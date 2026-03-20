@@ -8,7 +8,7 @@ import {
   type ConversationMode,
 } from "@/lib/prompts";
 import { retrieveContext } from "@/lib/rag";
-import type { ChatUserContext } from "@/lib/schema";
+import { ChatUserContext } from "@/drizzle/constants";
 
 export async function POST(req: NextRequest) {
   try {

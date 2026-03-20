@@ -9,7 +9,7 @@
   --bg-secondary: #F7F5F0;
   --bg-tertiary: #EBE8E0;
   --bg-card: #FFFFFF;
-  --bg-glass: rgba(255, 255, 255, 0.7);
+  --bg-glass: rgba(255, 255, 255, 0.5);
 
   --text-primary: #3D3A31;
   --text-secondary: #797566;
@@ -44,7 +44,7 @@
   --bg-secondary: #1C1A19;
   --bg-tertiary: #2F2D2A;
   --bg-card: #282624;
-  --bg-glass: rgba(40, 38, 36, 0.75);
+  --bg-glass: rgba(40, 38, 36, 0.6);
 
   --text-primary: #EBEAE5;
   --text-secondary: #A6A39D;
@@ -108,8 +108,10 @@ body {
 /* ─── Glass Card ───────────────────────────────────────────── */
 .glass {
   background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
   border: 1px solid var(--border-subtle);
 }
 
@@ -273,8 +275,10 @@ body {
 /* ─── Nav ──────────────────────────────────────────────────── */
 .nav-glass {
   background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  transform: translateZ(0); /* Fixes Safari rendering bugs */
+  -webkit-transform: translateZ(0);
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -327,4 +331,22 @@ body {
   background: var(--text-primary);
   border-color: var(--text-primary);
   color: var(--bg-primary);
+}
+
+.pageTransitionBlock {
+  flex: 1;
+  height: 100%;
+  background: black;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* Logo loading bar animation */
+@keyframes slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
 }

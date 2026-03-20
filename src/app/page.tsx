@@ -1,9 +1,10 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import Link from "next/link";
 import { BookOpen, Mic, Sparkles, ArrowRight, Headphones, Brain } from "lucide-react";
 import { motion } from "framer-motion";
+import PageMountSignaler from "@/components/PageMountSignaler";
+import { TransitionLink } from "@/components/TransitionLink";
 
 export default function LandingPage() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -24,6 +25,7 @@ export default function LandingPage() {
   }, []);
 
   return (
+   <>
     <div style={{ position: "relative", overflow: "hidden" }}>
       {/* ─── Floating Background Orbs ─────────────────────── */}
       <div
@@ -150,14 +152,14 @@ export default function LandingPage() {
               justifyContent: "center",
             }}
           >
-            <Link href="/library">
+            <TransitionLink href="/library">
               <button className="btn-primary" style={{ fontSize: 16, padding: "14px 32px" }}>
                 <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   Start Reading
                   <ArrowRight size={18} />
                 </span>
               </button>
-            </Link>
+            </TransitionLink>
             <button
               className="btn-ghost"
               style={{ fontSize: 16, padding: "14px 32px" }}
@@ -466,14 +468,14 @@ export default function LandingPage() {
             Start with Charlie and the Chocolate Factory or Harry Potter. Your AI
             companion is waiting.
           </p>
-          <Link href="/library">
+          <TransitionLink href="/library">
             <button className="btn-primary" style={{ fontSize: 16, padding: "14px 36px" }}>
               <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 Open Library
                 <ArrowRight size={18} />
               </span>
             </button>
-          </Link>
+          </TransitionLink>
         </motion.div>
       </section>
 
@@ -494,5 +496,7 @@ export default function LandingPage() {
         </p>
       </footer>
     </div>
+    <PageMountSignaler/>
+    </>
   );
 }

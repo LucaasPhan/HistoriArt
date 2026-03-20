@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { BookOpen, Sparkles } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeButton } from "./ThemeButton";
+import { TransitionLink } from "./TransitionLink";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -24,7 +24,7 @@ export function Navbar() {
           justifyContent: "space-between",
         }}
       >
-        <Link
+        <TransitionLink
           href="/"
           style={{
             display: "flex",
@@ -57,25 +57,25 @@ export function Navbar() {
           >
             Lit<span className="gradient-text">Companion</span>
           </span>
-        </Link>
+        </TransitionLink>
         
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <ThemeButton />
 
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <Link href="/library">
+            <TransitionLink href="/library">
               <button className="btn-ghost" style={{ fontSize: 14 }}>
                 <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <Sparkles size={14} />
                   Library
                 </span>
               </button>
-            </Link>
-            <Link href="/login">
+            </TransitionLink>
+            <TransitionLink href="/login">
               <button className="btn-primary" style={{ padding: "8px 20px", fontSize: 14 }}>
                 Sign In
               </button>
-            </Link>
+            </TransitionLink>
           </div>
         </div>
       </div>

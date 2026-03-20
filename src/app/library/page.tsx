@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { BookOpen, Clock, Star } from "lucide-react";
 import { motion } from "framer-motion";
+import PageMountSignaler from "@/components/PageMountSignaler";
+import { TransitionLink } from "@/components/TransitionLink";
 
 interface Book {
   id: string;
@@ -29,6 +30,7 @@ export default function LibraryPage() {
   }, []);
 
   return (
+   <>
     <div
       style={{
         minHeight: "100vh",
@@ -95,7 +97,7 @@ export default function LibraryPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: i * 0.15 }}
             >
-              <Link href={`/read/${book.id}`} style={{ textDecoration: "none" }}>
+              <TransitionLink href={`/read/${book.id}`} className="no-underline">
                 <div className="book-card">
                   {/* Cover */}
                   <div
@@ -218,11 +220,13 @@ export default function LibraryPage() {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </TransitionLink>
             </motion.div>
           ))}
         </div>
       )}
     </div>
+    <PageMountSignaler/>
+   </>
   );
 }

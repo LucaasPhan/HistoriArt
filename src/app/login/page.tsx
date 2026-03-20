@@ -1,22 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { Mail, Lock, User, ArrowRight, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { TransitionLink } from "@/components/TransitionLink";
+import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 
 export default function LoginPage() {
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Auth will be wired up with better-auth when API keys are configured
-    alert("Auth requires database setup. For the MVP demo, browse the library directly!");
-  };
-
   return (
     <div
       style={{
@@ -87,153 +76,19 @@ export default function LoginPage() {
               marginBottom: 8,
             }}
           >
-            {isSignUp ? "Create Account" : "Welcome Back"}
+            Welcome
           </h1>
           <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>
-            {isSignUp
-              ? "Start your literary journey"
-              : "Continue your reading adventure"}
+            Sign in to continue your reading adventure
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {isSignUp && (
-            <div style={{ position: "relative" }}>
-              <User
-                size={16}
-                style={{
-                  position: "absolute",
-                  left: 16,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  color: "var(--text-tertiary)",
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Full name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "14px 16px 14px 44px",
-                  borderRadius: "var(--radius-md)",
-                  border: "1px solid var(--border-subtle)",
-                  background: "var(--bg-tertiary)",
-                  color: "var(--text-primary)",
-                  fontSize: 14,
-                  outline: "none",
-                  transition: "border-color 0.2s",
-                }}
-              />
-            </div>
-          )}
-
-          <div style={{ position: "relative" }}>
-            <Mail
-              size={16}
-              style={{
-                position: "absolute",
-                left: 16,
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: "var(--text-tertiary)",
-              }}
-            />
-            <input
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "14px 16px 14px 44px",
-                borderRadius: "var(--radius-md)",
-                border: "1px solid var(--border-subtle)",
-                background: "var(--bg-tertiary)",
-                color: "var(--text-primary)",
-                fontSize: 14,
-                outline: "none",
-                transition: "border-color 0.2s",
-              }}
-            />
-          </div>
-
-          <div style={{ position: "relative" }}>
-            <Lock
-              size={16}
-              style={{
-                position: "absolute",
-                left: 16,
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: "var(--text-tertiary)",
-              }}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "14px 16px 14px 44px",
-                borderRadius: "var(--radius-md)",
-                border: "1px solid var(--border-subtle)",
-                background: "var(--bg-tertiary)",
-                color: "var(--text-primary)",
-                fontSize: 14,
-                outline: "none",
-                transition: "border-color 0.2s",
-              }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="btn-primary"
-            style={{
-              width: "100%",
-              marginTop: 8,
-              fontSize: 15,
-              padding: "14px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-            }}
-          >
-            {isSignUp ? "Create Account" : "Sign In"}
-            <ArrowRight size={16} />
-          </button>
-        </form>
-
-        <div
-          style={{
-            marginTop: 24,
-            textAlign: "center",
-            fontSize: 14,
-            color: "var(--text-secondary)",
-          }}
-        >
-          {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-          <button
-            onClick={() => setIsSignUp(!isSignUp)}
-            style={{
-              background: "none",
-              border: "none",
-              color: "var(--accent-secondary)",
-              cursor: "pointer",
-              fontWeight: 600,
-              fontSize: 14,
-            }}
-          >
-            {isSignUp ? "Sign In" : "Sign Up"}
-          </button>
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <GoogleSignInButton />
         </div>
 
         <div style={{ marginTop: 24, textAlign: "center" }}>
-          <Link
+          <TransitionLink
             href="/library"
             style={{
               fontSize: 13,
@@ -242,7 +97,7 @@ export default function LoginPage() {
             }}
           >
             Skip for now → Browse Library
-          </Link>
+          </TransitionLink>
         </div>
       </motion.div>
     </div>

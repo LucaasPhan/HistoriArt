@@ -5,16 +5,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-import OnboardingShell  from "./_components/OnboardingShell";
-import StepPersonal     from "./_components/StepPersonal";
-import StepPurpose      from "./_components/StepPurpose";
-import StepCommStyle    from "./_components/StepCommStyle";
-
+import OnboardingShell  from "@/features/onboarding/components/OnboardingShell";
+import StepPersonal     from "@/features/onboarding/components/StepPersonal";
+import StepPurpose      from "@/features/onboarding/components/StepPurpose";
+import StepCommStyle    from "@/features/onboarding/components/StepCommStyle";
 import "./onboarding.css";
-
-import { STEPS } from "./_components/constants";
-import type { OnboardingData } from "./_components/types";
+import { STEPS } from "@/features/onboarding/components/constants";
+import type { OnboardingData } from "@/features/onboarding/components/types";
+import PageMountSignaler from "@/components/PageMountSignaler";
 
 const EMPTY: OnboardingData = {
   age:                     "",
@@ -81,6 +79,7 @@ export default function OnboardingPage() {
   const stepProps = { data, set };
 
   return (
+   <>
     <OnboardingShell steps={STEPS} step={step}>
       {/* Step content */}
       {step === 0 && <StepPersonal  {...stepProps} />}
@@ -112,5 +111,7 @@ export default function OnboardingPage() {
         </button>
       </div>
     </OnboardingShell>
+    <PageMountSignaler/>
+   </>
   );
 }

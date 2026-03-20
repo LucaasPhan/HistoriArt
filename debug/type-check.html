@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TypeScript Type Check Results</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: #ef4444;
+      color: white;
+      padding: 20px 30px;
+      border-bottom: 3px solid #dc2626;
+    }
+    
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .content {
+      padding: 30px;
+    }
+    
+    .output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    
+    .success-message {
+      color: #10b981;
+      font-size: 18px;
+      font-weight: 500;
+      text-align: center;
+      padding: 40px;
+    }
+    
+    .timestamp {
+      text-align: right;
+      color: #666;
+      font-size: 12px;
+      margin-top: 20px;
+      padding: 0 30px 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>TypeScript Type Check Results</h1>
+      <p>Type checking completed with errors</p>
+    </div>
+    <div class="content">
+      <div class="output">src/app/read/[bookId]/page.tsx(33,45): error TS2345: Argument of type &apos;&quot;buddy&quot;&apos; is not assignable to parameter of type &apos;ConversationMode | (() =&gt; ConversationMode)&apos;.<br/>src/components/react-bits/FlowingMenu.tsx(5,26): error TS2307: Cannot find module &apos;next-themes&apos; or its corresponding type declarations.<br/>src/components/ui/carousel.tsx(3,61): error TS2307: Cannot find module &apos;embla-carousel-react&apos; or its corresponding type declarations.<br/>src/components/ui/combobox.tsx(3,47): error TS2307: Cannot find module &apos;@base-ui/react&apos; or its corresponding type declarations.<br/>src/components/ui/sonner.tsx(10,26): error TS2307: Cannot find module &apos;next-themes&apos; or its corresponding type declarations.<br/>src/components/ui/sonner.tsx(11,54): error TS2307: Cannot find module &apos;sonner&apos; or its corresponding type declarations.<br/></div>
+    </div>
+    <div class="timestamp">
+      Generated: 3/21/2026, 5:35:39 AM
+    </div>
+  </div>
+</body>
+</html>

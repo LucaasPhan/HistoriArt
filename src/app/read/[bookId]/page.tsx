@@ -3,11 +3,12 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Mic, Send, ArrowLeft, ChevronLeft, ChevronRight, BookOpen, MessageCircle, X, Sparkles, Volume2, Copy, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { SAMPLE_BOOKS } from "@/lib/sample-books";
 import type { ConversationMode } from "@/lib/prompts";
 import { ThemeButton } from "@/components/ThemeButton";
+import { TransitionLink } from "@/components/TransitionLink";
+import PageMountSignaler from "@/components/PageMountSignaler";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -254,6 +255,8 @@ export default function ReaderPage() {
   if (!book) return null;
 
   return (
+  <>
+  
     <div style={{ minHeight: "100vh", display: "flex", position: "relative" }}>
       {/* Selection Tooltip */}
       <AnimatePresence>
@@ -417,12 +420,12 @@ export default function ReaderPage() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <Link href="/library">
+            <TransitionLink href="/library">
               <button className="btn-ghost" style={{ padding: "6px 12px", display: "flex", alignItems: "center", gap: 4 }}>
                 <ArrowLeft size={16} />
                 Library
               </button>
-            </Link>
+            </TransitionLink>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <BookOpen size={16} color="var(--accent-primary)" />
               <span style={{ fontSize: 14, fontWeight: 600 }}>{book.title}</span>
@@ -606,5 +609,7 @@ export default function ReaderPage() {
         )}
       </AnimatePresence>
     </div>
+    <PageMountSignaler/>
+    </>
   );
 }
