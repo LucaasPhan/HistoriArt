@@ -33,6 +33,18 @@ export default function StepPurpose({ data, set }: Props) {
         })}
       </div>
 
+      {data.purposeOfUse === "other" && (
+        <div className="spu-custom-wrap">
+          <input
+            className="spu-input"
+            type="text"
+            placeholder="Please specify your reason..."
+            value={data.customPurpose || ""}
+            onChange={(e) => set("customPurpose", e.target.value)}
+          />
+        </div>
+      )}
+
       <style>{`
         .spu-grid {
           display: grid;
@@ -69,6 +81,24 @@ export default function StepPurpose({ data, set }: Props) {
           color: var(--bark);
           line-height: 1.4;
         }
+
+        .spu-custom-wrap {
+          margin-top: 16px;
+          animation: ob-fadeUp 0.35s ease both;
+        }
+        .spu-input {
+          width: 100%;
+          border: 1.5px solid var(--sand);
+          border-radius: var(--radius);
+          padding: 12px 14px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 15px;
+          color: var(--ink);
+          background: var(--cream);
+          outline: none;
+          transition: border-color 0.2s, background 0.2s;
+        }
+        .spu-input:focus { border-color: var(--sage); background: #fff; }
 
         @media (max-width: 400px) {
           .spu-grid { grid-template-columns: 1fr; }

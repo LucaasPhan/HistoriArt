@@ -21,12 +21,15 @@ export default function StepPersonal({ data, set }: Props) {
       <input
         className="ob-input"
         type="number"
-        min={10}
+        min={16}
         max={99}
         placeholder="e.g. 28"
         value={data.age}
         onChange={(e) => set("age", e.target.value)}
       />
+      {data.age !== "" && Number(data.age) < 16 && (
+        <p className="sp-error">You must be at least 16 to proceed.</p>
+      )}
 
       {/* Gender */}
       <p className="ob-section">Gender</p>
@@ -71,6 +74,12 @@ export default function StepPersonal({ data, set }: Props) {
           width: 18px;
           text-align: center;
           opacity: 0.7;
+        }
+
+        .sp-error {
+          color: #b5603a;
+          font-size: 13px;
+          margin-top: 8px;
         }
       `}</style>
     </>

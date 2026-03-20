@@ -132,6 +132,7 @@ export const userProfiles = pgTable("user_profiles", {
 
   // ── Onboarding step 2: CBT calibration ────────────────────
   purposeOfUse:            purposeOfUseEnum("purpose_of_use").notNull(),
+  customPurpose:           varchar("custom_purpose", { length: 500 }),
   communicationPreference: communicationPreferenceEnum("communication_preference").notNull(),
 
   // ── Meta ──────────────────────────────────────────────────
@@ -150,6 +151,7 @@ export type ChatUserContext = {
   age:                     number;   // from userProfiles.age
   gender:                  typeof genderEnum.enumValues[number];
   purposeOfUse:            typeof purposeOfUseEnum.enumValues[number];
+  customPurpose?:          string | null;
   communicationPreference: typeof communicationPreferenceEnum.enumValues[number];
 };
 

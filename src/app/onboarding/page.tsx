@@ -18,17 +18,21 @@ const EMPTY: OnboardingData = {
   age:                     "",
   gender:                  "",
   purposeOfUse:            "",
+  customPurpose:           "",
   communicationPreference: "",
 };
 
 function isValidAge(age: string) {
   const n = Number(age);
-  return age !== "" && Number.isInteger(n) && n >= 10 && n <= 99;
+  return age !== "" && Number.isInteger(n) && n >= 16 && n <= 99;
 }
 
 function canAdvance(step: number, data: OnboardingData): boolean {
   if (step === 0) return isValidAge(data.age) && data.gender !== "";
-  if (step === 1) return data.purposeOfUse !== "";
+  if (step === 1) {
+    if (data.purposeOfUse === "other") return (data.customPurpose || "").trim().length > 0;
+    return data.purposeOfUse !== "";
+  }
   if (step === 2) return data.communicationPreference !== "";
   return false;
 }
@@ -60,6 +64,7 @@ export default function OnboardingPage() {
           age:                     Number(data.age),
           gender:                  data.gender,
           purposeOfUse:            data.purposeOfUse,
+          customPurpose:           data.customPurpose,
           communicationPreference: data.communicationPreference,
         }),
       });

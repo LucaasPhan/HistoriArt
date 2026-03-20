@@ -25,6 +25,7 @@ export interface OnboardingData {
   age:                     string;
   gender:                  Gender | "";
   purposeOfUse:            PurposeOfUse | "";
+  customPurpose?:          string;
   communicationPreference: CommunicationPreference | "";
 }
 

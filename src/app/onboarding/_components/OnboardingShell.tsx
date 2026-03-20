@@ -2,7 +2,7 @@
 // Shared layout: grain background, progress bar, step dots, card wrapper.
 
 import type { ReactNode } from "react";
-import type { StepConfig } from "./onboarding.types";
+import type { StepConfig } from "./types";
 
 interface Props {
   steps:    StepConfig[];

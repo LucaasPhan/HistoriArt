@@ -5,7 +5,7 @@ import type {
   PurposeOfUse,
   CommunicationPreference,
   StepConfig,
-} from "./onboarding.types";
+} from "./types";
 
 export const STEPS: StepConfig[] = [
   {
@@ -77,7 +77,7 @@ export const PURPOSES: {
   {
     value:       "other",
     label:       "My own reasons",
-    description: "I'll explore freely — no label needed",
+    description: "I'll explore freely",
     emoji:       "○",
   },
 ];

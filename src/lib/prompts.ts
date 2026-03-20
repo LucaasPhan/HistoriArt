@@ -38,7 +38,11 @@ function genderPronounHint(gender: ChatUserContext["gender"]): string {
 }
 
 /** Maps purposeOfUse to a focus lens for the CBT layer. */
-function purposeLens(purpose: ChatUserContext["purposeOfUse"]): string {
+function purposeLens(purpose: ChatUserContext["purposeOfUse"], customPurpose?: string | null): string {
+  if (purpose === "other" && customPurpose) {
+    return `their specific goal: "${customPurpose}" — remain flexible and tailor the approach to this focus`;
+  }
+
   const map: Record<ChatUserContext["purposeOfUse"], string> = {
     "manage-anxiety":      "anxiety management — watch for catastrophising, 'what if' spirals, and avoidance patterns",
     "manage-depression":   "depression — watch for hopelessness, self-criticism, and withdrawal. Gently activate engagement",
@@ -78,7 +82,7 @@ function buildUserCalibration(user?: ChatUserContext): string {
 You are speaking with **${user.name}**.
 - **Age context:** ${user.name} is ${user.age} years old — treat them as ${ageToneHint(user.age)}.
 - **Gender / pronouns:** ${genderPronounHint(user.gender)}.
-- **Primary purpose:** ${user.name} is here to work on ${purposeLens(user.purposeOfUse)}.
+- **Primary purpose:** ${user.name} is here to work on ${purposeLens(user.purposeOfUse, user.customPurpose)}.
 - **Communication style:** ${commStyleDirective(user.communicationPreference)}
 
 Address ${user.name} by name naturally — not in every sentence, but enough to feel personal.
