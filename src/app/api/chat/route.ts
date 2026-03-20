@@ -56,15 +56,31 @@ export async function POST(req: NextRequest) {
       supplementaryContext
     );
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages,
-      temperature: 0.7,
-      max_tokens: 500,
-      stream: false,
-    });
+    let response = "I'm not sure how to respond to that.";
 
-    const response = completion.choices[0]?.message?.content || "I'm not sure how to respond to that.";
+    try {
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages,
+        temperature: 0.7,
+        max_tokens: 500,
+        stream: false,
+      });
+      response = completion.choices[0]?.message?.content || response;
+    } catch (openaiError) {
+      console.warn("OpenAI failed, falling back to Gemini:", openaiError);
+      
+      // Fallback to Gemini
+      const { GoogleGenerativeAI } = await import("@google/generative-ai");
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "dummy");
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      
+      // Convert OpenAI messages format to Gemini format
+      const geminiPrompt = messages.map(m => `${m.role.toUpperCase()}:\n${m.content}`).join("\n\n") + "\n\nASSISTANT:\n";
+      
+      const result = await model.generateContent(geminiPrompt);
+      response = result.response.text() || response;
+    }
 
     // Check if AI response contains navigation command
     const aiNavIntent = response.includes("[NAV:NEXT]")

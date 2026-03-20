@@ -5,12 +5,21 @@ import OpenAI from "openai";
 
 // ─── Embedding Generation ────────────────────────────────────
 export async function generateEmbedding(text: string): Promise<number[]> {
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "dummy" });
-  const response = await openai.embeddings.create({
-    model: "text-embedding-3-small",
-    input: text,
-  });
-  return response.data[0].embedding;
+  try {
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "dummy" });
+    const response = await openai.embeddings.create({
+      model: "text-embedding-3-small",
+      input: text,
+    });
+    return response.data[0].embedding;
+  } catch (error) {
+    console.warn("OpenAI embedding failed, falling back to Gemini:", error);
+    const { GoogleGenerativeAI } = await import("@google/generative-ai");
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "dummy");
+    const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
+    const result = await model.embedContent(text);
+    return result.embedding.values;
+  }
 }
 
 // ─── Vector Similarity Search ────────────────────────────────

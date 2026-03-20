@@ -74,37 +74,60 @@ export default function ReaderPage() {
   }, []);
 
   // ─── Text-to-Speech ────────────────────────────────────
-  const speakText = useCallback(async (text: string) => {
-    setIsSpeaking(true);
-    try {
-      // Try ElevenLabs first
-      const response = await fetch("/api/tts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: text.slice(0, 500) }),
-      });
+const speakText = useCallback(async (text: string) => {
+  setIsSpeaking(true);
 
-      if (response.ok) {
-        const audioData = await response.arrayBuffer();
-        const audioBlob = new Blob([audioData], { type: "audio/mpeg" });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        audio.onended = () => {
-          setIsSpeaking(false);
-          URL.revokeObjectURL(audioUrl);
-        };
-        audio.onerror = () => {
-          // Fallback to browser TTS
-          fallbackBrowserTTS(text);
-        };
-        await audio.play();
-        return;
-      }
-    } catch {
-      // fallback
+  try {
+    console.log("🎙️ Attempting ElevenLabs TTS...");
+    
+    const response = await fetch("/api/tts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: text.slice(0, 500) }),
+    });
+
+    console.log("📡 TTS response status:", response.status, response.ok);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("❌ TTS API failed:", errorText);
+      throw new Error(`TTS request failed: ${response.status} - ${errorText}`);
     }
+
+    const audioData = await response.arrayBuffer();
+    console.log("📦 Audio data size:", audioData.byteLength, "bytes");
+
+    if (audioData.byteLength === 0) {
+      throw new Error("Empty audio response from ElevenLabs");
+    }
+
+    const audioBlob = new Blob([audioData], { type: "audio/mpeg" });
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioUrl);
+
+    audio.oncanplaythrough = () => console.log("✅ Audio ready to play");
+    
+    audio.onended = () => {
+      console.log("✅ ElevenLabs audio finished");
+      setIsSpeaking(false);
+      URL.revokeObjectURL(audioUrl);
+    };
+
+    audio.onerror = (e) => {
+      console.error("❌ Audio playback error:", e, audio.error);
+      URL.revokeObjectURL(audioUrl);
+      fallbackBrowserTTS(text);
+    };
+
+    console.log("▶️ Playing audio...");
+    await audio.play();
+    console.log("✅ audio.play() resolved");
+
+  } catch (err) {
+    console.error("❌ ElevenLabs TTS error, falling back:", err);
     fallbackBrowserTTS(text);
-  }, []);
+  }
+}, []);
 
   const fallbackBrowserTTS = (text: string) => {
     if (!window.speechSynthesis) {
