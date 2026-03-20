@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       bookId,
       currentPage,
       highlightedText,
-      mode = "explain",
+      mode = "buddy",
       conversationHistory = [],
     } = body as {
       message: string;
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
       // Fallback to Gemini
       const { GoogleGenerativeAI } = await import("@google/generative-ai");
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "dummy");
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
       
       // Convert OpenAI messages format to Gemini format
       const geminiPrompt = messages.map(m => `${m.role.toUpperCase()}:\n${m.content}`).join("\n\n") + "\n\nASSISTANT:\n";

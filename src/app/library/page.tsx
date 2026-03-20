@@ -96,7 +96,7 @@ export default function LibraryPage() {
               transition={{ duration: 0.5, delay: i * 0.15 }}
             >
               <Link href={`/read/${book.id}`} style={{ textDecoration: "none" }}>
-                <div className="book-card" style={{ background: "var(--bg-card)" }}>
+                <div className="book-card">
                   {/* Cover */}
                   <div
                     style={{
@@ -120,7 +120,7 @@ export default function LibraryPage() {
                         width: 180,
                         height: 180,
                         borderRadius: "50%",
-                        background: "rgba(255,255,255,0.08)",
+                        background: "rgba(255,255,255,0.06)",
                       }}
                     />
                     <div
@@ -131,7 +131,7 @@ export default function LibraryPage() {
                         width: 120,
                         height: 120,
                         borderRadius: "50%",
-                        background: "rgba(255,255,255,0.05)",
+                        background: "rgba(255,255,255,0.04)",
                       }}
                     />
 
@@ -143,7 +143,7 @@ export default function LibraryPage() {
                         fontWeight: 600,
                         color: "white",
                         textAlign: "center",
-                        textShadow: "0 2px 8px rgba(0,0,0,0.3)",
+                        textShadow: "0 2px 12px rgba(0,0,0,0.2)",
                         lineHeight: 1.3,
                       }}
                     >
@@ -151,7 +151,7 @@ export default function LibraryPage() {
                     </h2>
                     <p
                       style={{
-                        color: "rgba(255,255,255,0.7)",
+                        color: "rgba(255,255,255,0.8)",
                         fontSize: 14,
                         marginTop: 8,
                       }}
@@ -207,7 +207,7 @@ export default function LibraryPage() {
                         style={{
                           fontSize: 13,
                           fontWeight: 600,
-                          color: "var(--accent-secondary)",
+                          color: "var(--accent-primary)",
                           display: "flex",
                           alignItems: "center",
                           gap: 4,

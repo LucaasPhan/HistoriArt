@@ -33,7 +33,7 @@ export default function LandingPage() {
           width: 600,
           height: 600,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)",
+          background: "radial-gradient(circle, var(--accent-glow) 0%, transparent 70%)",
           top: "-10%",
           right: "-10%",
           pointerEvents: "none",
@@ -47,7 +47,7 @@ export default function LandingPage() {
           width: 500,
           height: 500,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(236,72,153,0.1) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(223,117,90,0.08) 0%, transparent 70%)",
           bottom: "-15%",
           left: "-10%",
           pointerEvents: "none",
@@ -61,7 +61,7 @@ export default function LandingPage() {
           width: 300,
           height: 300,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(212,110,86,0.05) 0%, transparent 70%)",
           top: "50%",
           left: "30%",
           pointerEvents: "none",
@@ -98,9 +98,9 @@ export default function LandingPage() {
               padding: "6px 16px",
               borderRadius: "var(--radius-full)",
               border: "1px solid var(--border-subtle)",
-              background: "rgba(139,92,246,0.08)",
+              background: "var(--bg-tertiary)",
               fontSize: 13,
-              color: "var(--text-accent)",
+              color: "var(--accent-primary)",
               marginBottom: 32,
               fontWeight: 500,
             }}
@@ -222,7 +222,7 @@ export default function LandingPage() {
                 trembling.{" "}
                 <span
                   style={{
-                    background: "rgba(139,92,246,0.2)",
+                    background: "var(--accent-glow)",
                     borderRadius: 4,
                     padding: "2px 0",
                   }}
@@ -348,25 +348,25 @@ export default function LandingPage() {
         >
           {[
             {
-              icon: <Brain size={24} />,
-              title: "Deep Analysis",
-              desc: "Ask why characters make decisions, explore themes, and get passage-backed explanations.",
-              example: '"Why does Elizabeth reject Darcy?"',
-              gradient: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+              icon: <BookOpen size={24} />,
+              title: "Book Buddy",
+              desc: "A companion that reads along with you, providing insights and keeping track of your literary journey.",
+              example: '"What do you think of this chapter?"',
+              gradient: "linear-gradient(135deg, #D46E56, #A04A36)",
             },
             {
               icon: <Headphones size={24} />,
-              title: "Emotional Discussion",
-              desc: "Talk about how the book makes you feel. Your AI companion responds with genuine warmth.",
-              example: '"This scene made me so sad..."',
-              gradient: "linear-gradient(135deg, #ec4899, #be185d)",
+              title: "Human-like",
+              desc: "Natural, flowing conversations that feel like talking to a real friend who loves books as much as you.",
+              example: '"That ending was so unexpected!"',
+              gradient: "linear-gradient(135deg, #E3836B, #C4513E)",
             },
             {
               icon: <Sparkles size={24} />,
-              title: "Character Role-Play",
-              desc: "Ask the AI to become any character from the book and have a conversation with them.",
-              example: '"Pretend you\'re Wonka — show me the factory"',
-              gradient: "linear-gradient(135deg, #f97316, #c2410c)",
+              title: "Expressive Response",
+              desc: "Empathetic responses that capture the emotion of every scene, responding with warmth and depth.",
+              example: '"I feel exactly what the character is going through..."',
+              gradient: "linear-gradient(135deg, #DF755A, #C4513E)",
             },
           ].map((feature, i) => (
             <motion.div
