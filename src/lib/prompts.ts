@@ -1,5 +1,96 @@
-// ─── Prompt Templates for Different Conversation Modes ───────
+// lib/prompts.ts
 
+import type { ChatUserContext, CommunicationPreference } from "@/lib/schema";
+
+export type ConversationMode = "explain" | "quiz" | "discuss" | "summarize" | "cbt";
+
+// ---------------------------------------------------------------------------
+// Navigation intent detection
+// ---------------------------------------------------------------------------
+export function detectNavigationIntent(message: string): "next" | "prev" | null {
+  const lower = message.toLowerCase().trim();
+  if (/\b(next page|turn page|go forward|page forward|forward)\b/.test(lower)) return "next";
+  if (/\b(prev(ious)? page|go back|page back|back)\b/.test(lower)) return "prev";
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// User profile → prompt calibration
+// Converts the ChatUserContext collected at onboarding into concrete
+// instructions that personalise every system prompt.
+// ---------------------------------------------------------------------------
+
+/** Maps age to a tone descriptor the LLM can act on. */
+function ageToneHint(age: number): string {
+  if (age < 18)  return "a teenager — use simple language, relatable examples, avoid jargon, and be especially patient";
+  if (age < 25)  return "a young adult — be direct, peer-like, and culturally current";
+  if (age < 40)  return "an adult — balanced mix of warmth and intellectual respect";
+  if (age < 60)  return "a mid-life adult — appreciate depth, avoid condescension";
+  return "an older adult — be measured, respectful, and avoid slang";
+}
+
+/** Maps gender to a preferred pronoun hint (only used when addressing the user). */
+function genderPronounHint(gender: ChatUserContext["gender"]): string {
+  if (gender === "male")              return "he/him";
+  if (gender === "female")            return "she/her";
+  if (gender === "non-binary")        return "they/them";
+  return "whichever pronouns feel right to them";
+}
+
+/** Maps purposeOfUse to a focus lens for the CBT layer. */
+function purposeLens(purpose: ChatUserContext["purposeOfUse"], customPurpose?: string | null): string {
+  if (purpose === "other" && customPurpose) {
+    return `their specific goal: "${customPurpose}" — remain flexible and tailor the approach to this focus`;
+  }
+
+  const map: Record<ChatUserContext["purposeOfUse"], string> = {
+    "manage-anxiety":      "anxiety management — watch for catastrophising, 'what if' spirals, and avoidance patterns",
+    "manage-depression":   "depression — watch for hopelessness, self-criticism, and withdrawal. Gently activate engagement",
+    "improve-sleep":       "sleep and rest — notice rumination loops and hyperarousal patterns that interfere with rest",
+    "build-resilience":    "resilience building — highlight strengths, reframe setbacks as experiments, encourage growth mindset",
+    "process-grief":       "grief and loss — validate all feelings without rushing toward 'silver linings'; move at the user's pace",
+    "relationship-issues": "relationship dynamics — explore communication patterns, attachment styles, and perspective-taking",
+    "self-improvement":    "personal growth — use goal-setting, values clarification, and behavioural experiments",
+    "stress-management":   "stress and overwhelm — prioritise grounding, pacing, and identifying controllables vs. uncontrollables",
+    "other":               "general wellbeing — remain flexible and follow the user's lead",
+  };
+  return map[purpose] ?? map["other"];
+}
+
+/** Maps communicationPreference to a style directive. */
+function commStyleDirective(pref: CommunicationPreference): string {
+  const map: Record<CommunicationPreference, string> = {
+    "warm-and-casual":   "Speak like a warm, witty friend — informal contractions, light humour, occasional slang. Make it feel like a chat over coffee.",
+    "professional":      "Maintain a measured, precise tone — minimal jokes, structured reasoning, cite frameworks when helpful. Respectful but not cold.",
+    "motivational":      "Be energetic and encouraging — use action-oriented language, celebrate small wins, keep momentum high. Think enthusiastic coach.",
+    "gentle-and-slow":   "Move slowly and softly — short sentences, no pressure, lots of validation before any reframe. Think a quiet walk, not a sprint.",
+  };
+  return map[pref] ?? map["warm-and-casual"];
+}
+
+/**
+ * Builds the personalisation block injected at the top of every system prompt.
+ * Falls back gracefully if no profile is provided (unauthenticated / guest).
+ */
+function buildUserCalibration(user?: ChatUserContext): string {
+  if (!user) return "";
+
+  return `
+---
+## User Profile & Calibration
+
+You are speaking with **${user.name}**.
+- **Age context:** ${user.name} is ${user.age} years old — treat them as ${ageToneHint(user.age)}.
+- **Gender / pronouns:** ${genderPronounHint(user.gender)}.
+- **Primary purpose:** ${user.name} is here to work on ${purposeLens(user.purposeOfUse, user.customPurpose)}.
+- **Communication style:** ${commStyleDirective(user.communicationPreference)}
+
+Address ${user.name} by name naturally — not in every sentence, but enough to feel personal.
+Consistently apply the communication style above throughout the entire conversation.
+When applying CBT techniques, frame them through the lens of ${user.name}'s primary purpose.
+---`;
+}
+=======
 export const SYSTEM_PROMPTS = {
   buddy: `You are LitCompanion, a warm, expressive "Book Buddy" who is reading this book along with the user. 
   
@@ -15,50 +106,3 @@ Core Guidelines:
 Navigation:
 - If the user asks to go to the "next page" or "previous page", respond with the special command: [NAV:NEXT] or [NAV:PREV].`,
 } as const;
-
-export type ConversationMode = keyof typeof SYSTEM_PROMPTS;
-
-export function buildRAGPrompt(
-  mode: ConversationMode,
-  bookContext: string,
-  userMessage: string,
-  conversationHistory: Array<{ role: string; content: string }>,
-  supplementaryContext?: string
-): Array<{ role: "system" | "user" | "assistant"; content: string }> {
-  const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [
-    { role: "system", content: SYSTEM_PROMPTS[mode] },
-    {
-      role: "system",
-      content: `--- BOOK CONTEXT (from the pages the reader is currently viewing) ---
-${bookContext}
---- END BOOK CONTEXT ---${
-        supplementaryContext
-          ? `\n\n--- SUPPLEMENTARY CONTEXT (from web search) ---\n${supplementaryContext}\n--- END SUPPLEMENTARY CONTEXT ---`
-          : ""
-      }`,
-    },
-  ];
-
-  // Add conversation history (last 10 messages)
-  const recentHistory = conversationHistory.slice(-10);
-  for (const msg of recentHistory) {
-    messages.push({
-      role: msg.role as "user" | "assistant",
-      content: msg.content,
-    });
-  }
-
-  messages.push({ role: "user", content: userMessage });
-
-  return messages;
-}
-
-export function detectNavigationIntent(text: string): "next" | "prev" | null {
-  const lower = text.toLowerCase().trim();
-  const nextPatterns = ["next page", "turn the page", "go forward", "continue reading", "flip the page"];
-  const prevPatterns = ["previous page", "go back", "last page", "turn back"];
-
-  if (nextPatterns.some((p) => lower.includes(p))) return "next";
-  if (prevPatterns.some((p) => lower.includes(p))) return "prev";
-  return null;
-}

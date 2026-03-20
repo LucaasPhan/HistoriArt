@@ -8,10 +8,12 @@ import {
   boolean,
   serial,
   varchar,
+  smallint,
+  pgEnum,
   customType,
 } from "drizzle-orm/pg-core";
 
-// Custom pgvector type
+// ─── Custom pgvector type ─────────────────────────────────────
 const vector = customType<{ data: number[]; dpiverType: string }>({
   dataType() {
     return "vector(1536)";
@@ -30,7 +32,37 @@ const vector = customType<{ data: number[]; dpiverType: string }>({
   },
 });
 
+// ─── Enums ────────────────────────────────────────────────────
+
+export const genderEnum = pgEnum("gender", [
+  "male",
+  "female",
+  "non-binary",
+  "prefer-not-to-say",
+]);
+
+export const purposeOfUseEnum = pgEnum("purpose_of_use", [
+  "learn-and-grow",        // expand knowledge & skills through reading
+  "find-calm",             // use reading to decompress & slow down
+  "stay-consistent",       // build a regular reading habit
+  "go-deeper",             // understand books at a deeper level with AI help
+  "process-ideas",         // think through concepts & reflect as I read
+  "explore-stories",       // enjoy fiction & get more out of narratives
+  "other",
+]);
+
+export const communicationPreferenceEnum = pgEnum("communication_preference", [
+  "warm-and-casual",    // friendly, informal, like a mate
+  "professional",       // measured, precise, clinical-adjacent
+  "motivational",       // energetic, encouraging, action-oriented
+  "gentle-and-slow",    // soft pacing, minimal challenges, very validating
+]);
+
 // ─── Auth Tables (better-auth managed) ───────────────────────
+// NOTE: Do not rename or reorder columns in these four tables —
+// better-auth owns their structure. The `user` table is intentionally
+// kept minimal here; CBT profile data lives in `userProfiles` below.
+
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -81,51 +113,86 @@ export const verification = pgTable("verification", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// ─── CBT Onboarding Profile ───────────────────────────────────
+// Separated from the `user` table so better-auth stays untouched.
+// Created immediately after signup; onboardingComplete flips to true
+// once the user finishes both onboarding steps.
+// One-to-one with `user` via userId (unique constraint enforces this).
+
+export const userProfiles = pgTable("user_profiles", {
+  id:        uuid("id").defaultRandom().primaryKey(),
+  userId:    text("user_id")
+               .notNull()
+               .unique()                        // enforces 1-to-1 with user
+               .references(() => user.id, { onDelete: "cascade" }),
+
+  // ── Onboarding step 1: personal info ──────────────────────
+  age:       smallint("age").notNull(),
+  gender:    genderEnum("gender").notNull(),
+
+  // ── Onboarding step 2: CBT calibration ────────────────────
+  purposeOfUse:            purposeOfUseEnum("purpose_of_use").notNull(),
+  customPurpose:           varchar("custom_purpose", { length: 500 }),
+  communicationPreference: communicationPreferenceEnum("communication_preference").notNull(),
+
+  // ── Meta ──────────────────────────────────────────────────
+  onboardingComplete: boolean("onboarding_complete").notNull().default(false),
+  createdAt:          timestamp("created_at").notNull().defaultNow(),
+  updatedAt:          timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Convenience TypeScript types inferred from the table
+export type UserProfile    = typeof userProfiles.$inferSelect;
+export type NewUserProfile = typeof userProfiles.$inferInsert;
+
+// Lightweight subset passed per chat request (no credentials)
+export type ChatUserContext = {
+  name:                    string;   // from user.name
+  age:                     number;   // from userProfiles.age
+  gender:                  typeof genderEnum.enumValues[number];
+  purposeOfUse:            typeof purposeOfUseEnum.enumValues[number];
+  customPurpose?:          string | null;
+  communicationPreference: typeof communicationPreferenceEnum.enumValues[number];
+};
+
 // ─── App Tables ──────────────────────────────────────────────
+
 export const books = pgTable("books", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  title: varchar("title", { length: 255 }).notNull(),
-  author: varchar("author", { length: 255 }).notNull(),
-  coverUrl: text("cover_url"),
+  id:          uuid("id").defaultRandom().primaryKey(),
+  title:       varchar("title", { length: 255 }).notNull(),
+  author:      varchar("author", { length: 255 }).notNull(),
+  coverUrl:    text("cover_url"),
   description: text("description"),
-  totalPages: integer("total_pages").notNull().default(0),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
+  totalPages:  integer("total_pages").notNull().default(0),
+  createdAt:   timestamp("created_at").notNull().defaultNow(),
 });
 
 export const chapters = pgTable("chapters", {
-  id: serial("id").primaryKey(),
-  bookId: uuid("book_id")
-    .notNull()
-    .references(() => books.id),
-  number: integer("number").notNull(),
-  title: varchar("title", { length: 255 }).notNull(),
+  id:        serial("id").primaryKey(),
+  bookId:    uuid("book_id").notNull().references(() => books.id),
+  number:    integer("number").notNull(),
+  title:     varchar("title", { length: 255 }).notNull(),
   startPage: integer("start_page").notNull(),
-  endPage: integer("end_page").notNull(),
+  endPage:   integer("end_page").notNull(),
 });
 
 export const bookChunks = pgTable("book_chunks", {
-  id: serial("id").primaryKey(),
-  bookId: uuid("book_id")
-    .notNull()
-    .references(() => books.id),
+  id:            serial("id").primaryKey(),
+  bookId:        uuid("book_id").notNull().references(() => books.id),
   chapterNumber: integer("chapter_number").notNull(),
-  pageNumber: integer("page_number").notNull(),
-  content: text("content").notNull(),
-  embedding: vector("embedding"),
-  metadata: jsonb("metadata"),
+  pageNumber:    integer("page_number").notNull(),
+  content:       text("content").notNull(),
+  embedding:     vector("embedding"),
+  metadata:      jsonb("metadata"),
 });
 
 export const conversations = pgTable("conversations", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id),
-  bookId: uuid("book_id")
-    .notNull()
-    .references(() => books.id),
-  messages: jsonb("messages").$type<
-    Array<{ role: "user" | "assistant"; content: string; timestamp: string }>
-  >().default([]),
+  id:      uuid("id").defaultRandom().primaryKey(),
+  userId:  text("user_id").notNull().references(() => user.id),
+  bookId:  uuid("book_id").notNull().references(() => books.id),
+  messages: jsonb("messages")
+    .$type<Array<{ role: "user" | "assistant"; content: string; timestamp: string }>>()
+    .default([]),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
