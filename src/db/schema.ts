@@ -42,14 +42,12 @@ export const genderEnum = pgEnum("gender", [
 ]);
 
 export const purposeOfUseEnum = pgEnum("purpose_of_use", [
-  "manage-anxiety",
-  "manage-depression",
-  "improve-sleep",
-  "build-resilience",
-  "process-grief",
-  "relationship-issues",
-  "self-improvement",
-  "stress-management",
+  "learn-and-grow",        // expand knowledge & skills through reading
+  "find-calm",             // use reading to decompress & slow down
+  "stay-consistent",       // build a regular reading habit
+  "go-deeper",             // understand books at a deeper level with AI help
+  "process-ideas",         // think through concepts & reflect as I read
+  "explore-stories",       // enjoy fiction & get more out of narratives
   "other",
 ]);
 
