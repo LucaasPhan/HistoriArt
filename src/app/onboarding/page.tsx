@@ -11,6 +11,8 @@ import StepPersonal     from "./_components/StepPersonal";
 import StepPurpose      from "./_components/StepPurpose";
 import StepCommStyle    from "./_components/StepCommStyle";
 
+import "./onboarding.css";
+
 import { STEPS } from "./_components/constants";
 import type { OnboardingData } from "./_components/types";
 
@@ -109,15 +111,6 @@ export default function OnboardingPage() {
             : "Continue →"}
         </button>
       </div>
-
-      <style>{`
-        .ob-error {
-          margin-top: 14px;
-          font-size: 13px;
-          color: #b5603a;
-          text-align: center;
-        }
-      `}</style>
     </OnboardingShell>
   );
 }

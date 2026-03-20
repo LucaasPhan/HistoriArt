@@ -44,66 +44,6 @@ export default function StepPurpose({ data, set }: Props) {
           />
         </div>
       )}
-
-      <style>{`
-        .spu-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px;
-        }
-        .spu-card {
-          border: 1.5px solid var(--sand);
-          border-radius: var(--radius);
-          padding: 14px 12px;
-          cursor: pointer;
-          background: var(--cream);
-          transition: border-color 0.18s, background 0.18s;
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          user-select: none;
-        }
-        .spu-card:hover { border-color: var(--sage); background: var(--sage-lt); }
-        .spu-card--active { border-color: var(--sage); background: var(--sage-lt); }
-
-        .spu-emoji { font-size: 22px; line-height: 1; margin-bottom: 2px; }
-
-        .spu-label {
-          font-size: 13px;
-          font-weight: 500;
-          color: var(--ink);
-          line-height: 1.3;
-        }
-        .spu-card--active .spu-label { color: var(--sage); }
-
-        .spu-desc {
-          font-size: 11px;
-          color: var(--bark);
-          line-height: 1.4;
-        }
-
-        .spu-custom-wrap {
-          margin-top: 16px;
-          animation: ob-fadeUp 0.35s ease both;
-        }
-        .spu-input {
-          width: 100%;
-          border: 1.5px solid var(--sand);
-          border-radius: var(--radius);
-          padding: 12px 14px;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 15px;
-          color: var(--ink);
-          background: var(--cream);
-          outline: none;
-          transition: border-color 0.2s, background 0.2s;
-        }
-        .spu-input:focus { border-color: var(--sage); background: #fff; }
-
-        @media (max-width: 400px) {
-          .spu-grid { grid-template-columns: 1fr; }
-        }
-      `}</style>
     </>
   );
 }
