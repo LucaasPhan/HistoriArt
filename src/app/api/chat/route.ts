@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       bookId,
       currentPage,
       highlightedText,
-      mode = "explain",
+      mode = "buddy",
       conversationHistory = [],
       // ── User profile injected by the frontend after login/onboarding ──────
       // When auth is not yet wired up this will simply be undefined and the
