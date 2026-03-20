@@ -14,16 +14,10 @@ export async function GET(
   }
 
   const content = book.pages[page] || "";
-  const chapter = book.chapters.find(
-    (ch) => page >= ch.startPage && page <= ch.endPage
-  );
 
   return NextResponse.json({
     content,
     pageNumber: page,
     totalPages: book.totalPages,
-    chapter: chapter
-      ? { number: chapter.number, title: chapter.title }
-      : null,
   });
 }

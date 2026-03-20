@@ -4,9 +4,11 @@ import { BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { TransitionLink } from "@/components/TransitionLink";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
+import PageMountSignaler from "@/components/PageMountSignaler";
 
 export default function LoginPage() {
   return (
+   <>
     <div
       style={{
         minHeight: "100vh",
@@ -101,5 +103,6 @@ export default function LoginPage() {
         </div>
       </motion.div>
     </div>
+    <PageMountSignaler/></>
   );
 }

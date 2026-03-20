@@ -120,18 +120,11 @@ export const books = pgTable(
     totalChunks: integer("total_chunks").notNull().default(0),
     userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
+    lastPageRead: integer("last_page_read").notNull().default(0),
   },
   (table) => [index("idx_book_user").on(table.userId)],
 );
 
-export const chapters = pgTable("chapters", {
-  id:        serial("id").primaryKey(),
-  bookId:    uuid("book_id").notNull().references(() => books.id, { onDelete: "cascade" }),
-  number:    integer("number").notNull(),
-  title:     varchar("title", { length: 255 }).notNull(),
-  startPage: integer("start_page").notNull(),
-  endPage:   integer("end_page").notNull(),
-});
 
 export const bookChunks = pgTable(
   "book_chunks",

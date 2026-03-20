@@ -71,7 +71,7 @@ function purposeLens(
     "go-deeper":
       "deep-diving into ideas — offer analytical insights, explore subtext, character motivations, and thematic depth",
     "process-ideas":
-      "processing complex concepts — act as a sounding board, help break down tough chapters, and synthesize information",
+      "processing complex concepts — act as a sounding board, help break down tough sections, and synthesize information",
     "explore-stories":
       "exploring stories and escaping — prioritize atmosphere, narrative immersion, and shared emotional reactions to plot twists",
     "other": "general engagement — follow their lead, remain flexible, and adapt to their reading style",

@@ -8,7 +8,6 @@ export interface BookData {
   description: string;
   coverGradient: [string, string];
   totalPages: number;
-  chapters: Array<{ number: number; title: string; startPage: number; endPage: number }>;
   pages: Record<number, string>;
 }
 
@@ -21,11 +20,6 @@ export const SAMPLE_BOOKS: BookData[] = [
       "Young Charlie Bucket wins a golden ticket to visit the world's most extraordinary chocolate factory, run by the eccentric and brilliant Willy Wonka.",
     coverGradient: ["#8B4513", "#D2691E"],
     totalPages: 12,
-    chapters: [
-      { number: 1, title: "Here Comes Charlie", startPage: 1, endPage: 4 },
-      { number: 2, title: "The Golden Tickets", startPage: 5, endPage: 8 },
-      { number: 3, title: "The Factory", startPage: 9, endPage: 12 },
-    ],
     pages: {
       1: `Charlie Bucket lived in a small wooden house on the edge of a great town. The house wasn't nearly large enough for so many people, and life was extremely uncomfortable. There were only two rooms and one bed, and the entire family shared everything they had.
 
@@ -154,11 +148,6 @@ The elevator sailed on into the golden sunset, carrying a boy, an old man, and a
       "An orphaned boy discovers he is a wizard and begins his education at Hogwarts School of Witchcraft and Wizardry, where danger and destiny await.",
     coverGradient: ["#1a1a2e", "#e94560"],
     totalPages: 12,
-    chapters: [
-      { number: 1, title: "The Boy Who Lived", startPage: 1, endPage: 4 },
-      { number: 2, title: "Letters from No One", startPage: 5, endPage: 8 },
-      { number: 3, title: "The Journey to Hogwarts", startPage: 9, endPage: 12 },
-    ],
     pages: {
       1: `The Dursleys of number four, Privet Drive, were proud to say that they were perfectly normal, thank you very much. They were the last people you'd expect to be involved in anything strange or mysterious, because they just didn't hold with such nonsense.
 

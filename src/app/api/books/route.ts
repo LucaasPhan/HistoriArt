@@ -9,7 +9,6 @@ export async function GET() {
     description: b.description,
     coverGradient: b.coverGradient,
     totalPages: b.totalPages,
-    chapters: b.chapters,
   }));
 
   return NextResponse.json({ books });

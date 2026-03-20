@@ -41,9 +41,6 @@ export default function ReaderPage() {
 
   const totalPages = book?.totalPages || 1;
   const content = book?.pages[currentPage] || "Content not available.";
-  const chapter = book?.chapters.find(
-    (ch) => currentPage >= ch.startPage && currentPage <= ch.endPage
-  );
 
   // ─── Text-to-Speech ────────────────────────────────────
   const fallbackBrowserTTS = useCallback((text: string) => {
@@ -429,11 +426,6 @@ export default function ReaderPage() {
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <BookOpen size={16} color="var(--accent-primary)" />
               <span style={{ fontSize: 14, fontWeight: 600 }}>{book.title}</span>
-              {chapter && (
-                <span style={{ fontSize: 13, color: "var(--text-tertiary)" }}>
-                  — Ch. {chapter.number}: {chapter.title}
-                </span>
-              )}
             </div>
           </div>
 
