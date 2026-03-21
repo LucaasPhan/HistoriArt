@@ -133,6 +133,7 @@ export default function useReaderController({
   const [dynamicTotalPages, setDynamicTotalPages] = useState<number>(0);
   const [dynamicBookTitle, setDynamicBookTitle] = useState<string>("");
   const [pageLoading, setPageLoading] = useState(false);
+  const [retryTick, setRetryTick] = useState(0);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -211,17 +212,43 @@ export default function useReaderController({
     if (!isDynamic) return;
     setPageLoading(true);
 
-    fetch(`/api/books/${bookId}/pages?page=${currentPage}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.content) {
+    let isActive = true;
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    const fetchContent = async () => {
+      try {
+        const res = await fetch(`/api/books/${bookId}/pages?page=${currentPage}`);
+        const data = await res.json();
+        if (!isActive) return;
+
+        if (data.isProcessing) {
+          setDynamicContent("Your book is currently being downloaded and parsed in the background. Please wait a few moments...");
+          setDynamicTotalPages(data.totalPages || 1);
+          
+          // Poll every 2 seconds
+          timeoutId = setTimeout(() => {
+             setRetryTick(t => t + 1);
+          }, 2000);
+        } else if (data.content) {
           setDynamicContent(data.content);
           setDynamicTotalPages(data.totalPages);
+        } else if (data.error) {
+          setDynamicContent(data.error);
         }
-      })
-      .catch(() => setDynamicContent("Failed to load page content."))
-      .finally(() => setPageLoading(false));
-  }, [bookId, currentPage, isDynamic]);
+      } catch (err) {
+        if (isActive) setDynamicContent("Failed to load page content.");
+      } finally {
+        if (isActive) setPageLoading(false);
+      }
+    };
+
+    fetchContent();
+
+    return () => {
+      isActive = false;
+      clearTimeout(timeoutId);
+    };
+  }, [bookId, currentPage, isDynamic, retryTick]);
 
   // Fetch book title for dynamic books
   useEffect(() => {

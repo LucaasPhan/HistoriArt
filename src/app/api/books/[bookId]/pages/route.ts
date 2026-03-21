@@ -29,6 +29,25 @@ export async function GET(
         and(eqFn(chunks.bookId, bookId), eqFn(chunks.pageNumber, page)),
     });
 
+    if (!chunk) {
+      // Check if the book exists but is still processing
+      const hasBook = await db.query.books.findFirst({
+         where: (books, { eq: eqFn }) => eqFn(books.id, bookId)
+      });
+      if (hasBook) {
+         if (hasBook.totalChunks === 0) {
+            // Processing state
+            return NextResponse.json({ 
+              content: null, 
+              isProcessing: true, 
+              pageNumber: page, 
+              totalPages: 1 
+            });
+         }
+         return NextResponse.json({ error: "Page out of bounds" }, { status: 404 });
+      }
+    }
+
     if (chunk) {
       // Get total pages count
       const allChunks = await db

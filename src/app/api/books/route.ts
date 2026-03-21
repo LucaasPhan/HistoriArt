@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { SAMPLE_BOOKS } from "@/lib/sample-books";
 import { db } from "@/drizzle/db";
 import { books } from "@/drizzle/schema";
@@ -74,16 +74,68 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // If Gutenberg ID is provided but no pages were sent, fetch on the backend
+    // If Gutenberg ID is provided but no pages were sent, fetch on the backend using background queues
     if (gutenbergId && (!pages || Object.keys(pages).length === 0)) {
-      console.log(`Server fetching Gutenberg text for ID ${gutenbergId}...`);
-      const bookData = await fetchAndPaginateGutenbergBook(gutenbergId);
-      pages = bookData.pages;
-      title = title || bookData.title;
-      totalPages = totalPages || bookData.totalPages;
-      description = description || bookData.subjects.join(", ");
-      author = author || bookData.author;
-      coverUrl = coverUrl || bookData.coverUrl;
+      console.log(`Server backgrounding Gutenberg text fetch for ID ${gutenbergId}...`);
+      
+      // 1. Instantly create the database entry
+      const [newBook] = await db
+        .insert(books)
+        .values({
+          title: title || `Book ${gutenbergId}`,
+          author: author || "Unknown",
+          fileName: `gutenberg-${gutenbergId}`,
+          coverUrl: coverUrl || null,
+          description: description || null,
+          totalPages: totalPages || 0,
+          totalChunks: 0, // 0 = Processing
+        })
+        .returning({ id: books.id });
+
+      // 2. Queue the slow networking/parsing job
+      after(async () => {
+        try {
+          console.log(`[Background Queue] Processing ${gutenbergId} for Book ${newBook.id}...`);
+          const bookData = await fetchAndPaginateGutenbergBook(gutenbergId);
+          
+          const pagesToSave = bookData.pages;
+          const chunkInserts = Object.entries(pagesToSave).map(
+            ([pageNum, content]) => ({
+              bookId: newBook.id,
+              chunkIndex: parseInt(pageNum),
+              pageNumber: parseInt(pageNum),
+              content: content as string,
+            })
+          );
+
+          // Insert in chunks
+          for (let i = 0; i < chunkInserts.length; i += 50) {
+             const batch = chunkInserts.slice(i, i + 50);
+             await db.insert(bookChunks).values(batch);
+          }
+
+          // Complete the book record
+          await db.update(books).set({
+            title: title || bookData.title,
+            author: author || bookData.author,
+            description: description || bookData.subjects.join(", "),
+            coverUrl: coverUrl || bookData.coverUrl,
+            totalPages: bookData.totalPages,
+            totalChunks: bookData.totalPages,
+          }).where(eq(books.id, newBook.id));
+          
+          console.log(`[Background Queue] Job finished for ${gutenbergId}!`);
+        } catch (err) {
+          console.error(`[Background Queue] Error processing ${gutenbergId}:`, err);
+        }
+      });
+
+      // 3. Immediately return success to the browser!
+      return NextResponse.json({
+        id: newBook.id,
+        alreadyExists: false,
+        message: "Book added! Text is processing in the background.",
+      });
     }
 
     if (!title || !totalPages) {
