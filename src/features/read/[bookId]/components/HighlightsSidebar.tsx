@@ -22,7 +22,7 @@ type HighlightsSidebarProps = {
   onNavigate?: (pageNumber: number) => void;
 };
 
-function CustomFilterDropdown({ value, onChange, bookId }: { value: "desc" | "asc" | "custom", onChange: (val: "desc" | "asc") => void, bookId: string }) {
+function CustomFilterDropdown({ value, onChange }: { value: "desc" | "asc" | "custom", onChange: (val: "desc" | "asc") => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   

@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Check, Copy, MessageCircle, MoreVertical, Sparkles } from "lucide-react";
+import { Check, Copy, MessageCircle, MoreVertical, Sparkles, BookOpen } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   DropdownMenu,
@@ -14,20 +14,25 @@ type SelectionCoords = { x: number; y: number };
 type SelectionTooltipProps = {
   selectionCoords: SelectionCoords | null;
   showCopied: boolean;
+  selectedText: string;
   onCopy: () => void;
   onSendToChat: () => void;
   onHighlight: (color: string) => void;
+  onLookUp: () => void;
   interactionMode: InteractionMode;
 };
 
 const SelectionTooltip = memo(function SelectionTooltip({
   selectionCoords,
   showCopied,
+  selectedText,
   onCopy,
   onSendToChat,
   onHighlight,
+  onLookUp,
   interactionMode,
 }: SelectionTooltipProps) {
+  const isSingleWord = selectedText.trim().split(/\s+/).length === 1 && selectedText.trim().length > 0;
   return (
     <AnimatePresence>
       {selectionCoords && (
@@ -104,6 +109,17 @@ const SelectionTooltip = memo(function SelectionTooltip({
                 ))}
               </div>
               <div style={{ height: 1, background: "var(--border-subtle)", margin: "4px 0" }} />
+              {isSingleWord && (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onLookUp();
+                  }}
+                >
+                  <BookOpen size={14} className="mr-2" />
+                  <span>Look Up</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 onClick={(e) => {
                   e.stopPropagation();

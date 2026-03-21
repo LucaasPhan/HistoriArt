@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { ArrowLeft, BookOpen, MessageCircle, Highlighter } from "lucide-react";
 import { SAMPLE_BOOKS } from "@/lib/sample-books";
@@ -12,6 +12,7 @@ import ReaderContent from "./components/ReaderContent";
 import ReaderNavigation from "./components/ReaderNavigation";
 import ChatSidebar from "./components/ChatSidebar";
 import HighlightsSidebar from "./components/HighlightsSidebar";
+import DictionaryPopup from "./components/DictionaryPopup";
 import useReaderController from "./hooks/useReaderController";
 import { useAuth } from "@/context/AuthContext";
 import type { BookData } from "@/lib/sample-books";
@@ -24,6 +25,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
 
   const c = useReaderController({ bookId, sampleBook });
   const { isAuthenticated } = useAuth();
+  const [dictionaryWord, setDictionaryWord] = useState<string | null>(null);
 
   // If the book isn't known locally and dynamic loading is disabled, render nothing.
   // In practice `isDynamic` becomes true for unknown book IDs.
@@ -39,8 +41,9 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
         }}
       >
         <SelectionTooltip
-          selectionCoords={c.selectionCoords}
+          selectionCoords={dictionaryWord ? null : c.selectionCoords}
           showCopied={c.showCopied}
+          selectedText={c.selectedText}
           onCopy={c.copyToClipboard}
           onSendToChat={() => {
             c.setChatOpen(true);
@@ -49,7 +52,13 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             c.setInput(`${prefix}"${c.selectedText}"`);
           }}
           onHighlight={c.onHighlight}
+          onLookUp={() => setDictionaryWord(c.selectedText)}
           interactionMode={c.interactionMode}
+        />
+
+        <DictionaryPopup
+          word={dictionaryWord}
+          onClose={() => setDictionaryWord(null)}
         />
 
         <div
@@ -126,6 +135,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                     alignItems: "center",
                     gap: 6,
                     fontSize: 13,
+                    color: "var(--accent-primary)",
                   }}
                 >
                   <MessageCircle size={14} />
