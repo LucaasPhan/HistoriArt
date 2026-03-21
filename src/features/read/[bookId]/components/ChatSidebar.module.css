@@ -277,3 +277,87 @@
   display: flex;
   justify-content: center;
 }
+
+.signInBanner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 32px 24px 28px;
+  border-top: 1px solid var(--border-subtle);
+  text-align: center;
+  overflow: hidden;
+}
+
+.signInGlow {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 120px;
+  background: radial-gradient(ellipse, rgba(194, 94, 48, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.signInIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(194, 94, 48, 0.08);
+  border: 1px solid rgba(194, 94, 48, 0.15);
+  backdrop-filter: blur(8px);
+}
+
+.signInHeading {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.signInText {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 260px;
+}
+
+.signInCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  margin-top: 4px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #c25e30 0%, #d97a52 50%, #c25e30 100%);
+  background-size: 200% 200%;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(194, 94, 48, 0.3);
+  animation: signInShimmer 3s ease-in-out infinite;
+}
+
+.signInCta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(194, 94, 48, 0.45);
+}
+
+.signInCta:active {
+  transform: translateY(0);
+}
+
+@keyframes signInShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+

@@ -14,6 +14,7 @@ type ReaderNavigationProps = {
   bookTitle: string;
   bookId: string;
   highlightedText?: string;
+  isAuthenticated?: boolean;
 };
 
 import VisualizeButton from "./VisualizeButton";
@@ -29,6 +30,7 @@ const ReaderNavigation = memo(function ReaderNavigation({
   bookTitle,
   bookId,
   highlightedText,
+  isAuthenticated,
 }: ReaderNavigationProps) {
   const [isEditingPage, setIsEditingPage] = useState(false);
   const [pageInput, setPageInput] = useState(currentPage.toString());
@@ -133,6 +135,7 @@ const ReaderNavigation = memo(function ReaderNavigation({
           bookId={bookId} 
           currentPage={currentPage} 
           highlightedText={highlightedText}
+          isAuthenticated={isAuthenticated}
         />
       </div>
     </>

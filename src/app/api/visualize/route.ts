@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { retrieveContext } from "@/lib/rag";
+import { verifySession } from "@/dal/verifySession";
 
 function sanitizePrompt(prompt: string): string {
   // Strip potentially flagged terms — customize as needed
@@ -53,6 +54,15 @@ async function generateWithSanitization(
 
 export async function POST(req: NextRequest) {
   try {
+    // ── Auth guard ───────────────────────────────────────────────────────────
+    const session = await verifySession();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "You must be signed in to use Illuminate Scene." },
+        { status: 401 },
+      );
+    }
+
     const { content, bookId, bookTitle, currentPage, highlightedText } = await req.json();
 
     if (!content && !highlightedText) {

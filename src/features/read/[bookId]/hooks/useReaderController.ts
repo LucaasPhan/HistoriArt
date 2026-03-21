@@ -337,6 +337,14 @@ export default function useReaderController({
           }),
         });
 
+        if (response.status === 401) {
+          // Remove the optimistic user message
+          setMessages((prev) => prev.slice(0, -1));
+          toast.error("Please sign in to use the AI chat.");
+          setIsLoading(false);
+          return;
+        }
+
         const data = await response.json();
 
         if (

@@ -9,11 +9,13 @@ import {
   Volume2,
   X,
   ArrowUp,
+  LogIn,
 } from "lucide-react";
 import type { ChatMessage, InteractionMode } from "../types";
 import TypewriterText from "./TypewriterText";
 import ModeSwitchButton from "./ModeSwitchButton";
 import styles from "./ChatSidebar.module.css";
+import { TransitionLink } from "@/components/TransitionLink";
 
 type ChatSidebarProps = {
   interactionMode: InteractionMode;
@@ -43,6 +45,8 @@ type ChatSidebarProps = {
 
   modeSwitchMode: InteractionMode;
   onModeSwitchChange: (m: InteractionMode) => void;
+
+  isAuthenticated?: boolean;
 };
 
 const ChatSidebar = memo(function ChatSidebar({
@@ -66,6 +70,7 @@ const ChatSidebar = memo(function ChatSidebar({
   scrollToEnd,
   modeSwitchMode,
   onModeSwitchChange,
+  isAuthenticated = true,
 }: ChatSidebarProps) {
   return (
     <motion.div
@@ -175,126 +180,154 @@ const ChatSidebar = memo(function ChatSidebar({
         <div ref={chatEndRef} />
       </div>
 
-      <AnimatePresence>
-        {interactionMode === "voice" && (
+      {!isAuthenticated ? (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className={styles.signInBanner}
+        >
+          <div className={styles.signInGlow} />
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ type: "spring", stiffness: 380, damping: 28 }}
-            className={styles.voiceInteractionMode}
+            className={styles.signInIconWrap}
+            animate={{ scale: [1, 1.08, 1] }}
+            transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
           >
-            <div className={styles.micRingContainer}>
-              {isListening && [1, 2].map((ring) => (
-                <motion.div
-                  key={ring}
-                  animate={{ scale: [1, 1.7], opacity: [0.45, 0] }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 1.4,
-                    delay: ring * 0.35,
-                    ease: "easeOut",
-                  }}
-                  className={styles.micRing}
-                />
-              ))}
-
-              <button
-                onClick={onToggleVoice}
-                className={`${styles.micButton} ${
-                  isListening
-                    ? styles.micButtonListening
-                    : isSpeaking
-                      ? styles.micButtonSpeaking
-                      : styles.micButtonIdle
-                }`}
+            <Sparkles size={28} color="var(--accent-primary)" />
+          </motion.div>
+          <p className={styles.signInHeading}>Unlock AI Companion</p>
+          <p className={styles.signInText}>
+            Sign in to chat, ask questions, and explore your books with AI
+          </p>
+          <TransitionLink href="/login" className={styles.signInCta}>
+            <LogIn size={16} />
+            Sign In to Continue
+          </TransitionLink>
+        </motion.div>
+      ) : (
+        <>
+          <AnimatePresence>
+            {interactionMode === "voice" && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                className={styles.voiceInteractionMode}
               >
-                {isListening ? (
-                  <div className={styles.micStopIcon} />
-                ) : isSpeaking ? (
-                  <Volume2 size={28} color="white" />
-                ) : (
-                  <Mic size={28} color="white" />
-                )}
-              </button>
-            </div>
+                <div className={styles.micRingContainer}>
+                  {isListening && [1, 2].map((ring) => (
+                    <motion.div
+                      key={ring}
+                      animate={{ scale: [1, 1.7], opacity: [0.45, 0] }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1.4,
+                        delay: ring * 0.35,
+                        ease: "easeOut",
+                      }}
+                      className={styles.micRing}
+                    />
+                  ))}
 
-            <p className={styles.micStatusText}>
-              {isListening
-                ? "Listening… tap to stop"
-                : isSpeaking
-                  ? "Speaking…"
-                  : "Tap to talk"}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {interactionMode === "chat" && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.2 }}
-            className={styles.chatInteractionMode}
-          >
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                onSubmitChat();
-              }}
-              className={styles.chatForm}
-            >
-              <div className={styles.inputWrapper}>
-                <textarea
-                  value={input}
-                  onChange={(e) => onInputChange(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      onSubmitChat();
-                    }
-                  }}
-                  placeholder="Message..."
-                  className={styles.textarea}
-                  rows={1}
-                />
-                <div className={styles.inputControls}>
-                  {isLoading ? (
-                    <button
-                      type="button"
-                      onClick={onStopResponse}
-                      className={`${styles.submitIconBtn} ${styles.submitIconActive}`}
-                    >
-                      <Square size={16} fill="currentColor" />
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      disabled={!input.trim() || isTyping}
-                      className={`${styles.submitIconBtn} ${
-                        input.trim() && !isTyping
-                          ? styles.submitIconActive
-                          : styles.submitIconDisabled
-                      }`}
-                    >
-                      <ArrowUp size={18} strokeWidth={2.5} />
-                    </button>
-                  )}
+                  <button
+                    onClick={onToggleVoice}
+                    className={`${styles.micButton} ${
+                      isListening
+                        ? styles.micButtonListening
+                        : isSpeaking
+                          ? styles.micButtonSpeaking
+                          : styles.micButtonIdle
+                    }`}
+                  >
+                    {isListening ? (
+                      <div className={styles.micStopIcon} />
+                    ) : isSpeaking ? (
+                      <Volume2 size={28} color="white" />
+                    ) : (
+                      <Mic size={28} color="white" />
+                    )}
+                  </button>
                 </div>
-              </div>
-            </form>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      <div className={styles.footer}>
-        <ModeSwitchButton
-          mode={modeSwitchMode}
-          onChange={onModeSwitchChange}
-        />
-      </div>
+                <p className={styles.micStatusText}>
+                  {isListening
+                    ? "Listening… tap to stop"
+                    : isSpeaking
+                      ? "Speaking…"
+                      : "Tap to talk"}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {interactionMode === "chat" && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.2 }}
+                className={styles.chatInteractionMode}
+              >
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    onSubmitChat();
+                  }}
+                  className={styles.chatForm}
+                >
+                  <div className={styles.inputWrapper}>
+                    <textarea
+                      value={input}
+                      onChange={(e) => onInputChange(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          onSubmitChat();
+                        }
+                      }}
+                      placeholder="Message..."
+                      className={styles.textarea}
+                      rows={1}
+                    />
+                    <div className={styles.inputControls}>
+                      {isLoading ? (
+                        <button
+                          type="button"
+                          onClick={onStopResponse}
+                          className={`${styles.submitIconBtn} ${styles.submitIconActive}`}
+                        >
+                          <Square size={16} fill="currentColor" />
+                        </button>
+                      ) : (
+                        <button
+                          type="submit"
+                          disabled={!input.trim() || isTyping}
+                          className={`${styles.submitIconBtn} ${
+                            input.trim() && !isTyping
+                              ? styles.submitIconActive
+                              : styles.submitIconDisabled
+                          }`}
+                        >
+                          <ArrowUp size={18} strokeWidth={2.5} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className={styles.footer}>
+            <ModeSwitchButton
+              mode={modeSwitchMode}
+              onChange={onModeSwitchChange}
+            />
+          </div>
+        </>
+      )}
     </motion.div>
   );
 });

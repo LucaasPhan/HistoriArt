@@ -21,6 +21,15 @@ import { eq } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
   try {
+    // ── Auth guard ───────────────────────────────────────────────────────────
+    const session = await verifySession();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "You must be signed in to use the AI chat." },
+        { status: 401 },
+      );
+    }
+
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "dummy" });
     const body = await req.json();
 
@@ -46,7 +55,6 @@ export async function POST(req: NextRequest) {
 
     // ── Fetch User Profile Server-Side ───────────────────────────────────────
     let userProfile: ChatUserContext | undefined = undefined;
-    const session = await verifySession();
     if (session?.user?.id) {
       const profile = await db.query.userProfiles.findFirst({
         where: eq(userProfiles.userId, session.user.id),
@@ -57,11 +65,8 @@ export async function POST(req: NextRequest) {
           lastName: profile.lastName || session.user.name?.split(" ").slice(1).join(" ") || "",
           age: profile.age,
           gender: profile.gender as Gender,
-          purposeOfUse: profile.purposeOfUse,
+          purposeOfUse: profile.purposeOfUse as PurposeOfUse,
           customPurpose: profile.customPurpose,
-          readingGoal: profile.readingGoal,
-          personality: profile.personality,
-          genZMode: profile.genZMode,
           communicationPreference: profile.communicationPreference as CommunicationPreference,
         };
       }
@@ -114,7 +119,7 @@ export async function POST(req: NextRequest) {
         model: "gpt-4o-mini",
         messages,
         temperature: 0.7,
-        max_tokens: 500,
+        max_completion_tokens: 500,
         stream: false,
       });
       response = completion.choices[0]?.message?.content || response;

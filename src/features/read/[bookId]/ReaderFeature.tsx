@@ -13,6 +13,7 @@ import ReaderNavigation from "./components/ReaderNavigation";
 import ChatSidebar from "./components/ChatSidebar";
 import HighlightsSidebar from "./components/HighlightsSidebar";
 import useReaderController from "./hooks/useReaderController";
+import { useAuth } from "@/context/AuthContext";
 import type { BookData } from "@/lib/sample-books";
 
 export default function ReaderFeature({ bookId }: { bookId: string }) {
@@ -22,6 +23,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
   );
 
   const c = useReaderController({ bookId, sampleBook });
+  const { isAuthenticated } = useAuth();
 
   // If the book isn't known locally and dynamic loading is disabled, render nothing.
   // In practice `isDynamic` becomes true for unknown book IDs.
@@ -154,6 +156,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             bookTitle={c.bookTitle}
             bookId={bookId}
             highlightedText={c.selectedText}
+            isAuthenticated={isAuthenticated}
           />
         </div>
 
@@ -180,6 +183,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               scrollToEnd={c.scrollToEnd}
               modeSwitchMode={c.interactionMode}
               onModeSwitchChange={c.setInteractionMode}
+              isAuthenticated={isAuthenticated}
             />
           )}
           {c.highlightsSidebarOpen && (
