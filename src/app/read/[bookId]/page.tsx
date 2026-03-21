@@ -18,7 +18,7 @@ interface ChatMessage {
 export default function ReaderPage() {
   const params = useParams();
   const bookId = params.bookId as string;
-  const book = SAMPLE_BOOKS.find((b) => b.id === bookId);
+  const sampleBook = SAMPLE_BOOKS.find((b) => b.id === bookId);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [chatOpen, setChatOpen] = useState(false);
@@ -34,12 +34,50 @@ export default function ReaderPage() {
   const [interimTranscript, setInterimTranscript] = useState("");
   const [pageDirection, setPageDirection] = useState<"next" | "prev">("next");
 
+  // Dynamic book state (for Gutenberg books)
+  const [dynamicContent, setDynamicContent] = useState<string>("");
+  const [dynamicTotalPages, setDynamicTotalPages] = useState<number>(0);
+  const [dynamicBookTitle, setDynamicBookTitle] = useState<string>("");
+  const [pageLoading, setPageLoading] = useState(false);
+
   const chatEndRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
 
-  const totalPages = book?.totalPages || 1;
-  const content = book?.pages[currentPage] || "Content not available.";
+  const isDynamic = !sampleBook;
+  const totalPages = sampleBook ? sampleBook.totalPages : dynamicTotalPages;
+  const content = sampleBook ? (sampleBook.pages[currentPage] || "Content not available.") : dynamicContent;
+  const bookTitle = sampleBook ? sampleBook.title : dynamicBookTitle;
+
+  // Fetch page content for dynamic books
+  useEffect(() => {
+    if (!isDynamic) return;
+
+    setPageLoading(true);
+    fetch(`/api/books/${bookId}/pages?page=${currentPage}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.content) {
+          setDynamicContent(data.content);
+          setDynamicTotalPages(data.totalPages);
+        }
+      })
+      .catch(() => setDynamicContent("Failed to load page content."))
+      .finally(() => setPageLoading(false));
+  }, [bookId, currentPage, isDynamic]);
+
+  // Fetch book title for dynamic books
+  useEffect(() => {
+    if (!isDynamic) return;
+
+    fetch(`/api/books`)
+      .then((r) => r.json())
+      .then((data) => {
+        const found = data.books?.find((b: { id: string }) => b.id === bookId);
+        if (found) setDynamicBookTitle(found.title);
+      })
+      .catch(() => {});
+  }, [bookId, isDynamic]);
 
   // ─── Text-to-Speech ────────────────────────────────────
   const fallbackBrowserTTS = useCallback((text: string) => {
@@ -248,7 +286,7 @@ export default function ReaderPage() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, interimTranscript]);
 
-  if (!book) return null;
+  if (!sampleBook && !isDynamic) return null;
 
   return (
   <>
@@ -372,7 +410,7 @@ export default function ReaderPage() {
             </TransitionLink>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <BookOpen size={16} color="var(--accent-primary)" />
-              <span style={{ fontSize: 14, fontWeight: 600 }}>{book.title}</span>
+              <span style={{ fontSize: 14, fontWeight: 600 }}>{bookTitle || "Loading..."}</span>
             </div>
           </div>
 

@@ -6,12 +6,14 @@ import { authClient } from "@/lib/auth-client";
 import { motion } from "framer-motion";
 import PageMountSignaler from "@/components/PageMountSignaler";
 import { TransitionLink } from "@/components/TransitionLink";
+import Image from "next/image";
 
 interface Book {
   id: string;
   title: string;
   author: string;
   description: string;
+  coverUrl?: string | null;
   coverGradient: [string, string];
   totalPages: number;
 }
@@ -118,7 +120,9 @@ export default function LibraryPage() {
                   <motion.div
                     style={{
                       height: 180,
-                      background: `linear-gradient(135deg, ${book.coverGradient[0]}, ${book.coverGradient[1]})`,
+                      background: book.coverUrl
+                        ? "var(--bg-tertiary)"
+                        : `linear-gradient(135deg, ${book.coverGradient[0]}, ${book.coverGradient[1]})`,
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
@@ -130,14 +134,27 @@ export default function LibraryPage() {
                     animate={{ scale: hoveredBook === book.id ? 1.05 : 1 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        background: "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent 70%)",
-                      }}
-                    />
-                    <Sparkles size={40} color="rgba(255,255,255,0.85)" />
+                    {book.coverUrl ? (
+                      <Image
+                        src={book.coverUrl}
+                        alt={book.title}
+                        fill
+                        style={{ objectFit: "cover" }}
+                        sizes="260px"
+                        unoptimized
+                      />
+                    ) : (
+                      <>
+                        <div
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            background: "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent 70%)",
+                          }}
+                        />
+                        <Sparkles size={40} color="rgba(255,255,255,0.85)" />
+                      </>
+                    )}
                   </motion.div>
 
                   {/* Info */}
