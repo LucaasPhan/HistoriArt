@@ -28,7 +28,8 @@ export type CommunicationPreference = typeof COMMUNICATION_PREFERENCES[number];
 
 // Lightweight subset passed per chat request (no credentials)
 export type ChatUserContext = {
-  name:                    string;   // from user.name
+  firstName:               string;
+  lastName:                string;
   age:                     number;   // from userProfiles.age
   gender:                  Gender;
   purposeOfUse:            PurposeOfUse;

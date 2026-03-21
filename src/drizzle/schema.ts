@@ -90,6 +90,8 @@ export const userProfiles = pgTable("user_profiles", {
     .references(() => user.id, { onDelete: "cascade" }),
 
   // ── Onboarding step 1: personal info ──────────────────────
+  firstName: varchar("first_name", { length: 255 }).notNull().default(""),
+  lastName: varchar("last_name", { length: 255 }).notNull().default(""),
   age: smallint("age").notNull(),
   gender: text("gender").$type<Gender>().notNull(),
 

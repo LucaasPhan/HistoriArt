@@ -17,6 +17,8 @@ import PageMountSignaler from "@/components/PageMountSignaler";
 import { TransitionLink } from "@/components/TransitionLink";
 
 const EMPTY: OnboardingData = {
+  firstName:               "",
+  lastName:                "",
   age:                     "",
   gender:                  "",
   purposeOfUse:            "",
@@ -30,7 +32,7 @@ function isValidAge(age: string) {
 }
 
 function canAdvance(step: number, data: OnboardingData): boolean {
-  if (step === 0) return isValidAge(data.age) && data.gender !== "";
+  if (step === 0) return data.firstName.trim().length > 0 && data.lastName.trim().length > 0 && isValidAge(data.age) && data.gender !== "";
   if (step === 1) {
     if (data.purposeOfUse === "other") return (data.customPurpose || "").trim().length > 0;
     return data.purposeOfUse !== "";
@@ -52,6 +54,8 @@ export default function OnboardingPage() {
 
   const saveOnboardingMutation = useMutation({
     mutationFn: async (payload: {
+      firstName: string;
+      lastName: string;
       age: number;
       gender: string;
       purposeOfUse: string;
@@ -103,6 +107,8 @@ export default function OnboardingPage() {
 
     // Final step — persist and redirect.
     saveOnboardingMutation.mutate({
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
       age: Number(data.age),
       gender: data.gender,
       purposeOfUse: data.purposeOfUse,

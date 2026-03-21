@@ -16,6 +16,30 @@ export default function StepPersonal({ data, set }: Props) {
       <h1 className="ob-title">A little about you</h1>
       <p className="ob-subtitle">Helps us speak your language.</p>
 
+      {/* Name */}
+      <div style={{ display: "flex", gap: "10px", marginBottom: "1rem" }}>
+        <div style={{ flex: 1 }}>
+          <p className="ob-section">First name</p>
+          <input
+            className="ob-input"
+            type="text"
+            placeholder="e.g. Jane"
+            value={data.firstName}
+            onChange={(e) => set("firstName", e.target.value)}
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <p className="ob-section">Last name</p>
+          <input
+            className="ob-input"
+            type="text"
+            placeholder="e.g. Doe"
+            value={data.lastName}
+            onChange={(e) => set("lastName", e.target.value)}
+          />
+        </div>
+      </div>
+
       {/* Age */}
       <p className="ob-section">Your age</p>
       <input

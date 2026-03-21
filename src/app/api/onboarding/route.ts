@@ -12,16 +12,18 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { age, gender, purposeOfUse, customPurpose, communicationPreference } = body;
+    const { firstName, lastName, age, gender, purposeOfUse, customPurpose, communicationPreference } = body;
 
     // Basic validation
-    if (age === undefined || !gender || !purposeOfUse || !communicationPreference) {
+    if (!firstName || !lastName || age === undefined || !gender || !purposeOfUse || !communicationPreference) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     await db.insert(userProfiles)
       .values({
         userId: session.user.id,
+        firstName,
+        lastName,
         age: Number(age),
         gender,
         purposeOfUse,
@@ -32,6 +34,8 @@ export async function POST(req: NextRequest) {
       .onConflictDoUpdate({
         target: userProfiles.userId,
         set: {
+          firstName,
+          lastName,
           age: Number(age),
           gender,
           purposeOfUse,

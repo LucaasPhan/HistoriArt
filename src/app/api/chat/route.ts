@@ -53,7 +53,8 @@ export async function POST(req: NextRequest) {
       });
       if (profile) {
         userProfile = {
-          name: session.user.name || "Reader",
+          firstName: profile.firstName || session.user.name?.split(" ")[0] || "Reader",
+          lastName: profile.lastName || session.user.name?.split(" ").slice(1).join(" ") || "",
           age: profile.age,
           gender: profile.gender as Gender,
           purposeOfUse: profile.purposeOfUse as PurposeOfUse,

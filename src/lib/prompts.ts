@@ -105,15 +105,15 @@ export function buildUserCalibration(user?: ChatUserContext): string {
 ---
 ## User Profile & Calibration
 
-You are speaking with **${user.name}**.
-- **Age context:** ${user.name} is ${user.age} years old — treat them as ${ageToneHint(user.age)}.
+You are speaking with **${user.firstName} ${user.lastName}**.
+- **Age context:** ${user.firstName} is ${user.age} years old — treat them as ${ageToneHint(user.age)}.
 - **Gender / pronouns:** ${genderPronounHint(user.gender)}.
-- **Primary purpose:** ${user.name} is here to work on ${purposeLens(user.purposeOfUse, user.customPurpose)}.
+- **Primary purpose:** ${user.firstName} is here to work on ${purposeLens(user.purposeOfUse, user.customPurpose)}.
 - **Communication style:** ${commStyleDirective(user.communicationPreference)}
 
-Address ${user.name} by name naturally — not in every sentence, but enough to feel personal.
+Address ${user.firstName} by name naturally — not in every sentence, but enough to feel personal.
 Consistently apply the communication style above throughout the entire conversation.
-When applying CBT techniques, frame them through the lens of ${user.name}'s primary purpose.
+When applying CBT techniques, frame them through the lens of ${user.firstName}'s primary purpose.
 ---`;
 }
 

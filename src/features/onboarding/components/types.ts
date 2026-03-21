@@ -5,6 +5,8 @@ import { CommunicationPreference, Gender, PurposeOfUse } from "@/drizzle/constan
 export type { Gender, PurposeOfUse, CommunicationPreference } from "@/drizzle/constants";
 
 export interface OnboardingData {
+  firstName:               string;
+  lastName:                string;
   age:                     string;
   gender:                  Gender | "";
   purposeOfUse:            PurposeOfUse | "";
