@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useMemo, useState, useEffect, useRef } from "react";
+import React, { memo, useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type ReaderNavigationProps = {
@@ -10,15 +10,25 @@ type ReaderNavigationProps = {
   onPrev: () => void;
   onNext: () => void;
   onJumpTo: (page: number) => void;
+  content: string;
+  bookTitle: string;
+  bookId: string;
+  highlightedText?: string;
 };
+
+import VisualizeButton from "./VisualizeButton";
 
 const ReaderNavigation = memo(function ReaderNavigation({
   currentPage,
   totalPages,
   chatOpen,
-  onPrev,
+   onPrev,
   onNext,
   onJumpTo,
+  content,
+  bookTitle,
+  bookId,
+  highlightedText,
 }: ReaderNavigationProps) {
   const [isEditingPage, setIsEditingPage] = useState(false);
   const [pageInput, setPageInput] = useState(currentPage.toString());
@@ -116,6 +126,14 @@ const ReaderNavigation = memo(function ReaderNavigation({
           )}
           <span>of {totalPages}</span>
         </div>
+
+        <VisualizeButton 
+          content={content} 
+          bookTitle={bookTitle} 
+          bookId={bookId} 
+          currentPage={currentPage} 
+          highlightedText={highlightedText}
+        />
       </div>
     </>
   );

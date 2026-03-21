@@ -150,6 +150,10 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             onPrev={c.goPrev}
             onNext={c.goNext}
             onJumpTo={c.jumpToPage}
+            content={c.content}
+            bookTitle={c.bookTitle}
+            bookId={bookId}
+            highlightedText={c.selectedText}
           />
         </div>
 
