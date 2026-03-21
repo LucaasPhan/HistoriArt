@@ -27,7 +27,7 @@ export function HighlightItem({
         display: "flex",
         flexDirection: "column",
         gap: 8,
-        cursor: "pointer",
+        cursor: "var(--cursor-pointer)",
         transition: "all 0.2s ease",
       }}
     >

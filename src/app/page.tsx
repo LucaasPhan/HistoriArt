@@ -290,7 +290,6 @@ export default function LandingPage() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    cursor: "pointer",
                   }}
                 >
                   <Mic size={20} color="white" />
