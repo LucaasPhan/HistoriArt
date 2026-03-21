@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "@/drizzle/db";
 import { userProfiles } from "@/drizzle/schema";
 import { verifySession } from "@/dal/verifySession";
@@ -40,6 +41,10 @@ export async function POST(req: NextRequest) {
           updatedAt: new Date(),
         },
       });
+
+    // Ensure both the onboarding UI and any gated layouts/pages re-render.
+    revalidatePath("/onboarding");
+    revalidatePath("/", "layout");
 
     return NextResponse.json({ success: true });
   } catch (error) {

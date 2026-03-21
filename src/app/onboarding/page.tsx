@@ -4,6 +4,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import OnboardingShell  from "@/features/onboarding/components/OnboardingShell";
 import StepPersonal     from "@/features/onboarding/components/StepPersonal";
 import StepPurpose      from "@/features/onboarding/components/StepPurpose";
@@ -38,6 +39,7 @@ function canAdvance(step: number, data: OnboardingData): boolean {
 }
 
 export default function OnboardingPage() {
+  const router = useRouter();
   const transitionRef = useRef<HTMLDivElement>(null);
   const [step,   setStep]   = useState(0);
   const [data,   setData]   = useState<OnboardingData>(EMPTY);
@@ -69,6 +71,9 @@ export default function OnboardingPage() {
         }),
       });
       if (!res.ok) throw new Error("Failed to save profile.");
+      // RootLayout computes `onboardingComplete` on the server; refreshing
+      // ensures the guard gets the updated profile before navigating.
+      router.refresh();
       transitionRef.current?.click();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");

@@ -6,7 +6,7 @@ dotenv.config({ path: ".env.local" });
 
 export default defineConfig({
   schema: "./src/drizzle/schema.ts",
-  out: "./drizzle",
+  out: "./src/drizzle/migrations",
   dialect: "postgresql",
   dbCredentials: {
     url: process.env.NEON_DATABASE_URL!,
