@@ -410,3 +410,21 @@ body {
     transform: translateX(300%);
   }
 }
+
+/* ─── React Markdown ───────────────────────────────────────── */
+.react-markdown-prose > p:first-child {
+  margin-top: 0;
+}
+.react-markdown-prose > p:last-child {
+  margin-bottom: 0;
+}
+.react-markdown-prose p {
+  margin-bottom: 0.5rem;
+}
+.react-markdown-prose strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.react-markdown-prose em {
+  font-style: italic;
+}

@@ -161,6 +161,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               scrollToEnd={c.scrollToEnd}
               modeSwitchMode={c.interactionMode}
               onModeSwitchChange={c.setInteractionMode}
+              getAudioVolume={c.getAudioVolume}
             />
           )}
         </AnimatePresence>

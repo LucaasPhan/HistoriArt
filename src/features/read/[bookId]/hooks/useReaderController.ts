@@ -6,6 +6,16 @@ import { buildAssistantChatMessage, buildUserChatMessage, getChatStorageKey } fr
 import type { ChatMessage, InteractionMode } from "../types";
 import type { BookData } from "@/lib/sample-books";
 
+function cleanTextForSpeech(text: string): string {
+  if (!text) return "";
+  return text
+    .replace(/[*_~`#]/g, "") // Remove bold, italic, strikethrough, code, headers
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Keep link text, remove URL
+    .replace(/^\s*[-+]\s/gm, "") // Remove bullet points
+    .replace(/\s{2,}/g, " ") // Collapse multiple spaces
+    .trim();
+}
+
 type UseReaderControllerArgs = {
   bookId: string;
   sampleBook?: BookData;
@@ -206,7 +216,7 @@ export default function useReaderController({
         const response = await fetch("/api/tts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: text.slice(0, 500) }),
+          body: JSON.stringify({ text: text.slice(0, 2000) }),
         });
 
         if (!response.ok) throw new Error("TTS failed");
@@ -289,7 +299,7 @@ export default function useReaderController({
 
         setMessages((prev) => [...prev, aiMsg]);
         setIsTyping(true);
-        speakText(aiMsg.content);
+        speakText(cleanTextForSpeech(aiMsg.content));
       } catch (err: unknown) {
         const errLike = err as { name?: string; message?: string };
         if (errLike?.name === "AbortError") {
