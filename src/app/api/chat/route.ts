@@ -18,6 +18,8 @@ export async function POST(req: NextRequest) {
     const {
       message,
       bookId,
+      bookTitle,
+      pageContent,
       currentPage,
       highlightedText,
       mode = "buddy",
@@ -29,6 +31,8 @@ export async function POST(req: NextRequest) {
     } = body as {
       message: string;
       bookId: string;
+      bookTitle?: string;
+      pageContent?: string;
       currentPage: number;
       highlightedText?: string;
       mode?: ConversationMode;
@@ -46,16 +50,18 @@ export async function POST(req: NextRequest) {
     }
 
     // ── RAG context retrieval ────────────────────────────────────────────────
-    let bookContext = "";
+    let bookContext = pageContent ? `Book: ${bookTitle || "Unknown"}\nPage: ${currentPage}\n\nExcerpt:\n${pageContent}` : "";
     let supplementaryContext = "";
     try {
       const context = await retrieveContext(bookId, message, currentPage, highlightedText);
-      bookContext = context.bookContext;
+      bookContext = context.bookContext || bookContext;
       supplementaryContext = context.supplementaryContext;
     } catch {
-      bookContext = highlightedText
-        ? `The reader has highlighted: "${highlightedText}"`
-        : "No specific book context available.";
+      if (highlightedText) {
+        bookContext += `\n\nThe reader has highlighted: "${highlightedText}"`;
+      } else if (!pageContent) {
+        bookContext = "No specific book context available.";
+      }
     }
 
     // ── Prompt construction ──────────────────────────────────────────────────
