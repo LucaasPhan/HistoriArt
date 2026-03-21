@@ -7,6 +7,12 @@ import NextTopLoader from "nextjs-toploader";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navbar } from "@/components/Navbar";
 
+import { verifySession } from "@/dal/verifySession";
+import { db } from "@/drizzle/db";
+import { userProfiles } from "@/drizzle/schema";
+import { eq } from "drizzle-orm";
+import { OnboardingGuard } from "@/context/OnboardingGuard";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -29,23 +35,37 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await verifySession();
+  let onboardingComplete = true; // default true for guests or completed users
+
+  if (session?.user?.id) {
+    const profile = await db.query.userProfiles.findFirst({
+      where: eq(userProfiles.userId, session.user.id),
+      columns: { onboardingComplete: true },
+    });
+    // if no profile yet, or it's not complete -> false
+    onboardingComplete = profile?.onboardingComplete ?? false;
+  }
+
   return (
    <ThemeProvider>
      <html lang="en" className="dark" suppressHydrationWarning>
       <QueryProvider>
         <AuthProvider>
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            <Navbar />
-            <NextTopLoader color="#f59e0b" zIndex={99_999_999} />
-            {children}
-          </body>
+          <OnboardingGuard onboardingComplete={onboardingComplete}>
+            <body
+              className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            >
+              <Navbar />
+              <NextTopLoader color="#f59e0b" zIndex={99_999_999} />
+              {children}
+            </body>
+          </OnboardingGuard>
         </AuthProvider>
       </QueryProvider>
     </html>

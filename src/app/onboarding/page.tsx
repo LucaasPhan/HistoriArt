@@ -3,8 +3,7 @@
 
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef } from "react";
 import OnboardingShell  from "@/features/onboarding/components/OnboardingShell";
 import StepPersonal     from "@/features/onboarding/components/StepPersonal";
 import StepPurpose      from "@/features/onboarding/components/StepPurpose";
@@ -13,6 +12,7 @@ import "./onboarding.css";
 import { STEPS } from "@/features/onboarding/components/constants";
 import type { OnboardingData } from "@/features/onboarding/components/types";
 import PageMountSignaler from "@/components/PageMountSignaler";
+import { TransitionLink } from "@/components/TransitionLink";
 
 const EMPTY: OnboardingData = {
   age:                     "",
@@ -38,7 +38,7 @@ function canAdvance(step: number, data: OnboardingData): boolean {
 }
 
 export default function OnboardingPage() {
-  const router  = useRouter();
+  const transitionRef = useRef<HTMLDivElement>(null);
   const [step,   setStep]   = useState(0);
   const [data,   setData]   = useState<OnboardingData>(EMPTY);
   const [saving, setSaving] = useState(false);
@@ -69,7 +69,7 @@ export default function OnboardingPage() {
         }),
       });
       if (!res.ok) throw new Error("Failed to save profile.");
-      router.push("/");
+      transitionRef.current?.click();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
       setSaving(false);
@@ -112,6 +112,7 @@ export default function OnboardingPage() {
       </div>
     </OnboardingShell>
     <PageMountSignaler/>
+    <TransitionLink href="/library" ref={transitionRef} className="hidden" />
    </>
   );
 }

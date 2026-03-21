@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { BookOpen, Clock, Star, Plus, Sparkles } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 import { motion } from "framer-motion";
 import PageMountSignaler from "@/components/PageMountSignaler";
 import { TransitionLink } from "@/components/TransitionLink";
@@ -16,6 +17,7 @@ interface Book {
 }
 
 export default function LibraryPage() {
+  const { data: session } = authClient.useSession();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [hoveredBook, setHoveredBook] = useState<string | null>(null);
@@ -224,6 +226,48 @@ export default function LibraryPage() {
               </TransitionLink>
             </motion.div>
           ))}
+          {!session && (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: books.length * 0.15 }}
+            >
+              <TransitionLink href="/login" className="no-underline">
+                <div className="book-card" style={{ height: '100%', minHeight: 420, border: '2px dashed var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', padding: 32 }}>
+                  <div style={{
+                      width: 64,
+                      height: 64,
+                      borderRadius: '50%',
+                      background: 'var(--bg-card)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: 16,
+                      border: '1px solid var(--border)'
+                  }}>
+                    <Plus size={32} color="var(--text-secondary)" />
+                  </div>
+                  <h2 style={{
+                    fontFamily: "var(--font-serif)",
+                    fontSize: 20,
+                    fontWeight: 600,
+                    color: "var(--text-primary)",
+                    textAlign: "center",
+                    marginBottom: 8
+                  }}>
+                    Add another book
+                  </h2>
+                  <p style={{
+                    color: "var(--text-secondary)",
+                    fontSize: 14,
+                    textAlign: "center"
+                  }}>
+                    Signup to add your own book!
+                  </p>
+                </div>
+              </TransitionLink>
+            </motion.div>
+          )}
         </div>
       )}
     </div>

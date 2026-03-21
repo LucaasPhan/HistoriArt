@@ -4,6 +4,7 @@ import { BookOpen, Sparkles, Home, Search, Settings as Cog } from "lucide-react"
 import { usePathname } from "next/navigation";
 import { ThemeButton } from "./ThemeButton";
 import { TransitionLink } from "./TransitionLink";
+import UserMenu from "./UserMenu";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -80,7 +81,6 @@ export function Navbar() {
                 </span>
               </button>
             </TransitionLink>
-
             <TransitionLink href="/search">
               <button className="btn-ghost" style={{ fontSize: 14 }}>
                 <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
