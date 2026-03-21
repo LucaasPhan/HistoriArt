@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import {
   Mic, Send, ArrowLeft, ChevronLeft, ChevronRight,
-  BookOpen, MessageCircle, X, Sparkles, Volume2, Copy, Check,
+  BookOpen, MessageCircle, X, Sparkles, Volume2, Copy, Check, Square,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "next/navigation";
@@ -68,12 +68,14 @@ function TypewriterText({
   text, 
   messageIndex, 
   finishedRef, 
-  onUpdate 
+  onUpdate,
+  onFinished 
 }: { 
   text: string; 
   messageIndex: number; 
   finishedRef: React.RefObject<Set<number> | null>; 
   onUpdate: () => void; 
+  onFinished?: () => void;
 }) {
   const [displayedText, setDisplayedText] = useState(finishedRef.current?.has(messageIndex) ? text : "");
 
@@ -90,10 +92,11 @@ function TypewriterText({
       if (i >= text.length) {
         clearInterval(interval);
         finishedRef.current!.add(messageIndex);
+        if (onFinished) onFinished();
       }
     }, 12);
     return () => clearInterval(interval);
-  }, [text, messageIndex, finishedRef, onUpdate]);
+  }, [text, messageIndex, finishedRef, onUpdate, onFinished]);
 
   return <span>{displayedText}</span>;
 }
@@ -113,11 +116,14 @@ export default function ReaderPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [isChatLoaded, setIsChatLoaded] = useState(false);
   const [selectedText, setSelectedText] = useState("");
   const [selectionCoords, setSelectionCoords] = useState<{ x: number; y: number } | null>(null);
   const [showCopied, setShowCopied] = useState(false);
   const [mode] = useState<ConversationMode>("buddy");
   const [interimTranscript, setInterimTranscript] = useState("");
+  const [dictatedText, setDictatedText] = useState("");
   const [pageDirection, setPageDirection] = useState<"next" | "prev">("next");
 
   // Dynamic book state (for Gutenberg books)
@@ -134,6 +140,45 @@ export default function ReaderPage() {
   const recognitionRef = useRef<any>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const typewriterFinishedRef = useRef<Set<number>>(new Set());
+  const voiceTranscriptRef = useRef("");
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const handleStopResponse = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
+    }
+    window.speechSynthesis.cancel();
+    setIsSpeaking(false);
+    setIsLoading(false);
+  }, []);
+
+  // Load from local storage
+  useEffect(() => {
+    const saved = localStorage.getItem(`litcompanion_chat_${bookId}`);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setMessages(parsed);
+        // Mark all loaded messages as finished typing so they don't reanimate
+        parsed.forEach((_: any, i: number) => typewriterFinishedRef.current.add(i));
+      } catch (e) {
+        console.error("Failed to parse saved chat", e);
+      }
+    }
+    setIsChatLoaded(true);
+  }, [bookId]);
+
+  // Save to local storage
+  useEffect(() => {
+    if (isChatLoaded) {
+      localStorage.setItem(`litcompanion_chat_${bookId}`, JSON.stringify(messages));
+    }
+  }, [messages, bookId, isChatLoaded]);
 
   const isDynamic = !sampleBook;
   const totalPages = sampleBook ? sampleBook.totalPages : dynamicTotalPages;
@@ -229,6 +274,8 @@ export default function ReaderPage() {
     const text = messageText || input.trim();
     if (!text || isLoading) return;
 
+    abortControllerRef.current = new AbortController();
+
     const userMsg: ChatMessage = {
       role: "user",
       content: text,
@@ -242,9 +289,12 @@ export default function ReaderPage() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: abortControllerRef.current?.signal,
         body: JSON.stringify({
           message: text,
           bookId,
+          bookTitle: book?.title,
+          pageContent: content,
           currentPage,
           highlightedText: selectedText || undefined,
           mode,
@@ -266,8 +316,13 @@ export default function ReaderPage() {
         timestamp: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, aiMsg]);
+      setIsTyping(true);
       speakText(aiMsg.content);
-    } catch {
+    } catch (err: any) {
+      if (err.name === "AbortError") {
+        setIsLoading(false);
+        return;
+      }
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: "Connection error. Please try again.", timestamp: new Date().toISOString() },
@@ -288,20 +343,38 @@ export default function ReaderPage() {
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = "en-US";
+    
+    voiceTranscriptRef.current = "";
+    setDictatedText("");
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     recognition.onresult = (event: any) => {
       let interim = "";
+      let finalChunk = "";
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         if (event.results[i].isFinal) {
-          handleSendMessage(event.results[i][0].transcript);
+          finalChunk += event.results[i][0].transcript + " ";
         } else {
           interim += event.results[i][0].transcript;
         }
       }
+      if (finalChunk) {
+        const appended = voiceTranscriptRef.current + finalChunk;
+        voiceTranscriptRef.current = appended;
+        setDictatedText(appended);
+      }
       setInterimTranscript(interim);
     };
-    recognition.onend = () => { setIsListening(false); setInterimTranscript(""); };
+    recognition.onend = () => { 
+      setIsListening(false); 
+      const finalMsg = voiceTranscriptRef.current.trim();
+      if (finalMsg) {
+        handleSendMessage(finalMsg);
+      }
+      voiceTranscriptRef.current = "";
+      setDictatedText("");
+      setInterimTranscript(""); 
+    };
 
     recognitionRef.current = recognition;
     recognition.start();
@@ -311,7 +384,7 @@ export default function ReaderPage() {
 
   const stopListening = useCallback(() => {
     recognitionRef.current?.stop();
-    setIsListening(false);
+    // onend will handle the rest
   }, []);
 
   const toggleVoice = useCallback(() => {
@@ -537,6 +610,7 @@ export default function ReaderPage() {
                           messageIndex={i} 
                           finishedRef={typewriterFinishedRef} 
                           onUpdate={() => chatEndRef.current?.scrollIntoView()} 
+                          onFinished={() => { if (i === messages.length - 1) setIsTyping(false); }}
                         />
                       ) : (
                         msg.content
@@ -544,10 +618,10 @@ export default function ReaderPage() {
                     </div>
                   </div>
                 ))}
-                {interimTranscript && (
+                {(dictatedText || interimTranscript) && (
                   <div style={{ alignSelf: "flex-end", maxWidth: "85%", opacity: 0.7 }}>
                     <div className="chat-bubble-user" style={{ padding: "10px 16px", fontSize: 14, lineHeight: 1.6, borderRadius: "18px", border: "1px dashed rgba(255,255,255,0.4)" }}>
-                      {interimTranscript}...
+                      {dictatedText}{interimTranscript}...
                     </div>
                   </div>
                 )}
@@ -646,13 +720,23 @@ export default function ReaderPage() {
                         placeholder="Ask your Buddy..."
                         style={{ flex: 1, padding: "12px 16px", borderRadius: "var(--radius-full)", border: "1px solid var(--border-subtle)", background: "var(--bg-tertiary)", color: "var(--text-primary)", fontSize: 14, outline: "none" }}
                       />
-                      <button
-                        type="submit"
-                        disabled={!input.trim() || isLoading}
-                        style={{ width: 44, height: 44, borderRadius: "50%", border: "none", background: input.trim() ? "var(--accent-primary)" : "var(--bg-tertiary)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", cursor: input.trim() ? "pointer" : "not-allowed" }}
-                      >
-                        <Send size={16} />
-                      </button>
+                      {isLoading ? (
+                        <button
+                          type="button"
+                          onClick={handleStopResponse}
+                          style={{ width: 44, height: 44, borderRadius: "50%", border: "none", background: "var(--accent-primary)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+                        >
+                          <Square size={16} fill="currentColor" />
+                        </button>
+                      ) : (
+                        <button
+                          type="submit"
+                          disabled={!input.trim() || isTyping}
+                          style={{ width: 44, height: 44, borderRadius: "50%", border: "none", background: input.trim() && !isTyping ? "var(--accent-primary)" : "var(--bg-tertiary)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", cursor: input.trim() && !isTyping ? "pointer" : "not-allowed" }}
+                        >
+                          <Send size={16} />
+                        </button>
+                      )}
                     </form>
                   </motion.div>
                 )}
