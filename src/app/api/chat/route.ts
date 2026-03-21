@@ -9,6 +9,10 @@ import {
 } from "@/lib/prompts";
 import { retrieveContext } from "@/lib/rag";
 import { ChatUserContext } from "@/drizzle/constants";
+import { verifySession } from "@/dal/verifySession";
+import { db } from "@/drizzle/db";
+import { userProfiles } from "@/drizzle/schema";
+import { eq } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,10 +28,6 @@ export async function POST(req: NextRequest) {
       highlightedText,
       mode = "buddy",
       conversationHistory = [],
-      // ── User profile injected by the frontend after login/onboarding ──────
-      // When auth is not yet wired up this will simply be undefined and the
-      // prompt engine falls back to a generic (non-personalised) response.
-      userProfile,
     } = body as {
       message: string;
       bookId: string;
@@ -37,8 +37,26 @@ export async function POST(req: NextRequest) {
       highlightedText?: string;
       mode?: ConversationMode;
       conversationHistory?: Array<{ role: string; content: string }>;
-      userProfile?: ChatUserContext;   // optional until auth is integrated
     };
+
+    // ── Fetch User Profile Server-Side ───────────────────────────────────────
+    let userProfile: ChatUserContext | undefined = undefined;
+    const session = await verifySession();
+    if (session?.user?.id) {
+      const profile = await db.query.userProfiles.findFirst({
+        where: eq(userProfiles.userId, session.user.id),
+      });
+      if (profile) {
+        userProfile = {
+          name: session.user.name || "Reader",
+          age: profile.age,
+          gender: profile.gender as any,
+          purposeOfUse: profile.purposeOfUse as any,
+          customPurpose: profile.customPurpose,
+          communicationPreference: profile.communicationPreference as any,
+        };
+      }
+    }
 
     // ── Navigation intent ────────────────────────────────────────────────────
     const navIntent = detectNavigationIntent(message);

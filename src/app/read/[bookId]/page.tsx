@@ -294,7 +294,7 @@ export default function ReaderPage() {
         body: JSON.stringify({
           message: text,
           bookId,
-          bookTitle: book?.title,
+          bookTitle,
           pageContent: content,
           currentPage,
           highlightedText: selectedText || undefined,
@@ -324,9 +324,10 @@ export default function ReaderPage() {
         setIsLoading(false);
         return;
       }
+      console.error("DEBUG FETCH:", err);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Connection error. Please try again.", timestamp: new Date().toISOString() },
+        { role: "assistant", content: `Connection error: ${err?.message || String(err)}. Please try again.`, timestamp: new Date().toISOString() },
       ]);
     } finally {
       setIsLoading(false);
