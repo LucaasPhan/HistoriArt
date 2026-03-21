@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import {
   Search as SearchIcon,
   TrendingUp,
@@ -14,7 +15,6 @@ import {
   X,
 } from "lucide-react";
 import PageMountSignaler from "@/components/PageMountSignaler";
-import { TransitionLink } from "@/components/TransitionLink";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -38,63 +38,72 @@ type AddingState = "idle" | "fetching" | "saving" | "done" | "error";
 
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [trending, setTrending] = useState<SearchResult[]>([]);
-  const [trendingLoading, setTrendingLoading] = useState(true);
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [addingBooks, setAddingBooks] = useState<
     Record<number, { state: AddingState; bookId?: string }>
   >({});
 
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const router = useRouter();
 
-  // Load trending books on mount
-  useEffect(() => {
-    fetch("/api/search?q=")
-      .then((r) => r.json())
-      .then((data: SearchResponse) => {
-        setTrending(data.books.slice(0, 8));
-        setTrendingLoading(false);
-      })
-      .catch(() => setTrendingLoading(false));
-  }, []);
+  const hasSearched = debouncedQuery.trim().length > 0;
 
-  // Debounced search
-  const performSearch = useCallback(async (query: string) => {
-    if (!query.trim()) {
-      setResults([]);
-      setHasSearched(false);
+  const {
+    data: trendingData,
+    isPending: trendingLoading,
+    isError: isTrendingError,
+  } = useQuery<SearchResponse>({
+    queryKey: ["search", "trending"],
+    queryFn: async () => {
+      const res = await fetch("/api/search?q=");
+      if (!res.ok) throw new Error("Failed to load trending books");
+      return (await res.json()) as SearchResponse;
+    },
+    retry: 2,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const {
+    data: searchData,
+    isPending: searchLoading,
+    isError: isSearchError,
+  } = useQuery<SearchResponse>({
+    queryKey: ["search", "results", debouncedQuery],
+    queryFn: async () => {
+      const q = debouncedQuery.trim();
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+      if (!res.ok) throw new Error("Failed to load search results");
+      return (await res.json()) as SearchResponse;
+    },
+    enabled: hasSearched,
+    retry: 2,
+    staleTime: 1000 * 10,
+  });
+
+  const results = searchData?.books ?? [];
+  const trending = trendingData?.books.slice(0, 8) ?? [];
+
+  const scheduleDebouncedQuery = useCallback((value: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    const next = value.trim();
+    if (!next) {
+      setDebouncedQuery("");
       return;
     }
 
-    setIsSearching(true);
-    setHasSearched(true);
-
-    try {
-      const res = await fetch(
-        `/api/search?q=${encodeURIComponent(query.trim())}`
-      );
-      const data: SearchResponse = await res.json();
-      setResults(data.books);
-    } catch {
-      setResults([]);
-    } finally {
-      setIsSearching(false);
-    }
+    debounceRef.current = setTimeout(() => setDebouncedQuery(next), 400);
   }, []);
 
   const handleInputChange = (value: string) => {
     setSearchQuery(value);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => performSearch(value), 400);
+    scheduleDebouncedQuery(value);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    performSearch(searchQuery);
+    setDebouncedQuery(searchQuery.trim());
   };
 
   // Add book to library
@@ -279,8 +288,7 @@ export default function SearchPage() {
               type="button"
               onClick={() => {
                 setSearchQuery("");
-                setResults([]);
-                setHasSearched(false);
+                setDebouncedQuery("");
               }}
               style={{
                 background: "none",
@@ -295,7 +303,7 @@ export default function SearchPage() {
           )}
           <button
             type="submit"
-            disabled={isSearching}
+            disabled={searchLoading}
             style={{
               padding: "10px 24px",
               background: "var(--accent-gradient)",
@@ -311,7 +319,7 @@ export default function SearchPage() {
               fontSize: 14,
             }}
           >
-            {isSearching ? (
+            {searchLoading ? (
               <Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />
             ) : (
               "Search"
@@ -345,7 +353,7 @@ export default function SearchPage() {
           </div>
 
           {/* Loading State */}
-          {(isSearching || trendingLoading) && (
+          {(hasSearched ? searchLoading : trendingLoading) && (
             <div
               style={{
                 display: "grid",
@@ -369,7 +377,7 @@ export default function SearchPage() {
           )}
 
           {/* Empty State */}
-          {hasSearched && !isSearching && results.length === 0 && (
+          {hasSearched && !searchLoading && !isSearchError && results.length === 0 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -394,7 +402,7 @@ export default function SearchPage() {
           )}
 
           {/* Book Grid */}
-          {!isSearching && !trendingLoading && displayBooks.length > 0 && (
+          {!searchLoading && !trendingLoading && displayBooks.length > 0 && (
             <div
               style={{
                 display: "grid",
@@ -627,7 +635,7 @@ export default function SearchPage() {
         </div>
 
         {/* Quick Search Suggestions */}
-        {!hasSearched && !trendingLoading && (
+        {!hasSearched && !trendingLoading && !isTrendingError && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -665,7 +673,8 @@ export default function SearchPage() {
                   key={suggestion}
                   onClick={() => {
                     setSearchQuery(suggestion);
-                    performSearch(suggestion);
+                    if (debounceRef.current) clearTimeout(debounceRef.current);
+                    setDebouncedQuery(suggestion);
                   }}
                   style={{
                     padding: "8px 16px",

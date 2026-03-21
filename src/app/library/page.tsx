@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { BookOpen, Clock, Star, Plus, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { Clock, Star, Plus, Sparkles } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import PageMountSignaler from "@/components/PageMountSignaler";
 import { TransitionLink } from "@/components/TransitionLink";
 import Image from "next/image";
@@ -18,21 +19,29 @@ interface Book {
   totalPages: number;
 }
 
+interface BooksResponse {
+  books: Book[];
+}
+
 export default function LibraryPage() {
   const { data: session } = authClient.useSession();
-  const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
   const [hoveredBook, setHoveredBook] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetch("/api/books")
-      .then((r) => r.json())
-      .then((data) => {
-        setBooks(data.books);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+  const {
+    data: booksData,
+    isPending: loading,
+    isError: isBooksError,
+  } = useQuery({
+    queryKey: ["books"],
+    queryFn: async (): Promise<BooksResponse> => {
+      const res = await fetch("/api/books");
+      if (!res.ok) throw new Error("Failed to load books");
+      return (await res.json()) as BooksResponse;
+    },
+    retry: 3,
+  });
+
+  const books = booksData?.books ?? [];
 
   return (
    <>
@@ -94,6 +103,16 @@ export default function LibraryPage() {
               }}
             />
           ))}
+        </div>
+      ) : isBooksError ? (
+        <div
+          style={{
+            padding: "60px 20px",
+            textAlign: "center",
+            color: "var(--text-tertiary)",
+          }}
+        >
+          Failed to load your library. Please refresh.
         </div>
       ) : (
         <div

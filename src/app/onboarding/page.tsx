@@ -5,6 +5,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import OnboardingShell  from "@/features/onboarding/components/OnboardingShell";
 import StepPersonal     from "@/features/onboarding/components/StepPersonal";
 import StepPurpose      from "@/features/onboarding/components/StepPurpose";
@@ -49,36 +50,65 @@ export default function OnboardingPage() {
   const set = <K extends keyof OnboardingData>(key: K, val: OnboardingData[K]) =>
     setData((d) => ({ ...d, [key]: val }));
 
-  const handleNext = async () => {
+  const saveOnboardingMutation = useMutation({
+    mutationFn: async (payload: {
+      age: number;
+      gender: string;
+      purposeOfUse: string;
+      customPurpose: string;
+      communicationPreference: string;
+    }) => {
+      const res = await fetch("/api/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        // Try to surface the API-provided error message.
+        let message = "Failed to save profile.";
+        try {
+          const json = (await res.json()) as { error?: string };
+          if (json?.error) message = json.error;
+        } catch {
+          // ignore JSON parsing errors
+        }
+        throw new Error(message);
+      }
+
+      return (await res.json()) as { success: true };
+    },
+    onMutate: () => {
+      setSaving(true);
+      setError(null);
+    },
+    onSuccess: () => {
+      // RootLayout computes `onboardingComplete` on the server; refreshing
+      // ensures the guard gets the updated profile before navigating.
+      router.refresh();
+      transitionRef.current?.click();
+      setSaving(false);
+    },
+    onError: (e) => {
+      setError(e instanceof Error ? e.message : "Something went wrong.");
+      setSaving(false);
+    },
+  });
+
+  const handleNext = () => {
     if (step < STEPS.length - 1) {
       setStep((s) => s + 1);
       return;
     }
 
-    // Final step — persist and redirect
-    setSaving(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/onboarding", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          age:                     Number(data.age),
-          gender:                  data.gender,
-          purposeOfUse:            data.purposeOfUse,
-          customPurpose:           data.customPurpose,
-          communicationPreference: data.communicationPreference,
-        }),
-      });
-      if (!res.ok) throw new Error("Failed to save profile.");
-      // RootLayout computes `onboardingComplete` on the server; refreshing
-      // ensures the guard gets the updated profile before navigating.
-      router.refresh();
-      transitionRef.current?.click();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
-      setSaving(false);
-    }
+    // Final step — persist and redirect.
+    saveOnboardingMutation.mutate({
+      age: Number(data.age),
+      gender: data.gender,
+      purposeOfUse: data.purposeOfUse,
+      customPurpose: data.customPurpose ?? "",
+      communicationPreference: data.communicationPreference,
+    });
   };
 
   const stepProps = { data, set };
