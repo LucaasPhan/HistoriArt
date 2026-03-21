@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
-import { ArrowLeft, BookOpen, MessageCircle } from "lucide-react";
+import { ArrowLeft, BookOpen, MessageCircle, Highlighter } from "lucide-react";
 import { SAMPLE_BOOKS } from "@/lib/sample-books";
 import { ThemeButton } from "@/components/ThemeButton";
 import { TransitionLink } from "@/components/TransitionLink";
@@ -11,6 +11,7 @@ import SelectionTooltip from "./components/SelectionTooltip";
 import ReaderContent from "./components/ReaderContent";
 import ReaderNavigation from "./components/ReaderNavigation";
 import ChatSidebar from "./components/ChatSidebar";
+import HighlightsSidebar from "./components/HighlightsSidebar";
 import useReaderController from "./hooks/useReaderController";
 import type { BookData } from "@/lib/sample-books";
 
@@ -45,6 +46,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             const prefix = currentInput ? currentInput + " " : "";
             c.setInput(`${prefix}"${c.selectedText}"`);
           }}
+          onHighlight={c.onHighlight}
           interactionMode={c.interactionMode}
         />
 
@@ -55,8 +57,9 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             flexDirection: "column",
             position: "relative",
             minHeight: "100vh",
-            transition: "margin-right 0.4s cubic-bezier(0.4,0,0.2,1)",
+            transition: "margin-right 0.4s cubic-bezier(0.4,0,0.2,1), margin-left 0.4s cubic-bezier(0.4,0,0.2,1)",
             marginRight: c.chatOpen ? 380 : 0,
+            marginLeft: c.highlightsSidebarOpen ? 320 : 0,
           }}
         >
           {/* Top bar */}
@@ -117,6 +120,20 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                   AI Chat
                 </button>
               )}
+              <button
+                className="btn-ghost"
+                onClick={() => c.setHighlightsSidebarOpen((o: boolean) => !o)}
+                style={{
+                  padding: "6px 14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontSize: 13,
+                }}
+              >
+                <Highlighter size={14} />
+                Highlights
+              </button>
             </div>
           </div>
 
@@ -124,6 +141,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             content={c.content}
             currentPage={c.currentPage}
             pageDirection={c.pageDirection}
+            highlights={c.highlights.filter((h) => h.pageNumber === c.currentPage)}
             onMouseUp={c.handleTextSelection}
             onDoubleClick={c.handleDoubleClick}
           />
@@ -162,6 +180,14 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               modeSwitchMode={c.interactionMode}
               onModeSwitchChange={c.setInteractionMode}
               getAudioVolume={c.getAudioVolume}
+            />
+          )}
+          {c.highlightsSidebarOpen && (
+            <HighlightsSidebar
+              highlights={c.highlights}
+              onClose={() => c.setHighlightsSidebarOpen(false)}
+              onDeleteHighlight={c.onDeleteHighlight}
+              onNavigate={c.jumpToPage}
             />
           )}
         </AnimatePresence>

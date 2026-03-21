@@ -118,6 +118,7 @@ export default function SearchPage() {
       const textRes = await fetch(`/api/search/${book.gutenbergId}`);
       if (!textRes.ok) throw new Error("Failed to fetch book text");
       const textData = await textRes.json();
+      
 
       setAddingBooks((prev) => ({
         ...prev,

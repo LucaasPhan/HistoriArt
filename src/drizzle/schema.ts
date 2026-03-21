@@ -152,12 +152,17 @@ export const bookChunks = pgTable(
 export const conversations = pgTable("conversations", {
   id:      uuid("id").defaultRandom().primaryKey(),
   userId:  text("user_id").notNull().references(() => user.id),
-  bookId:  uuid("book_id").notNull().references(() => books.id),
+  bookId:  text("book_id").notNull(),
   messages: jsonb("messages")
     .$type<Array<{ role: "user" | "assistant"; content: string; timestamp: string }>>()
     .default([]),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+
+ 
+ 
+
 
 

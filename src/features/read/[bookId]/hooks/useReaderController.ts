@@ -5,6 +5,8 @@ import type { ConversationMode } from "@/lib/prompts";
 import { buildAssistantChatMessage, buildUserChatMessage, getChatStorageKey } from "../helpers";
 import type { ChatMessage, InteractionMode } from "../types";
 import type { BookData } from "@/lib/sample-books";
+import { toast } from "sonner";
+import type { Highlight } from "../components/HighlightsSidebar";
 
 function cleanTextForSpeech(text: string): string {
   if (!text) return "";
@@ -68,6 +70,55 @@ export default function useReaderController({
   const [pageDirection, setPageDirection] = useState<"next" | "prev">("next");
   const [interactionMode, setInteractionMode] = useState<InteractionMode>("chat");
 
+  // --- Highlights (Local Storage Only) ---
+  const [highlights, setHighlights] = useState<Highlight[]>([]);
+  const [highlightsLoaded, setHighlightsLoaded] = useState(false);
+  const [highlightsSidebarOpen, setHighlightsSidebarOpen] = useState(false);
+
+  const getHighlightsStorageKey = useCallback((bid: string) => `highlights_v2_${bid}`, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(getHighlightsStorageKey(bookId));
+    if (saved) {
+      try {
+        setHighlights(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse saved highlights", e);
+      }
+    }
+    setHighlightsLoaded(true);
+  }, [bookId, getHighlightsStorageKey]);
+
+  useEffect(() => {
+    if (!highlightsLoaded) return;
+    localStorage.setItem(getHighlightsStorageKey(bookId), JSON.stringify(highlights));
+  }, [highlights, bookId, highlightsLoaded, getHighlightsStorageKey]);
+
+  const handleHighlight = useCallback(
+    (color: string) => {
+      if (!selectedText) return;
+      const newHighlight: Highlight = {
+        id: crypto.randomUUID(),
+        bookId,
+        userId: "local",
+        text: selectedText,
+        color,
+        pageNumber: currentPage,
+        createdAt: new Date().toISOString(),
+      };
+      setHighlights((prev) => [...prev, newHighlight]);
+      setSelectionCoords(null);
+      toast.success("Highlight saved locally");
+    },
+    [selectedText, currentPage, bookId],
+  );
+
+  const handleDeleteHighlight = useCallback((id: string) => {
+    setHighlights((prev) => prev.filter((h) => h.id !== id));
+    toast.success("Highlight removed");
+  }, []);
+  // ----------------------------------------
+
   // Dynamic book state (for Gutenberg books)
   const [dynamicContent, setDynamicContent] = useState<string>("");
   const [dynamicTotalPages, setDynamicTotalPages] = useState<number>(0);
@@ -124,7 +175,7 @@ export default function useReaderController({
     setIsLoading(false);
   }, []);
 
-  // Load from local storage
+  // Load chat from local storage
   useEffect(() => {
     const saved = localStorage.getItem(getChatStorageKey(bookId));
     if (saved) {
@@ -140,7 +191,7 @@ export default function useReaderController({
     setIsChatLoaded(true);
   }, [bookId]);
 
-  // Save to local storage
+  // Save chat to local storage
   useEffect(() => {
     if (!isChatLoaded) return;
     localStorage.setItem(getChatStorageKey(bookId), JSON.stringify(messages));
@@ -555,6 +606,13 @@ export default function useReaderController({
     // Close / stop
     mode,
 
+    // Highlights
+    highlights,
+    highlightsSidebarOpen,
+    setHighlightsSidebarOpen,
+    onHighlight: handleHighlight,
+    onDeleteHighlight: handleDeleteHighlight,
+
     // For ChatSidebar
     onInputChange: setInput,
 
@@ -563,4 +621,3 @@ export default function useReaderController({
     }, []),
   };
 }
-
