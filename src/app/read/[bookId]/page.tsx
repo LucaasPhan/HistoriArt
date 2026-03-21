@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "next/navigation";
 import { SAMPLE_BOOKS } from "@/lib/sample-books";
 import type { ConversationMode } from "@/lib/prompts";
-import { ThemeButton } from "@/components/ThemeButton";
 import { TransitionLink } from "@/components/TransitionLink";
 import PageMountSignaler from "@/components/PageMountSignaler";
 
@@ -334,75 +333,57 @@ export default function ReaderPage() {
           marginRight: chatOpen ? 380 : 0,
         }}
       >
-        {/* Side Navigation - Left Area */}
-        <button
+        {/* Side Navigation - Left Area - FIXED WIDTH */}
+        <motion.button
           onClick={() => { if (currentPage > 1) { setPageDirection("prev"); setCurrentPage(p => p - 1); } }}
           disabled={currentPage <= 1}
           style={{
-            position: "absolute",
+            position: "fixed",
             left: 0,
             top: 0,
             bottom: 0,
-            width: "18%",
-            minWidth: 100,
+            width: 100,
             border: "none",
             background: "transparent",
             cursor: currentPage <= 1 ? "default" : "pointer",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "flex-end",
+            paddingRight: 16,
             color: "var(--text-tertiary)",
-            transition: "all 0.3s ease",
-            zIndex: 10,
+            zIndex: 25,
           }}
-          onMouseEnter={(e) => { 
-            if (currentPage > 1) {
-              (e.currentTarget as HTMLElement).style.background = "linear-gradient(to right, rgba(var(--accent-primary-rgb), 0.05), transparent)";
-              (e.currentTarget as HTMLElement).style.color = "var(--accent-primary)";
-            }
-          }}
-          onMouseLeave={(e) => { 
-            (e.currentTarget as HTMLElement).style.background = "transparent";
-            (e.currentTarget as HTMLElement).style.color = "var(--text-tertiary)";
-          }}
+          whileHover={currentPage > 1 ? { color: "var(--accent-primary)" } : {}}
+          transition={{ duration: 0.2 }}
         >
-          <ChevronLeft size={44} style={{ opacity: currentPage <= 1 ? 0 : 0.3, transition: "opacity 0.2s" }} />
-        </button>
+          <ChevronLeft size={44} style={{ opacity: currentPage <= 1 ? 0.15 : 0.4 }} />
+        </motion.button>
 
-        {/* Side Navigation - Right Area */}
-        <button
+        {/* Side Navigation - Right Area - FIXED WIDTH */}
+        <motion.button
           onClick={() => { if (currentPage < totalPages) { setPageDirection("next"); setCurrentPage(p => p + 1); } }}
           disabled={currentPage >= totalPages}
           style={{
-            position: "absolute",
+            position: "fixed",
             right: 0,
             top: 0,
             bottom: 0,
-            width: "18%",
-            minWidth: 100,
+            width: 100,
             border: "none",
             background: "transparent",
             cursor: currentPage >= totalPages ? "default" : "pointer",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "flex-start",
+            paddingLeft: 16,
             color: "var(--text-tertiary)",
-            transition: "all 0.3s ease",
-            zIndex: 10,
+            zIndex: 25,
           }}
-          onMouseEnter={(e) => { 
-            if (currentPage < totalPages) {
-              (e.currentTarget as HTMLElement).style.background = "linear-gradient(to left, rgba(var(--accent-primary-rgb), 0.05), transparent)";
-              (e.currentTarget as HTMLElement).style.color = "var(--accent-primary)";
-            }
-          }}
-          onMouseLeave={(e) => { 
-            (e.currentTarget as HTMLElement).style.background = "transparent";
-            (e.currentTarget as HTMLElement).style.color = "var(--text-tertiary)";
-          }}
+          whileHover={currentPage < totalPages ? { color: "var(--accent-primary)" } : {}}
+          transition={{ duration: 0.2 }}
         >
-          <ChevronRight size={44} style={{ opacity: currentPage >= totalPages ? 0 : 0.3, transition: "opacity 0.2s" }} />
-        </button>
+          <ChevronRight size={44} style={{ opacity: currentPage >= totalPages ? 0.15 : 0.4 }} />
+        </motion.button>
         {/* Top bar */}
         <div
           className="nav-glass"
@@ -550,12 +531,9 @@ export default function ReaderPage() {
                   AI Companion
                 </div>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <ThemeButton />
-                <button onClick={() => setChatOpen(false)} style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: 4 }}>
-                  <X size={18} />
-                </button>
-              </div>
+              <button onClick={() => setChatOpen(false)} style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: 4 }}>
+                <X size={18} />
+              </button>
             </div>
 
             <div style={{ flex: 1, overflow: "auto", padding: "20px", display: "flex", flexDirection: "column", gap: 12 }}>

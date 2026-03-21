@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Sparkles } from "lucide-react";
+import { BookOpen, Sparkles, Home, Search, Settings as Cog } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeButton } from "./ThemeButton";
 import { TransitionLink } from "./TransitionLink";
@@ -63,6 +63,15 @@ export function Navbar() {
           <ThemeButton />
 
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <TransitionLink href="/dashboard">
+              <button className="btn-ghost" style={{ fontSize: 14 }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Home size={14} />
+                  Dashboard
+                </span>
+              </button>
+            </TransitionLink>
+
             <TransitionLink href="/library">
               <button className="btn-ghost" style={{ fontSize: 14 }}>
                 <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -71,6 +80,25 @@ export function Navbar() {
                 </span>
               </button>
             </TransitionLink>
+
+            <TransitionLink href="/search">
+              <button className="btn-ghost" style={{ fontSize: 14 }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Search size={14} />
+                  Search
+                </span>
+              </button>
+            </TransitionLink>
+
+            <TransitionLink href="/settings">
+              <button className="btn-ghost" style={{ fontSize: 14 }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Cog size={14} />
+                  Settings
+                </span>
+              </button>
+            </TransitionLink>
+
             <TransitionLink href="/login">
               <button className="btn-primary" style={{ padding: "8px 20px", fontSize: 14 }}>
                 Sign In
