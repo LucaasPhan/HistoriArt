@@ -333,57 +333,23 @@ export default function ReaderPage() {
           marginRight: chatOpen ? 380 : 0,
         }}
       >
-        {/* Side Navigation - Left Area - FIXED WIDTH */}
-        <motion.button
+        {/* Side Navigation - Left Area */}
+        <button
           onClick={() => { if (currentPage > 1) { setPageDirection("prev"); setCurrentPage(p => p - 1); } }}
-          disabled={currentPage <= 1}
-          style={{
-            position: "fixed",
-            left: 0,
-            top: 0,
-            bottom: 0,
-            width: 100,
-            border: "none",
-            background: "transparent",
-            cursor: currentPage <= 1 ? "default" : "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-            paddingRight: 16,
-            color: "var(--text-tertiary)",
-            zIndex: 25,
-          }}
-          whileHover={currentPage > 1 ? { color: "var(--accent-primary)" } : {}}
-          transition={{ duration: 0.2 }}
+          className={`nav-zone nav-zone-left ${currentPage <= 1 ? "disabled" : ""}`}
+          aria-label="Previous Page"
         >
-          <ChevronLeft size={44} style={{ opacity: currentPage <= 1 ? 0.15 : 0.4 }} />
-        </motion.button>
+          <ChevronLeft size={48} style={{ opacity: 0.4 }} />
+        </button>
 
-        {/* Side Navigation - Right Area - FIXED WIDTH */}
-        <motion.button
+        {/* Side Navigation - Right Area */}
+        <button
           onClick={() => { if (currentPage < totalPages) { setPageDirection("next"); setCurrentPage(p => p + 1); } }}
-          disabled={currentPage >= totalPages}
-          style={{
-            position: "fixed",
-            right: 0,
-            top: 0,
-            bottom: 0,
-            width: 100,
-            border: "none",
-            background: "transparent",
-            cursor: currentPage >= totalPages ? "default" : "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-start",
-            paddingLeft: 16,
-            color: "var(--text-tertiary)",
-            zIndex: 25,
-          }}
-          whileHover={currentPage < totalPages ? { color: "var(--accent-primary)" } : {}}
-          transition={{ duration: 0.2 }}
+          className={`nav-zone nav-zone-right ${currentPage >= totalPages ? "disabled" : ""}`}
+          aria-label="Next Page"
         >
-          <ChevronRight size={44} style={{ opacity: currentPage >= totalPages ? 0.15 : 0.4 }} />
-        </motion.button>
+          <ChevronRight size={48} style={{ opacity: 0.4 }} />
+        </button>
         {/* Top bar */}
         <div
           className="nav-glass"
@@ -526,9 +492,16 @@ export default function ReaderPage() {
           >
             <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--border-subtle)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ fontSize: 15, fontWeight: 600, display: "flex", alignItems: "center", gap: 12 }}>
                   <Sparkles size={16} color="var(--accent-primary)" />
                   AI Companion
+                  {(isListening || isSpeaking) && (
+                    <div className="voice-wave-container" style={{ marginLeft: 8 }}>
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <div key={i} className="voice-bar" style={{ animationDelay: `${i * 0.1}s` }} />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
               <button onClick={() => setChatOpen(false)} style={{ background: "none", border: "none", color: "var(--text-tertiary)", cursor: "pointer", padding: 4 }}>

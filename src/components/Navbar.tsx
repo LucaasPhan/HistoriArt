@@ -99,11 +99,7 @@ export function Navbar() {
               </button>
             </TransitionLink>
 
-            <TransitionLink href="/login">
-              <button className="btn-primary" style={{ padding: "8px 20px", fontSize: 14 }}>
-                Sign In
-              </button>
-            </TransitionLink>
+            <UserMenu />
           </div>
         </div>
       </div>
