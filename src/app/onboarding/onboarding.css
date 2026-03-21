@@ -6,28 +6,16 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --cream:     #f7f3ed;
-  --parchment: #ede8df;
-  --sand:      #d6cfc3;
-  --bark:      #8c7b6b;
-  --ink:       #2d2520;
-  --sage:      #df755a;
-  --sage-lt:   #fdf2ee;
-  --card-bg:   #ffffff;
+  --cream:     var(--bg-primary);
+  --parchment: var(--border-subtle);
+  --sand:      var(--border-hover);
+  --bark:      var(--text-secondary);
+  --ink:       var(--text-primary);
+  --sage:      var(--accent-primary);
+  --sage-lt:   var(--accent-glow);
+  --card-bg:   var(--bg-card);
   --radius:    14px;
-  --shadow:    0 4px 28px rgba(45,37,32,0.10);
-}
-
-.dark {
-  --cream:     #22201E;
-  --parchment: rgba(255, 255, 255, 0.08);
-  --sand:      rgba(255, 255, 255, 0.15);
-  --bark:      #A6A39D;
-  --ink:       #EBEAE5;
-  --sage:      #df755a;
-  --sage-lt:   rgba(223, 117, 90, 0.15);
-  --card-bg:   #282624;
-  --shadow:    0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow:    var(--shadow-card);
 }
 
 .ob-bg {
@@ -187,7 +175,7 @@
 
 .ob-next {
   background: var(--sage);
-  color: #fff;
+  color: var(--bg-primary);
   border: none;
   border-radius: var(--radius);
   padding: 13px 26px;
@@ -199,7 +187,7 @@
 }
 .ob-next:disabled { opacity: 0.35; cursor: not-allowed; }
 .ob-next:not(:disabled):hover {
-  background: #c96248;
+  background: var(--accent-secondary);
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(223,117,90,0.32);
 }
@@ -256,7 +244,7 @@
 .scs-dot-inner {
   width: 6px; height: 6px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--bg-card);
   opacity: 0;
   transition: opacity 0.18s;
 }
@@ -295,7 +283,7 @@
 }
 
 .sp-error {
-  color: #b5603a;
+  color: var(--text-accent);
   font-size: 13px;
   margin-top: 8px;
 }
@@ -365,6 +353,6 @@
 .ob-error {
   margin-top: 14px;
   font-size: 13px;
-  color: #b5603a;
+  color: var(--text-accent);
   text-align: center;
 }

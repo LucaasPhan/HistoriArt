@@ -22,7 +22,9 @@
 .settings-sidebar-title {
   font-family: var(--font-serif);
   font-size: 32px;
-  margin-bottom: 40px;
+  margin-top: 20px;
+  margin-bottom: 25px;
+  padding-left: 16px;
   color: var(--text-primary);
 }
 
@@ -43,7 +45,8 @@
   color: var(--text-primary);
 }
 
-.settings-nav-item.active {
+.settings-nav-item.active,
+.settings-nav-item[data-state="active"] {
   background-color: var(--bg-tertiary); 
   color: var(--text-primary);
 }
@@ -55,6 +58,7 @@
 
 .settings-section {
   margin-bottom: 48px;
+  padding-top: 100px;
 }
 
 .settings-section-title {
@@ -108,6 +112,8 @@
   font-size: 14px;
   transition: border-color 0.2s ease;
   outline: none;
+  box-sizing: border-box;
+  height: 46px;
 }
 
 .settings-input:focus {

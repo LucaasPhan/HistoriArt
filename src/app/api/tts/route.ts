@@ -4,7 +4,7 @@
 export async function POST(req: Request) {
   const { text, voiceId } = await req.json();
   
-  const selectedVoiceId = voiceId || process.env.ELEVENLABS_VOICE_ID || "21m00Tcm4TlvDq8ikWAM";
+  const selectedVoiceId = voiceId;
 
   console.log("🔑 ElevenLabs API Key present:", !!process.env.ELEVENLABS_API_KEY);
   console.log("🎤 Voice ID:", selectedVoiceId);
