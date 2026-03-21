@@ -4,6 +4,7 @@ import { db } from "@/drizzle/db";
 import { books } from "@/drizzle/schema";
 import { bookChunks } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
+import { fetchAndPaginateGutenbergBook } from "@/lib/gutenberg";
 
 export async function GET() {
   try {
@@ -56,7 +57,34 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, author, coverUrl, description, totalPages, gutenbergId, pages } = body;
+    let { title, author, coverUrl, description, totalPages, gutenbergId, pages } = body;
+
+    // Check if this Gutenberg book was already added
+    if (gutenbergId) {
+      const existing = await db.query.books.findFirst({
+        where: eq(books.fileName, `gutenberg-${gutenbergId}`),
+      });
+
+      if (existing) {
+        return NextResponse.json({
+          id: existing.id,
+          alreadyExists: true,
+          message: "This book is already in your library!",
+        });
+      }
+    }
+
+    // If Gutenberg ID is provided but no pages were sent, fetch on the backend
+    if (gutenbergId && (!pages || Object.keys(pages).length === 0)) {
+      console.log(`Server fetching Gutenberg text for ID ${gutenbergId}...`);
+      const bookData = await fetchAndPaginateGutenbergBook(gutenbergId);
+      pages = bookData.pages;
+      title = title || bookData.title;
+      totalPages = totalPages || bookData.totalPages;
+      description = description || bookData.subjects.join(", ");
+      author = author || bookData.author;
+      coverUrl = coverUrl || bookData.coverUrl;
+    }
 
     if (!title || !totalPages) {
       return NextResponse.json(

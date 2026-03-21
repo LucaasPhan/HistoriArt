@@ -179,18 +179,12 @@ export default function SearchPage() {
     }));
 
     try {
-      // 1. Fetch full text and paginate
-      const textRes = await fetch(`/api/search/${book.gutenbergId}`);
-      if (!textRes.ok) throw new Error("Failed to fetch book text");
-      const textData = await textRes.json();
-      
-
       setAddingBooks((prev) => ({
         ...prev,
         [book.gutenbergId]: { state: "saving" },
       }));
 
-      // 2. Save to library
+      // Directly save to library - the backend will fetch the text!
       const saveRes = await fetch("/api/books", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -199,9 +193,8 @@ export default function SearchPage() {
           author: book.author,
           coverUrl: book.coverUrl,
           description: book.subjects.join(", "),
-          totalPages: textData.totalPages,
+          totalPages: 0, // Server will resolve this
           gutenbergId: book.gutenbergId,
-          pages: textData.pages,
         }),
       });
 

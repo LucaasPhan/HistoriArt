@@ -28,7 +28,7 @@ export async function PUT(req: NextRequest) {
     if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await req.json();
-    const { purposeOfUse, customPurpose, communicationPreference, firstName, lastName, age, gender } = body;
+    const { purposeOfUse, customPurpose, communicationPreference, firstName, lastName, age, gender, readingGoal, personality, genZMode } = body;
 
     const updates: Partial<Record<keyof typeof userProfiles._.columns, any>> = { updatedAt: new Date() };
     if (purposeOfUse !== undefined) updates.purposeOfUse = purposeOfUse;
@@ -38,6 +38,9 @@ export async function PUT(req: NextRequest) {
     if (lastName !== undefined) updates.lastName = lastName;
     if (age !== undefined) updates.age = Number(age);
     if (gender !== undefined) updates.gender = gender;
+    if (readingGoal !== undefined) updates.readingGoal = readingGoal;
+    if (personality !== undefined) updates.personality = personality;
+    if (genZMode !== undefined) updates.genZMode = genZMode;
 
     await db.update(userProfiles)
       .set(updates)

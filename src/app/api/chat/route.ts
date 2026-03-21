@@ -67,6 +67,9 @@ export async function POST(req: NextRequest) {
           gender: profile.gender as Gender,
           purposeOfUse: profile.purposeOfUse as PurposeOfUse,
           customPurpose: profile.customPurpose,
+          readingGoal: profile.readingGoal,
+          personality: profile.personality,
+          genZMode: profile.genZMode,
           communicationPreference: profile.communicationPreference as CommunicationPreference,
         };
       }

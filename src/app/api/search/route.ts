@@ -34,7 +34,8 @@ export async function GET(request: NextRequest) {
   }
 
   const res = await fetch(
-    `https://gutendex.com/books?search=${encodeURIComponent(query)}&languages=en&page=${page}`
+    `https://gutendex.com/books?search=${encodeURIComponent(query)}&languages=en&page=${page}`,
+    { next: { revalidate: 86400 } } // Cache for 24 hours
   );
 
   if (!res.ok) {
