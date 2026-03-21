@@ -175,7 +175,6 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               scrollToEnd={c.scrollToEnd}
               modeSwitchMode={c.interactionMode}
               onModeSwitchChange={c.setInteractionMode}
-              getAudioVolume={c.getAudioVolume}
             />
           )}
           {c.highlightsSidebarOpen && (
@@ -183,6 +182,12 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               highlights={c.highlights}
               onClose={() => c.setHighlightsSidebarOpen(false)}
               onDeleteHighlight={c.onDeleteHighlight}
+              onSendToChat={(text) => {
+                c.setChatOpen(true);
+                const currentInput = c.input.trim();
+                const prefix = currentInput ? currentInput + " " : "";
+                c.setInput(`${prefix}"${text}"`);
+              }}
               onNavigate={c.jumpToPage}
             />
           )}

@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { X, Trash2 } from "lucide-react";
+import { X } from "lucide-react";
+import { HighlightItem } from "./HighlightItem";
+
 
 export type Highlight = {
   id: string;
@@ -16,6 +18,7 @@ type HighlightsSidebarProps = {
   highlights: Highlight[];
   onClose: () => void;
   onDeleteHighlight?: (id: string) => void;
+  onSendToChat?: (text: string) => void;
   onNavigate?: (pageNumber: number) => void;
 };
 
@@ -23,6 +26,7 @@ export default function HighlightsSidebar({
   highlights,
   onClose,
   onDeleteHighlight,
+  onSendToChat,
   onNavigate,
 }: HighlightsSidebarProps) {
   return (
@@ -70,60 +74,13 @@ export default function HighlightsSidebar({
           </p>
         ) : (
           highlights.map((h, i) => (
-            <div
+            <HighlightItem
               key={h.id || `highlight-${i}`}
-              onClick={() => onNavigate?.(h.pageNumber)}
-              className="highlight-item"
-              style={{
-                background: "var(--bg-tertiary)",
-                border: "1px solid var(--border-subtle)",
-                borderRadius: "var(--radius-md)",
-                padding: "12px",
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div
-                    style={{
-                      width: 12,
-                      height: 12,
-                      borderRadius: "50%",
-                      backgroundColor: h.color,
-                      border: "1px solid rgba(0,0,0,0.1)",
-                    }}
-                  />
-                  <span style={{ fontSize: 12, color: "var(--text-tertiary)", fontWeight: 500 }}>
-                    Page {h.pageNumber}
-                  </span>
-                </div>
-                {onDeleteHighlight && (
-                  <button
-                    onClick={() => onDeleteHighlight(h.id)}
-                    className="btn-ghost"
-                    style={{ padding: 4, color: "var(--text-error)" }}
-                    aria-label="Delete highlight"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                )}
-              </div>
-              <p
-                style={{
-                  fontSize: 14,
-                  margin: 0,
-                  lineHeight: 1.5,
-                  paddingLeft: 8,
-                  borderLeft: `3px solid ${h.color}`,
-                }}
-              >
-                {h.text}
-              </p>
-            </div>
+              highlight={h}
+              onDeleteHighlight={onDeleteHighlight}
+              onSendToChat={onSendToChat}
+              onNavigate={onNavigate}
+            />
           ))
         )}
       </div>
