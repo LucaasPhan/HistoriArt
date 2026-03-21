@@ -100,10 +100,6 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
 
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <ThemeButton />
-              <span style={{ fontSize: 13, color: "var(--text-tertiary)" }}>
-                Page {c.currentPage} of {c.totalPages}
-              </span>
-
               {!c.chatOpen && (
                 <button
                   className="btn-ghost"
@@ -192,7 +188,6 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
           )}
         </AnimatePresence>
       </div>
-
       <PageMountSignaler />
     </>
   );

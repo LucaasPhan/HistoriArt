@@ -103,7 +103,7 @@ const ReaderContent = memo(function ReaderContent({
               return (
                 <p
                   key={i}
-                  style={{ marginBottom: 20, textIndent: i > 0 ? "2em" : 0 }}
+                  style={{ marginBottom: 20, textIndent: i > 0 ? "2em" : 0, textAlign: "justify" }}
                 >
                   {elements}
                 </p>

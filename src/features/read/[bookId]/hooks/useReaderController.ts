@@ -264,10 +264,11 @@ export default function useReaderController({
 
       setIsSpeaking(true);
       try {
+        const voiceId = localStorage.getItem("elevenlabs_voice_id") || undefined;
         const response = await fetch("/api/tts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: text.slice(0, 2000) }),
+          body: JSON.stringify({ text: text.slice(0, 2000), voiceId }),
         });
 
         if (!response.ok) throw new Error("TTS failed");

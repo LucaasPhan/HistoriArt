@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useMemo } from "react";
+import React, { memo, useMemo, useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type ReaderNavigationProps = {
@@ -20,7 +20,42 @@ const ReaderNavigation = memo(function ReaderNavigation({
   onNext,
   onJumpTo,
 }: ReaderNavigationProps) {
-  const dotsCount = useMemo(() => Math.min(totalPages, 12), [totalPages]);
+  const [isEditingPage, setIsEditingPage] = useState(false);
+  const [pageInput, setPageInput] = useState(currentPage.toString());
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setPageInput(currentPage.toString());
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (isEditingPage && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditingPage]);
+
+  const handlePageSubmit = (e?: React.SyntheticEvent) => {
+    if (e && "preventDefault" in e) e.preventDefault();
+    
+    if (pageInput.trim() === "") {
+      setPageInput(currentPage.toString());
+      setIsEditingPage(false);
+      return;
+    }
+
+    const pageNum = parseInt(pageInput, 10);
+    if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= totalPages) {
+      if (pageNum !== currentPage) {
+        onJumpTo(pageNum);
+      } else {
+        setPageInput(currentPage.toString());
+      }
+    } else {
+      setPageInput(currentPage.toString());
+    }
+    setIsEditingPage(false);
+  };
 
   return (
     <>
@@ -47,28 +82,39 @@ const ReaderNavigation = memo(function ReaderNavigation({
       </button>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 32, marginBottom: 32 }}>
-        <div style={{ display: "flex", gap: 4 }}>
-          {Array.from({ length: dotsCount }, (_, i) => {
-            const page = i + 1;
-            const isActive = currentPage === page;
-            return (
-              <button
-                key={i}
-                onClick={() => onJumpTo(page)}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "14px", color: "var(--text-secondary)", fontFamily: "var(--font-mono, monospace)" }}>
+          {isEditingPage ? (
+            <form onSubmit={handlePageSubmit} style={{ margin: 0 }}>
+              <input
+                ref={inputRef}
+                type="number"
+                min={1}
+                max={totalPages}
+                value={pageInput}
+                onChange={(e) => setPageInput(e.target.value)}
+                onBlur={handlePageSubmit}
                 style={{
-                  width: isActive ? 24 : 8,
-                  height: 8,
-                  borderRadius: 4,
-                  border: "none",
-                  background: isActive
-                    ? "var(--accent-primary)"
-                    : "var(--border-subtle)",
-                  transition: "all 0.3s",
-                  cursor: "pointer",
+                  width: "50px",
+                  textAlign: "center",
+                  background: "transparent",
+                  border: "1px solid var(--border-subtle)",
+                  borderRadius: "4px",
+                  color: "var(--text-primary)",
+                  padding: "4px",
+                  fontFamily: "inherit",
                 }}
               />
-            );
-          })}
+            </form>
+          ) : (
+            <span 
+              onClick={() => setIsEditingPage(true)}
+              style={{ cursor: "pointer", fontWeight: 600, color: "var(--text-primary)", textDecoration: "underline", textUnderlineOffset: 4, textDecorationColor: "var(--border-subtle)" }}
+              title="Jump to page"
+            >
+              {currentPage}
+            </span>
+          )}
+          <span>of {totalPages}</span>
         </div>
       </div>
     </>
@@ -78,4 +124,3 @@ const ReaderNavigation = memo(function ReaderNavigation({
 ReaderNavigation.displayName = "ReaderNavigation";
 
 export default ReaderNavigation;
-

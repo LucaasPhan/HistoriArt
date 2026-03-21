@@ -2,13 +2,15 @@
 
 // src/app/api/tts/route.ts
 export async function POST(req: Request) {
-  const { text } = await req.json();
+  const { text, voiceId } = await req.json();
   
+  const selectedVoiceId = voiceId || process.env.ELEVENLABS_VOICE_ID || "21m00Tcm4TlvDq8ikWAM";
+
   console.log("🔑 ElevenLabs API Key present:", !!process.env.ELEVENLABS_API_KEY);
-  console.log("🎤 Voice ID:", process.env.ELEVENLABS_VOICE_ID);
+  console.log("🎤 Voice ID:", selectedVoiceId);
 
   const response = await fetch(
-    `https://api.elevenlabs.io/v1/text-to-speech/${process.env.ELEVENLABS_VOICE_ID}`,
+    `https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}`,
     {
       method: "POST",
       headers: {
