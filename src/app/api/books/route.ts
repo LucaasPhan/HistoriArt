@@ -205,3 +205,33 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { bookId } = await request.json();
+    if (!bookId) {
+      return NextResponse.json({ error: "Missing bookId" }, { status: 400 });
+    }
+
+    // Check the book exists in DB (sample books can't be deleted)
+    const existing = await db.query.books.findFirst({
+      where: eq(books.id, bookId),
+    });
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: "Book not found in database. Sample books cannot be deleted." },
+        { status: 404 },
+      );
+    }
+
+    // Delete chunks first, then the book (cascade should handle it, but be explicit)
+    await db.delete(bookChunks).where(eq(bookChunks.bookId, bookId));
+    await db.delete(books).where(eq(books.id, bookId));
+
+    return NextResponse.json({ success: true, message: "Book deleted." });
+  } catch (err) {
+    console.error("Error deleting book:", err);
+    return NextResponse.json({ error: "Failed to delete book" }, { status: 500 });
+  }
+}

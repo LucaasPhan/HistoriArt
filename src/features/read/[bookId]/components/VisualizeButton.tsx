@@ -47,6 +47,31 @@ export default function VisualizeButton({
   const [result, setResult] = useState<{ prompt: string; imageUrl: string } | null>(null);
   const [loadingPhase, setLoadingPhase] = useState(0);
   const [showPrompt, setShowPrompt] = useState(false);
+  const [isCached, setIsCached] = useState(false);
+
+  /* Load cached image when dialog opens */
+  useEffect(() => {
+    if (!isOpen || !isAuthenticated || !bookId || currentPage == null) return;
+    // Don't re-fetch if we already have a result
+    if (result) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/visualize?bookId=${encodeURIComponent(bookId)}&page=${currentPage}`);
+        if (!res.ok || cancelled) return;
+        const data = await res.json();
+        if (cancelled) return;
+        if (data.cached) {
+          setResult({ prompt: data.prompt, imageUrl: data.imageUrl });
+          setIsCached(true);
+        }
+      } catch {
+        // Silently fail — user can still generate
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [isOpen, isAuthenticated, bookId, currentPage, result]);
 
   /* cycle through loading messages */
   useEffect(() => {
@@ -67,6 +92,7 @@ export default function VisualizeButton({
     setResult(null);
     setImageLoaded(false);
     setShowPrompt(false);
+    setIsCached(false);
     try {
       const response = await fetch("/api/visualize", {
         method: "POST",
@@ -119,10 +145,10 @@ export default function VisualizeButton({
           whileHover={{ scale: 1.04, y: -1 }}
           whileTap={{ scale: 0.97 }}
           style={{
-            padding: "8px 18px",
+            padding: "6px 14px",
             display: "flex",
             alignItems: "center",
-            gap: 8,
+            gap: 6,
             fontSize: 13,
             fontWeight: 600,
             borderRadius: "var(--radius-full)",
@@ -136,6 +162,7 @@ export default function VisualizeButton({
             cursor: "var(--cursor-pointer)",
             position: "relative",
             overflow: "hidden",
+            height: "36px", // Standard height for ghost buttons in this app
           }}
           onClick={handleVisualize}
         >
@@ -149,18 +176,23 @@ export default function VisualizeButton({
               pointerEvents: "none",
             }}
           />
-          <Paintbrush size={15} />
+          <Paintbrush size={14} />
           <span style={{ position: "relative" }}>Illuminate Scene</span>
         </motion.button>
       </DialogTrigger>
 
       <DialogContent
-        className="sm:max-w-[640px] p-0 overflow-hidden"
+        className="p-0 overflow-hidden"
         style={{
           background: "var(--bg-card)",
           border: "1px solid var(--border-subtle)",
           borderRadius: "var(--radius-lg)",
           boxShadow: "var(--shadow-glow), 0 25px 60px rgba(0,0,0,0.25)",
+          maxWidth: "min(640px, 90vw)",
+          maxHeight: "85vh",
+          width: "100%",
+          display: "flex",
+          flexDirection: "column" as const,
         }}
       >
         {/* ─── Decorative top accent bar ─── */}
@@ -172,7 +204,7 @@ export default function VisualizeButton({
           }}
         />
 
-        <div style={{ padding: "24px 28px 20px" }}>
+        <div style={{ padding: "24px 28px 20px", flex: 1, overflowY: "auto" }}>
           {!isAuthenticated ? (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -544,27 +576,6 @@ export default function VisualizeButton({
                         }}
                       >
                         <Download size={16} />
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.08 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={handleVisualize}
-                        title="Regenerate"
-                        style={{
-                          width: 36,
-                          height: 36,
-                          borderRadius: "var(--radius-sm)",
-                          background: "rgba(0,0,0,0.45)",
-                          backdropFilter: "blur(12px)",
-                          border: "1px solid rgba(255,255,255,0.12)",
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          cursor: "var(--cursor-pointer)",
-                        }}
-                      >
-                        <RotateCcw size={16} />
                       </motion.button>
                     </motion.div>
 

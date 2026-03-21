@@ -16,7 +16,11 @@ import {
   LogOut,
   RefreshCcw,
   SquareUserRound,
+  Cog,
+  Sun,
+  Moon,
 } from "lucide-react";
+import { useTheme } from "./ThemeProvider";
 import { AnimatePresence, motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { memo, useCallback, useState } from "react";
@@ -64,6 +68,8 @@ const User = memo(
     const router = useRouter();
     const queryClient = useQueryClient();
     const { user, isSessionPending, isSessionError, isAuthenticated } = useAuth();
+    const { theme, toggleTheme } = useTheme();
+    const menuItemClass = "data-[highlighted]:bg-muted flex w-full cursor-pointer items-center justify-start gap-2 pl-1! px-2 py-2 rounded-sm text-sm font-normal"
 
     const signOutMutation = useMutation({
       mutationFn: () => authClient.signOut(),
@@ -134,10 +140,7 @@ const User = memo(
                 exit={{ opacity: 0, scale: 0.8 }}
                 initial={{ opacity: 0, scale: 0.8 }}
                 key={user.image}
-                transition={{
-                  duration: 0.3,
-                  ease: "easeInOut",
-                }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
               >
                 <Avatar>
                   <GlareHover
@@ -165,7 +168,7 @@ const User = memo(
 
           <DropdownMenuContent
             align="end"
-            className="bg-(--bg-card) text-foreground p-2! relative z-100001 flex w-[200px] flex-col px-1"
+            className="bg-(--bg-card) text-foreground p-2! gap-3! relative z-100001 flex w-[200px] flex-col px-1"
           >
             <div className="flex w-full items-center justify-start gap-2 px-4 py-2">
               <Avatar>
@@ -182,34 +185,46 @@ const User = memo(
               </p>
             </div>
 
-            <DropdownMenuSeparator className="mx-0! my-0!" />
+            <DropdownMenuItem
+              className={menuItemClass}
+              onSelect={(e) => {
+                e.preventDefault();
+                toggleTheme();
+              }}
+            >
+              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+              {theme === "dark" ? "Light Mode" : "Dark Mode"}
+            </DropdownMenuItem>
 
             <DropdownMenuItem
-              asChild
+              className={menuItemClass}
+              onClick={() => router.push("/settings")}
+            >
+              <Cog size={16} />
+              Settings
+            </DropdownMenuItem>
+
+
+            <DropdownMenuItem
+              className={menuItemClass + " mb-2!"}
               onSelect={(e) => {
                 e.preventDefault();
                 setIsMenuOpen(true);
               }}
-              title="Sign out"
+              onClick={handleSignOut}
+              disabled={signOutMutation.isPending}
             >
-              <Button
-                className="hover:bg-muted flex w-full cursor-pointer items-center justify-start px-2 py-2"
-                onClick={handleSignOut}
-                size="icon"
-                variant="ghost"
-              >
-                {signOutMutation.isPending ? (
-                  <>
-                    <Loader2 className="animate-spin" />
-                    Signing out...
-                  </>
-                ) : (
-                  <>
-                    <LogOut />
-                    Sign out
-                  </>
-                )}
-              </Button>
+              {signOutMutation.isPending ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Signing out...
+                </>
+              ) : (
+                <>
+                  <LogOut size={16} />
+                  Sign out
+                </>
+              )}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

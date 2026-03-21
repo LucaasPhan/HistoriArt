@@ -1,8 +1,7 @@
 "use client";
 
-import { BookOpen, Sparkles, Search, Cog } from "lucide-react";
+import { BookOpen, Sparkles, Search } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { ThemeButton } from "./ThemeButton";
 import { TransitionLink } from "./TransitionLink";
 import UserMenu from "./UserMenu";
 
@@ -61,8 +60,6 @@ export function Navbar() {
         </TransitionLink>
         
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <ThemeButton />
-
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             {/* Dashboard removed for hackathon
             <TransitionLink href="/dashboard">
@@ -91,17 +88,6 @@ export function Navbar() {
                 </span>
               </button>
             </TransitionLink>
-
-            {/* Settings removed for hackathon */}
-            <TransitionLink href="/settings">
-              <button className="btn-ghost" style={{ fontSize: 14 }}>
-                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <Cog size={14} />
-                  Settings
-                </span>
-              </button>
-            </TransitionLink>
-           
 
             <UserMenu />
           </div>

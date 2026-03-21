@@ -18,8 +18,6 @@ type ReaderNavigationProps = {
   isAuthenticated?: boolean;
 };
 
-import VisualizeButton from "./VisualizeButton";
-
 const ReaderNavigation = memo(function ReaderNavigation({
   currentPage,
   totalPages,
@@ -72,38 +70,29 @@ const ReaderNavigation = memo(function ReaderNavigation({
   };
 
   return (
-    <>
-      <button
-        onClick={() => {
-          if (currentPage > 1) onPrev();
-        }}
-        className={`nav-zone nav-zone-left ${currentPage <= 1 ? "disabled" : ""}`}
-        style={{ 
-          left: highlightsSidebarOpen ? 320 : 0,
-          transition: "left 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
-        }}
-        aria-label="Previous Page"
-      >
-        <ChevronLeft size={48} style={{ opacity: 0.4 }} />
-      </button>
-      <button
-        onClick={() => {
-          if (currentPage < totalPages) onNext();
-        }}
-        className={`nav-zone nav-zone-right ${
-          currentPage >= totalPages ? "disabled" : ""
-        }`}
-        style={{ 
-          right: chatOpen ? 380 : 0,
-          transition: "right 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
-        }}
-        aria-label="Next Page"
-      >
-        <ChevronRight size={48} style={{ opacity: 0.4 }} />
-      </button>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "16px 0", padding: "8px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: "14px", color: "var(--text-secondary)", fontFamily: "var(--font-mono, monospace)" }}>
+        <button
+          onClick={() => {
+            if (currentPage > 1) onPrev();
+          }}
+          disabled={currentPage <= 1}
+          style={{
+            cursor: currentPage <= 1 ? "not-allowed" : "pointer",
+            opacity: currentPage <= 1 ? 0.3 : 1,
+            background: "transparent",
+            border: "none",
+            display: "flex",
+            alignItems: "center",
+            padding: "4px",
+            color: "var(--text-primary)"
+          }}
+          aria-label="Previous Page"
+        >
+          <ChevronLeft size={20} />
+        </button>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 32, marginBottom: 32 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "14px", color: "var(--text-secondary)", fontFamily: "var(--font-mono, monospace)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {isEditingPage ? (
             <form onSubmit={handlePageSubmit} style={{ margin: 0 }}>
               <input
@@ -138,16 +127,27 @@ const ReaderNavigation = memo(function ReaderNavigation({
           <span>of {totalPages}</span>
         </div>
 
-        <VisualizeButton 
-          content={content} 
-          bookTitle={bookTitle} 
-          bookId={bookId} 
-          currentPage={currentPage} 
-          highlightedText={highlightedText}
-          isAuthenticated={isAuthenticated}
-        />
+        <button
+          onClick={() => {
+            if (currentPage < totalPages) onNext();
+          }}
+          disabled={currentPage >= totalPages}
+          style={{
+            cursor: currentPage >= totalPages ? "not-allowed" : "pointer",
+            opacity: currentPage >= totalPages ? 0.3 : 1,
+            background: "transparent",
+            border: "none",
+            display: "flex",
+            alignItems: "center",
+            padding: "4px",
+            color: "var(--text-primary)"
+          }}
+          aria-label="Next Page"
+        >
+          <ChevronRight size={20} />
+        </button>
       </div>
-    </>
+    </div>
   );
 });
 

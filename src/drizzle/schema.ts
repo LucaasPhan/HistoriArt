@@ -164,8 +164,39 @@ export const conversations = pgTable("conversations", {
 });
 
 
- 
- 
+// ─── Scene Images (Illuminate Scene cache) ────────────────────
 
+export const sceneImages = pgTable(
+  "scene_images",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    bookId: text("book_id").notNull(),
+    pageNumber: integer("page_number").notNull(),
+    imageUrl: text("image_url").notNull(),
+    prompt: text("prompt").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("idx_scene_user_book_page").on(table.userId, table.bookId, table.pageNumber),
+  ],
+);
 
+// ─── Favorite Books ───────────────────────────────────────────
 
+export const favoriteBooks = pgTable(
+  "favorite_books",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    bookId: text("book_id").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("idx_fav_user_book").on(table.userId, table.bookId),
+  ],
+);

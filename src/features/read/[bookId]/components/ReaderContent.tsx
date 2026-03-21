@@ -29,7 +29,6 @@ const ReaderContent = memo(function ReaderContent({
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "48px 24px",
       }}
     >
       <AnimatePresence mode="wait" initial={false}>

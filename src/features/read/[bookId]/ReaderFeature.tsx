@@ -16,6 +16,7 @@ import DictionaryPopup from "./components/DictionaryPopup";
 import useReaderController from "./hooks/useReaderController";
 import { useAuth } from "@/context/AuthContext";
 import type { BookData } from "@/lib/sample-books";
+import VisualizeButton from "./components/VisualizeButton";
 
 export default function ReaderFeature({ bookId }: { bookId: string }) {
   const sampleBook = useMemo(
@@ -108,9 +109,16 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                 </span>
               </div>
             </div>
-
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <ThemeButton />
+              <VisualizeButton 
+                    content={c.content} 
+                    bookTitle={c.bookTitle} 
+                    bookId={bookId} 
+                    currentPage={c.currentPage} 
+                    highlightedText={c.selectedText}
+                    isAuthenticated={isAuthenticated}
+              />  
                <button
                 className="btn-ghost"
                 onClick={() => c.setHighlightsSidebarOpen((o: boolean) => !o)}
@@ -145,6 +153,21 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
              
             </div>
           </div>
+
+          <ReaderNavigation
+            currentPage={c.currentPage}
+            totalPages={c.totalPages}
+            chatOpen={c.chatOpen}
+            highlightsSidebarOpen={c.highlightsSidebarOpen}
+            onPrev={c.goPrev}
+            onNext={c.goNext}
+            onJumpTo={c.jumpToPage}
+            content={c.content}
+            bookTitle={c.bookTitle}
+            bookId={bookId}
+            highlightedText={c.selectedText}
+            isAuthenticated={isAuthenticated}
+          />
 
           <ReaderContent
             content={c.content}

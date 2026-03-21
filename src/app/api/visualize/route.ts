@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { retrieveContext } from "@/lib/rag";
 import { verifySession } from "@/dal/verifySession";
+import { db } from "@/drizzle/db";
+import { sceneImages } from "@/drizzle/schema";
+import { and, eq } from "drizzle-orm";
 
 function sanitizePrompt(prompt: string): string {
   // Strip potentially flagged terms — customize as needed
@@ -52,6 +55,51 @@ async function generateWithSanitization(
 }
 
 
+// ── GET: Check for cached scene image ────────────────────────────────────
+export async function GET(req: NextRequest) {
+  try {
+    const session = await verifySession();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const bookId = searchParams.get("bookId");
+    const page = searchParams.get("page");
+
+    if (!bookId || !page) {
+      return NextResponse.json({ error: "Missing bookId or page" }, { status: 400 });
+    }
+
+    const existing = await db
+      .select()
+      .from(sceneImages)
+      .where(
+        and(
+          eq(sceneImages.userId, session.user.id),
+          eq(sceneImages.bookId, bookId),
+          eq(sceneImages.pageNumber, parseInt(page, 10))
+        )
+      )
+      .limit(1);
+
+    if (existing.length > 0) {
+      return NextResponse.json({
+        cached: true,
+        prompt: existing[0].prompt,
+        imageUrl: existing[0].imageUrl,
+      });
+    }
+
+    return NextResponse.json({ cached: false });
+  } catch (error) {
+    console.error("Scene image GET error:", error);
+    return NextResponse.json({ error: "Failed to check cache" }, { status: 500 });
+  }
+}
+
+
+// ── POST: Generate (or return cached) scene image ────────────────────────
 export async function POST(req: NextRequest) {
   try {
     // ── Auth guard ───────────────────────────────────────────────────────────
@@ -67,6 +115,30 @@ export async function POST(req: NextRequest) {
 
     if (!content && !highlightedText) {
       return NextResponse.json({ error: "No content or highlighted text provided" }, { status: 400 });
+    }
+
+    // ── Check for existing cached image ──────────────────────────────────────
+    if (bookId && currentPage != null) {
+      const existing = await db
+        .select()
+        .from(sceneImages)
+        .where(
+          and(
+            eq(sceneImages.userId, session.user.id),
+            eq(sceneImages.bookId, bookId),
+            eq(sceneImages.pageNumber, currentPage)
+          )
+        )
+        .limit(1);
+
+      if (existing.length > 0) {
+        return NextResponse.json({
+          cached: true,
+          prompt: existing[0].prompt,
+          imageUrl: existing[0].imageUrl,
+          success: true,
+        });
+      }
     }
 
     if (!process.env.OPENAI_API_KEY) {
@@ -147,6 +219,22 @@ ${content || highlightedText}`;
 
       if (!imageUrl) {
         throw new Error("GPT Image 1.5 returned no image data.");
+      }
+
+      // ── Save to database ──────────────────────────────────────────────────
+      if (bookId && currentPage != null) {
+        try {
+          await db.insert(sceneImages).values({
+            userId: session.user.id,
+            bookId,
+            pageNumber: currentPage,
+            imageUrl,
+            prompt: generatedPrompt,
+          });
+        } catch (dbError) {
+          // If unique constraint violation, the image already exists — that's fine
+          console.warn("Failed to save scene image (may already exist):", dbError);
+        }
       }
 
       return NextResponse.json({ 
