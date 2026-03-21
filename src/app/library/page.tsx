@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import PageMountSignaler from "@/components/PageMountSignaler";
 import { TransitionLink } from "@/components/TransitionLink";
 import Image from "next/image";
+import ReactMarkdown from "react-markdown";
 
 interface Book {
   id: string;
@@ -205,7 +206,7 @@ export default function LibraryPage() {
                       {book.author}
                     </p>
 
-                    <p
+                    <div
                       style={{
                         color: "var(--text-tertiary)",
                         fontSize: 13,
@@ -218,8 +219,14 @@ export default function LibraryPage() {
                         overflow: "hidden",
                       }}
                     >
-                      {book.description}
-                    </p>
+                      <ReactMarkdown
+                        components={{
+                          p: ({ node, ...props }) => <span {...props} />
+                        }}
+                      >
+                        {book.description.replace(/--/g, "—")}
+                      </ReactMarkdown>
+                    </div>
 
                     <div
                       style={{
