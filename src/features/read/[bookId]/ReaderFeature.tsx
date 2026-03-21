@@ -100,6 +100,20 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
 
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <ThemeButton />
+               <button
+                className="btn-ghost"
+                onClick={() => c.setHighlightsSidebarOpen((o: boolean) => !o)}
+                style={{
+                  padding: "6px 14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontSize: 13,
+                }}
+              >
+                <Highlighter size={14} />
+                Highlights
+              </button>
               {!c.chatOpen && (
                 <button
                   className="btn-ghost"
@@ -116,20 +130,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                   AI Chat
                 </button>
               )}
-              <button
-                className="btn-ghost"
-                onClick={() => c.setHighlightsSidebarOpen((o: boolean) => !o)}
-                style={{
-                  padding: "6px 14px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  fontSize: 13,
-                }}
-              >
-                <Highlighter size={14} />
-                Highlights
-              </button>
+             
             </div>
           </div>
 
