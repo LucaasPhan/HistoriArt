@@ -4,6 +4,7 @@ import { BookOpen, Sparkles } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeButton } from "./ThemeButton";
 import { TransitionLink } from "./TransitionLink";
+import UserMenu from "./UserMenu";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -71,11 +72,7 @@ export function Navbar() {
                 </span>
               </button>
             </TransitionLink>
-            <TransitionLink href="/login">
-              <button className="btn-primary" style={{ padding: "8px 20px", fontSize: 14 }}>
-                Sign In
-              </button>
-            </TransitionLink>
+            <UserMenu />
           </div>
         </div>
       </div>
