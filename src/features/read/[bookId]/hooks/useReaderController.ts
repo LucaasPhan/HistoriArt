@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { ConversationMode } from "@/lib/prompts";
 import { buildAssistantChatMessage, buildUserChatMessage, getChatStorageKey } from "../helpers";
 import type { ChatMessage, InteractionMode } from "../types";
@@ -51,8 +52,16 @@ export default function useReaderController({
   bookId,
   sampleBook,
 }: UseReaderControllerArgs) {
-  const [currentPage, setCurrentPage] = useState(1);
+  const searchParams = useSearchParams();
+  const initialPage = parseInt(searchParams.get("page") || "1", 10);
+  
+  const [currentPage, setCurrentPage] = useState(!isNaN(initialPage) && initialPage >= 1 ? initialPage : 1);
   const [chatOpen, setChatOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem(`last_page_${bookId}`, currentPage.toString());
+  }, [currentPage, bookId]);
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
