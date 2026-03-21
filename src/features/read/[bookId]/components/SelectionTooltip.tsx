@@ -1,8 +1,13 @@
-"use client";
-
 import React, { memo } from "react";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, MessageCircle, MoreVertical, Sparkles } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import type { InteractionMode } from "../types";
 
 type SelectionCoords = { x: number; y: number };
 
@@ -10,12 +15,16 @@ type SelectionTooltipProps = {
   selectionCoords: SelectionCoords | null;
   showCopied: boolean;
   onCopy: () => void;
+  onSendToChat: () => void;
+  interactionMode: InteractionMode;
 };
 
 const SelectionTooltip = memo(function SelectionTooltip({
   selectionCoords,
   showCopied,
   onCopy,
+  onSendToChat,
+  interactionMode,
 }: SelectionTooltipProps) {
   return (
     <AnimatePresence>
@@ -32,39 +41,66 @@ const SelectionTooltip = memo(function SelectionTooltip({
             zIndex: 100,
           }}
         >
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onCopy();
-            }}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "8px 14px",
-              borderRadius: "var(--radius-md)",
-              background: "var(--bg-secondary)",
-              border: "1px solid var(--border-subtle)",
-              boxShadow: "var(--shadow-lg)",
-              color: "var(--text-primary)",
-              fontSize: 13,
-              fontWeight: 500,
-              cursor: "pointer",
-              backdropFilter: "blur(12px)",
-            }}
-          >
-            {showCopied ? (
-              <>
-                <Check size={14} color="#10b981" />
-                <span>Copied!</span>
-              </>
-            ) : (
-              <>
-                <Copy size={14} />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "8px 14px",
+                  borderRadius: "var(--radius-md)",
+                  background: "var(--bg-secondary)",
+                  border: "1px solid var(--border-subtle)",
+                  boxShadow: "var(--shadow-lg)",
+                  color: "var(--text-primary)",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  backdropFilter: "blur(12px)",
+                }}
+              >
+                {showCopied ? (
+                  <>
+                    <Check size={14} color="#10b981" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={14} color="var(--accent-primary)" />
+                    <span>AI Buddy</span>
+                    <MoreVertical size={14} style={{ marginLeft: 4, opacity: 0.6 }} />
+                  </>
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="center"
+              className="bg-(--bg-secondary) border-(--border-subtle) text-(--text-primary) min-w-48 shadow-lg backdrop-blur-md flex flex-col gap-4 p-2!"
+            >
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCopy();
+                }}
+              >
+                <Copy size={14} className="mr-2" />
                 <span>Copy to Clipboard</span>
-              </>
-            )}
-          </button>
+              </DropdownMenuItem>
+              {interactionMode === "chat" && (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSendToChat();
+                  }}
+                >
+                  <MessageCircle size={14} className="mr-2" />
+                  <span>Send to AI Chat</span>
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <div
             style={{
               position: "absolute",
@@ -87,4 +123,5 @@ const SelectionTooltip = memo(function SelectionTooltip({
 SelectionTooltip.displayName = "SelectionTooltip";
 
 export default SelectionTooltip;
+
 

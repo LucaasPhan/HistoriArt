@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Sparkles, Home, Search, Settings as Cog } from "lucide-react";
+import { BookOpen, Sparkles, Search } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeButton } from "./ThemeButton";
 import { TransitionLink } from "./TransitionLink";

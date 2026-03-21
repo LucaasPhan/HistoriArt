@@ -31,6 +31,7 @@ type SpeechRecognitionLike = {
   stop: () => void;
   onresult: ((event: SpeechRecognitionEventLike) => void) | null;
   onend: (() => void) | null;
+  onerror: ((event: { error: string; message?: string }) => void) | null;
 };
 type SpeechRecognitionConstructorLike = new () => SpeechRecognitionLike;
 
@@ -325,6 +326,14 @@ export default function useReaderController({
 
   // Speech Recognition
   const startListening = useCallback(() => {
+    // Prevent mic conflicts by stopping TTS first
+    window.speechSynthesis.cancel();
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
+    }
+    setIsSpeaking(false);
+
     const w = window as unknown as {
       SpeechRecognition?: SpeechRecognitionConstructorLike;
       webkitSpeechRecognition?: SpeechRecognitionConstructorLike;
@@ -336,6 +345,14 @@ export default function useReaderController({
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = "en-US";
+
+    recognition.onerror = (event: { error: string; message?: string }) => {
+      console.error("Speech recognition error:", event.error);
+      if (event.error === "not-allowed") {
+        console.warn("Microphone access was denied.");
+      }
+      setIsListening(false);
+    };
 
     voiceTranscriptRef.current = "";
     setDictatedText("");

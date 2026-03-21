@@ -8,7 +8,12 @@ import {
   type ConversationMode,
 } from "@/lib/prompts";
 import { retrieveContext } from "@/lib/rag";
-import { ChatUserContext } from "@/drizzle/constants";
+import {
+  ChatUserContext,
+  Gender,
+  PurposeOfUse,
+  CommunicationPreference,
+} from "@/drizzle/constants";
 import { verifySession } from "@/dal/verifySession";
 import { db } from "@/drizzle/db";
 import { userProfiles } from "@/drizzle/schema";
@@ -50,10 +55,10 @@ export async function POST(req: NextRequest) {
         userProfile = {
           name: session.user.name || "Reader",
           age: profile.age,
-          gender: profile.gender as any,
-          purposeOfUse: profile.purposeOfUse as any,
+          gender: profile.gender as Gender,
+          purposeOfUse: profile.purposeOfUse as PurposeOfUse,
           customPurpose: profile.customPurpose,
-          communicationPreference: profile.communicationPreference as any,
+          communicationPreference: profile.communicationPreference as CommunicationPreference,
         };
       }
     }

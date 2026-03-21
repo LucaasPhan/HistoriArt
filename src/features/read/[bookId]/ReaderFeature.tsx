@@ -39,6 +39,13 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
           selectionCoords={c.selectionCoords}
           showCopied={c.showCopied}
           onCopy={c.copyToClipboard}
+          onSendToChat={() => {
+            c.setChatOpen(true);
+            const currentInput = c.input.trim();
+            const prefix = currentInput ? currentInput + " " : "";
+            c.setInput(`${prefix}"${c.selectedText}"`);
+          }}
+          interactionMode={c.interactionMode}
         />
 
         <div
