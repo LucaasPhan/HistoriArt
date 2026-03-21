@@ -121,60 +121,87 @@ const ChatSidebar = memo(function ChatSidebar({
       </div>
 
       <div className={styles.messagesContainer}>
-        {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`${styles.messageWrapper} ${
-              msg.role === "user" ? styles.messageWrapperUser : styles.messageWrapperAI
-            }`}
-          >
-            <div
-              className={`${
-                msg.role === "user" ? "chat-bubble-user" : "chat-bubble-ai"
-              } ${styles.chatBubble}`}
-            >
-              {msg.role === "assistant" ? (
-                <TypewriterText
-                  text={msg.content}
-                  messageIndex={i}
-                  finishedRef={typewriterFinishedRef}
-                  onUpdate={scrollToEnd}
-                  onFinished={() => {
-                    if (i === messages.length - 1) onLastMessageFinished();
-                  }}
-                />
-              ) : (
-                msg.content
-              )}
+        {!isAuthenticated ? (
+          <div className={styles.decorativeMessages}>
+            <div className={`${styles.messageWrapper} ${styles.messageWrapperUser}`}>
+              <div className={`chat-bubble-user ${styles.chatBubble} ${styles.blurText}`}>
+                Can you explain the main theme of this chapter?
+              </div>
+            </div>
+            <div className={`${styles.messageWrapper} ${styles.messageWrapperAI}`}>
+              <div className={`chat-bubble-ai ${styles.chatBubble} ${styles.blurText}`}>
+                The main themes revolve around the struggle for power and the consequences of ambition, as seen through the protagonist&apos;s choices and the overarching political landscape described in these pages.
+              </div>
+            </div>
+            <div className={`${styles.messageWrapper} ${styles.messageWrapperUser}`}>
+              <div className={`chat-bubble-user ${styles.chatBubble} ${styles.blurText}`}>
+                What about the character development? How does it progress?
+              </div>
+            </div>
+            <div className={`${styles.messageWrapper} ${styles.messageWrapperAI}`}>
+              <div className={`chat-bubble-ai ${styles.chatBubble} ${styles.blurText}`}>
+                The protagonist undergoes significant growth, transitioning from a naive observer to a central figure who must navigate complex moral dilemmas.
+              </div>
             </div>
           </div>
-        ))}
-
-        {(dictatedText || interimTranscript) && (
-          <div className={styles.dictationContainer}>
-            <div
-              className={`chat-bubble-user ${styles.dictationBubble}`}
-            >
-              {dictatedText}
-              {interimTranscript}...
-            </div>
-          </div>
-        )}
-
-        {isLoading && (
-          <div
-            className={`chat-bubble-ai ${styles.loadingContainer}`}
-          >
-            {[0, 0.2, 0.4].map((d, i) => (
-              <span
+        ) : (
+          <>
+            {messages.map((msg, i) => (
+              <div
                 key={i}
-                className={`voice-breathe ${styles.loadingDot}`}
-                style={{
-                  animationDelay: `${d}s`,
-                }}
-              />
+                className={`${styles.messageWrapper} ${
+                  msg.role === "user" ? styles.messageWrapperUser : styles.messageWrapperAI
+                }`}
+              >
+                <div
+                  className={`${
+                    msg.role === "user" ? "chat-bubble-user" : "chat-bubble-ai"
+                  } ${styles.chatBubble}`}
+                >
+                  {msg.role === "assistant" ? (
+                    <TypewriterText
+                      text={msg.content}
+                      messageIndex={i}
+                      finishedRef={typewriterFinishedRef}
+                      onUpdate={scrollToEnd}
+                      onFinished={() => {
+                        if (i === messages.length - 1) onLastMessageFinished();
+                      }}
+                    />
+                  ) : (
+                    msg.content
+                  )}
+                </div>
+              </div>
             ))}
-          </div>
+
+            {(dictatedText || interimTranscript) && (
+              <div className={styles.dictationContainer}>
+                <div
+                  className={`chat-bubble-user ${styles.dictationBubble}`}
+                >
+                  {dictatedText}
+                  {interimTranscript}...
+                </div>
+              </div>
+            )}
+
+            {isLoading && (
+              <div
+                className={`chat-bubble-ai ${styles.loadingContainer}`}
+              >
+                {[0, 0.2, 0.4].map((d, i) => (
+                  <span
+                    key={i}
+                    className={`voice-breathe ${styles.loadingDot}`}
+                    style={{
+                      animationDelay: `${d}s`,
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
 
         <div ref={chatEndRef} />

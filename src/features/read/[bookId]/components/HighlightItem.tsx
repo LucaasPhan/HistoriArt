@@ -1,5 +1,5 @@
-import React from "react";
-import { MessageCircle, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import { MessageCircle, Trash2, GripVertical } from "lucide-react";
 import { Highlight } from "./HighlightsSidebar";
 
 type HighlightItemProps = {
@@ -15,9 +15,13 @@ export function HighlightItem({
   onSendToChat,
   onNavigate,
 }: HighlightItemProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <div
       onClick={() => onNavigate?.(highlight.pageNumber)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className="highlight-item"
       style={{
         background: "var(--bg-tertiary)",
@@ -27,7 +31,7 @@ export function HighlightItem({
         display: "flex",
         flexDirection: "column",
         gap: 8,
-        cursor: "var(--cursor-pointer)",
+        cursor: "var(--cursor-pointer)", // changed to grab when dragging?
         transition: "all 0.2s ease",
       }}
     >
@@ -41,6 +45,19 @@ export function HighlightItem({
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div
             style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              opacity: isHovered ? 0.6 : 0.2,
+              transition: "opacity 0.2s ease",
+              cursor: "grab",
+              marginLeft: -4,
+            }}
+          >
+            <GripVertical size={14} color="var(--text-tertiary)" />
+          </div>
+          <div
+            style={{
               width: 12,
               height: 12,
               borderRadius: "50%",
@@ -50,7 +67,8 @@ export function HighlightItem({
           />
           <span
             style={{
-              fontSize: 12,
+              marginTop: "3px",
+              fontSize: 10,
               color: "var(--text-tertiary)",
               fontWeight: 500,
             }}
