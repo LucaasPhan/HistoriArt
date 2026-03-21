@@ -79,7 +79,7 @@ const ReaderContent = memo(function ReaderContent({
                       if (partIndex < parts.length - 1) {
                         newElements.push(
                           <mark
-                            key={`${i}-${index}-${partIndex}`}
+                            key={`${h.id}-${i}-${index}-${partIndex}`}
                             style={{
                               backgroundColor: h.color,
                               color: "#000",

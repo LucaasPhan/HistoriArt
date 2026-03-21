@@ -83,7 +83,7 @@ const ChatSidebar = memo(function ChatSidebar({
         <div className={styles.headerSubtitle}>
           <Sparkles size={16} color="var(--accent-primary)" />
           <span className={styles.aiCompanionLabel}>
-            AI Companion
+            Fable
           </span>
 
           <AnimatePresence>
@@ -222,7 +222,7 @@ const ChatSidebar = memo(function ChatSidebar({
           >
             <Sparkles size={28} color="var(--accent-primary)" />
           </motion.div>
-          <p className={styles.signInHeading}>Unlock AI Companion</p>
+          <p className={styles.signInHeading}>Unlock Fable</p>
           <p className={styles.signInText}>
             Sign in to chat, ask questions, and explore your books with AI
           </p>

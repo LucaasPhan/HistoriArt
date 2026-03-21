@@ -24,11 +24,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LitAI — Your Personal Book Companion",
+  title: "LitCompanion — Your Personal Book Companion",
   description:
-    "Upload any book. Talk to it naturally. LitAI is a voice-first reading companion that remembers every word and brings literature to life.",
+    "Upload any book. Talk to it naturally. LitCompanion is a voice-first reading companion that remembers every word and brings literature to life.",
   openGraph: {
-    title: "LitAI — Your Personal Book Companion",
+    title: "LitCompanion — Your Personal Book Companion",
     description:
       "A voice-first reading companion that remembers every word of your book.",
     type: "website",

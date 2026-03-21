@@ -129,7 +129,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                   }}
                 >
                   <MessageCircle size={14} />
-                  AI Chat
+                  Fable Chat
                 </button>
               )}
              
@@ -149,6 +149,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             currentPage={c.currentPage}
             totalPages={c.totalPages}
             chatOpen={c.chatOpen}
+            highlightsSidebarOpen={c.highlightsSidebarOpen}
             onPrev={c.goPrev}
             onNext={c.goNext}
             onJumpTo={c.jumpToPage}
@@ -163,6 +164,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
         <AnimatePresence>
           {c.chatOpen && (
             <ChatSidebar
+              key="chat-sidebar"
               interactionMode={c.interactionMode}
               chatEndRef={c.chatEndRef}
               messages={c.messages}
@@ -188,6 +190,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
           )}
           {c.highlightsSidebarOpen && (
             <HighlightsSidebar
+              key="highlights-sidebar"
               highlights={c.highlights}
               onClose={() => c.setHighlightsSidebarOpen(false)}
               onDeleteHighlight={c.onDeleteHighlight}

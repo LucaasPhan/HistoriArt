@@ -7,6 +7,7 @@ type ReaderNavigationProps = {
   currentPage: number;
   totalPages: number;
   chatOpen: boolean;
+  highlightsSidebarOpen: boolean;
   onPrev: () => void;
   onNext: () => void;
   onJumpTo: (page: number) => void;
@@ -23,7 +24,8 @@ const ReaderNavigation = memo(function ReaderNavigation({
   currentPage,
   totalPages,
   chatOpen,
-   onPrev,
+  highlightsSidebarOpen,
+  onPrev,
   onNext,
   onJumpTo,
   content,
@@ -76,6 +78,10 @@ const ReaderNavigation = memo(function ReaderNavigation({
           if (currentPage > 1) onPrev();
         }}
         className={`nav-zone nav-zone-left ${currentPage <= 1 ? "disabled" : ""}`}
+        style={{ 
+          left: highlightsSidebarOpen ? 320 : 0,
+          transition: "left 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
+        }}
         aria-label="Previous Page"
       >
         <ChevronLeft size={48} style={{ opacity: 0.4 }} />
@@ -87,7 +93,10 @@ const ReaderNavigation = memo(function ReaderNavigation({
         className={`nav-zone nav-zone-right ${
           currentPage >= totalPages ? "disabled" : ""
         }`}
-        style={{ right: chatOpen ? 380 : 0 }}
+        style={{ 
+          right: chatOpen ? 380 : 0,
+          transition: "right 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
+        }}
         aria-label="Next Page"
       >
         <ChevronRight size={48} style={{ opacity: 0.4 }} />

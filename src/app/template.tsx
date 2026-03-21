@@ -22,7 +22,7 @@ export const LogoLoading = ({
     >
       <div className="flex flex-col items-center justify-center gap-4 p-[20px]" ref={logoRef}>
         <p className="text-xs font-semibold tracking-[0.2em] text-white/80 uppercase md:text-sm">
-          Lit Companion
+          LitCompanion
         </p>
 
         <div className="relative mt-2 h-px w-24 overflow-hidden bg-white/20">

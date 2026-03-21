@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { X, ChevronDown, Check } from "lucide-react";
 import { HighlightItem } from "./HighlightItem";
-
+import styles from "./HighlightsSidebar.module.css";
 
 export type Highlight = {
   id: string;
@@ -22,10 +22,10 @@ type HighlightsSidebarProps = {
   onNavigate?: (pageNumber: number) => void;
 };
 
-function CustomFilterDropdown({ value, onChange }: { value: "desc" | "asc" | "custom", onChange: (val: "desc" | "asc") => void }) {
+function CustomFilterDropdown({ value, onChange, bookId }: { value: "desc" | "asc" | "custom", onChange: (val: "desc" | "asc") => void, bookId: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -37,23 +37,15 @@ function CustomFilterDropdown({ value, onChange }: { value: "desc" | "asc" | "cu
   }, []);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className={styles.dropdownContainer} ref={dropdownRef}>
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between gap-2 px-3! transition-all duration-200 hover:bg-(--bg-secondary) hover:text-(--text-primary) hover:border-(--text-secondary)"
-        style={{
-          width: 140,
-          height: 32,
-          background: "var(--bg-card)",
-          border: "1px solid var(--border-subtle)",
-          borderRadius: "var(--radius-full)",
-          color: "var(--text-secondary)",
-          fontSize: 13,
-          fontWeight: 500,
-          boxShadow: "var(--shadow-card)",
-        }}
+        className={styles.dropdownTrigger}
       >
-        <span>{value === "desc" ? "Newest First" : value === "asc" ? "Oldest First" : "Custom Order"}</span>
+        <span>
+          {value === "desc" ? "Newest First" : value === "asc" ? "Oldest First" : "Custom Order"}
+        </span>
         <ChevronDown size={14} className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
@@ -64,18 +56,9 @@ function CustomFilterDropdown({ value, onChange }: { value: "desc" | "asc" | "cu
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -5, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute right-0 top-full mt-2 z-1050 overflow-hidden"
-            style={{
-              width: 140,
-              background: "var(--bg-glass)",
-              backdropFilter: "blur(16px)",
-              WebkitBackdropFilter: "blur(16px)",
-              border: "1px solid var(--border-subtle)",
-              borderRadius: "var(--radius-md)",
-              boxShadow: "var(--shadow-card)",
-            }}
+            className={styles.dropdownMenu + " nav-glass"}
           >
-            <div className="flex flex-col p-1">
+            <div className="flex flex-col">
               {[
                 { label: "Newest First", val: "desc" },
                 { label: "Oldest First", val: "asc" }
@@ -83,12 +66,7 @@ function CustomFilterDropdown({ value, onChange }: { value: "desc" | "asc" | "cu
                 <button
                   key={item.val}
                   onClick={() => { onChange(item.val as "desc" | "asc"); setIsOpen(false); }}
-                  className="flex items-center justify-between w-full px-2! py-1.5! text-left transition-colors duration-150 rounded-sm text-[13px] cursor-pointer hover:bg-(--bg-secondary) hover:text-(--text-primary)"
-                  style={{
-                    color: value === item.val ? "var(--text-primary)" : "var(--text-secondary)",
-                    backgroundColor: value === item.val ? "var(--bg-secondary)" : "transparent",
-                    fontWeight: value === item.val ? 500 : 400,
-                  }}
+                  className={`${styles.dropdownItem} ${value === item.val ? styles.dropdownItemActive : ""}`}
                 >
                   {item.label}
                   {value === item.val && <Check size={14} className="text-(--text-primary)" />}
@@ -155,52 +133,31 @@ export default function HighlightsSidebar({
 
   return (
     <motion.div
-      initial={{ x: -250, opacity: 0 }}
+      initial={{ x: -320, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      exit={{ x: -250, opacity: 0 }}
+      exit={{ x: -320, opacity: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="nav-glass"
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        height: "100vh",
-        width: 320,
-        borderRight: "1px solid var(--border-subtle)",
-        display: "flex",
-        flexDirection: "column",
-        zIndex: 1000,
-        padding: "24px 6px",
-      }}
+      className={styles.container}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 24,
-          gap: 12,
-        }}
-      >
-        <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>Highlights</h2>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Highlights</h2>
+        <div className={styles.headerControls}>
           <CustomFilterDropdown
             value={detectedOrder}
             onChange={handleSortChange}
           />
           <button
             onClick={onClose}
-            className="btn-ghost"
-            style={{ padding: 4, borderRadius: "50%" }}
+            className={styles.closeButton}
           >
             <X size={18} />
           </button>
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 12 , padding: "0 10px" }}>
+      <div className={styles.content}>
         {orderedHighlights.length === 0 ? (
-          <p style={{ color: "var(--text-tertiary)", fontSize: 14, textAlign: "center", marginTop: 40 }}>
+          <p className={styles.emptyState}>
             No highlights yet. Select text in the book to add some!
           </p>
         ) : (
