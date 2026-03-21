@@ -11,6 +11,7 @@ export const GoogleSignInButton = memo(() => {
     try {
       const response = await authClient.signIn.social({
         provider: "google",
+        callbackURL: "/library",
       });
       if (response.error?.message) {
         setError("An unknown error occurred");

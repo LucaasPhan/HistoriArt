@@ -641,6 +641,11 @@ export default function useReaderController({
     typewriterFinishedRef,
     onStopResponse: handleStopResponse,
     onSendMessage: handleSendMessage,
+    onClearChat: useCallback(() => {
+      setMessages([]);
+      localStorage.removeItem(getChatStorageKey(bookId));
+      toast.success("Chat history cleared");
+    }, [bookId]),
 
     // Voice
     toggleVoice,
@@ -657,6 +662,10 @@ export default function useReaderController({
     setHighlightsSidebarOpen,
     onHighlight: handleHighlight,
     onDeleteHighlight: handleDeleteHighlight,
+    onClearAllHighlights: useCallback(() => {
+      setHighlights([]);
+      toast.success("All highlights removed");
+    }, []),
 
     // For ChatSidebar
     onInputChange: setInput,

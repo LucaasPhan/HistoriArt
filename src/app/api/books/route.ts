@@ -3,17 +3,37 @@ import { SAMPLE_BOOKS } from "@/lib/sample-books";
 import { db } from "@/drizzle/db";
 import { books } from "@/drizzle/schema";
 import { bookChunks } from "@/drizzle/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
+import { verifySession } from "@/dal/verifySession";
 import { fetchAndPaginateGutenbergBook } from "@/lib/gutenberg";
 
 export async function GET() {
   try {
-    // Fetch books from the database
+    const session = await verifySession();
+    const userId = session?.user?.id;
+
+    // Sample books are always visible
+    const sampleBooksMapped = SAMPLE_BOOKS.map((b) => ({
+      id: b.id,
+      title: b.title,
+      author: b.author,
+      description: b.description,
+      coverUrl: null as string | null,
+      coverGradient: b.coverGradient,
+      totalPages: b.totalPages,
+      fileName: null,
+    }));
+
+    // Only fetch user's own DB books if authenticated
+    if (!userId) {
+      return NextResponse.json({ books: sampleBooksMapped });
+    }
+
     const dbBooks = await db.query.books.findMany({
+      where: eq(books.userId, userId),
       orderBy: (books, { desc }) => [desc(books.createdAt)],
     });
 
-    // Combine DB books with sample books
     const allBooks = [
       ...dbBooks.map((b) => ({
         id: b.id,
@@ -23,18 +43,10 @@ export async function GET() {
         coverUrl: b.coverUrl || null,
         coverGradient: ["#667eea", "#764ba2"] as [string, string],
         totalPages: b.totalPages,
+        totalChunks: b.totalChunks,
         fileName: b.fileName,
       })),
-      ...SAMPLE_BOOKS.map((b) => ({
-        id: b.id,
-        title: b.title,
-        author: b.author,
-        description: b.description,
-        coverUrl: null as string | null,
-        coverGradient: b.coverGradient,
-        totalPages: b.totalPages,
-        fileName: null,
-      })),
+      ...sampleBooksMapped,
     ];
 
     return NextResponse.json({ books: allBooks });
@@ -56,13 +68,19 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await verifySession();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = session.user.id;
+
     const body = await request.json();
     let { title, author, coverUrl, description, totalPages, gutenbergId, pages } = body;
 
     // Check if this Gutenberg book was already added
     if (gutenbergId) {
       const existing = await db.query.books.findFirst({
-        where: eq(books.fileName, `gutenberg-${gutenbergId}`),
+        where: and(eq(books.fileName, `gutenberg-${gutenbergId}`), eq(books.userId, userId)),
       });
 
       if (existing) {
@@ -89,6 +107,7 @@ export async function POST(request: NextRequest) {
           description: description || null,
           totalPages: totalPages || 0,
           totalChunks: 0, // 0 = Processing
+          userId,
         })
         .returning({ id: books.id });
 
@@ -148,7 +167,7 @@ export async function POST(request: NextRequest) {
     // Check if this Gutenberg book was already added
     if (gutenbergId) {
       const existing = await db.query.books.findFirst({
-        where: eq(books.fileName, `gutenberg-${gutenbergId}`),
+        where: and(eq(books.fileName, `gutenberg-${gutenbergId}`), eq(books.userId, userId)),
       });
 
       if (existing) {
@@ -171,6 +190,7 @@ export async function POST(request: NextRequest) {
         description: description || null,
         totalPages,
         totalChunks: totalPages,
+        userId,
       })
       .returning({ id: books.id });
 
@@ -208,19 +228,24 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const session = await verifySession();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { bookId } = await request.json();
     if (!bookId) {
       return NextResponse.json({ error: "Missing bookId" }, { status: 400 });
     }
 
-    // Check the book exists in DB (sample books can't be deleted)
+    // Check the book exists in DB and belongs to the current user
     const existing = await db.query.books.findFirst({
-      where: eq(books.id, bookId),
+      where: and(eq(books.id, bookId), eq(books.userId, session.user.id)),
     });
 
     if (!existing) {
       return NextResponse.json(
-        { error: "Book not found in database. Sample books cannot be deleted." },
+        { error: "Book not found or you don't have permission to delete it." },
         { status: 404 },
       );
     }

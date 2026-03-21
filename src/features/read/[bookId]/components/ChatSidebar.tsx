@@ -10,6 +10,7 @@ import {
   X,
   ArrowUp,
   LogIn,
+  Trash2,
 } from "lucide-react";
 import type { ChatMessage, InteractionMode } from "../types";
 import TypewriterText from "./TypewriterText";
@@ -39,6 +40,7 @@ type ChatSidebarProps = {
 
   onClose: () => void;
   onToggleVoice: () => void;
+  onClearChat?: () => void;
 
   onLastMessageFinished: () => void;
   scrollToEnd: () => void;
@@ -71,7 +73,10 @@ const ChatSidebar = memo(function ChatSidebar({
   modeSwitchMode,
   onModeSwitchChange,
   isAuthenticated = true,
+  onClearChat,
 }: ChatSidebarProps) {
+  const [showConfirm, setShowConfirm] = React.useState(false);
+
   return (
     <motion.div
       initial={{ x: 380 }}
@@ -112,12 +117,23 @@ const ChatSidebar = memo(function ChatSidebar({
           </AnimatePresence>
         </div>
 
-        <button
-          onClick={onClose}
-          className={styles.closeButton}
-        >
-          <X size={18} />
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {messages.length > 0 && onClearChat && (
+            <button
+              onClick={() => setShowConfirm(true)}
+              className={styles.closeButton}
+              title="Clear Chat History"
+            >
+              <Trash2 size={16} color="var(--text-secondary)" />
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className={styles.closeButton}
+          >
+            <X size={18} />
+          </button>
+        </div>
       </div>
 
       <div className={styles.messagesContainer}>
@@ -355,6 +371,75 @@ const ChatSidebar = memo(function ChatSidebar({
           </div>
         </>
       )}
+
+      {/* Custom Confirmation Modal */}
+      <AnimatePresence>
+        {showConfirm && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "rgba(0,0,0,0.5)",
+              backdropFilter: "blur(2px)",
+              zIndex: 500,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 24,
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              style={{
+                background: "var(--bg-card)",
+                borderRadius: "var(--radius-lg)",
+                padding: 24,
+                boxShadow: "var(--shadow-elevated)",
+                border: "1px solid var(--border-subtle)",
+                width: "100%",
+                maxWidth: 320,
+              }}
+            >
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)", marginBottom: 8 }}>
+                Clear Chat History
+              </h3>
+              <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 24 }}>
+                Are you sure you want to delete all messages? This action cannot be undone.
+              </p>
+              <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
+                <button
+                  onClick={() => setShowConfirm(false)}
+                  className="btn-ghost"
+                  style={{ padding: "8px 16px", fontSize: 13 }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    setShowConfirm(false);
+                    onClearChat?.();
+                  }}
+                  style={{
+                    padding: "8px 16px",
+                    fontSize: 13,
+                    background: "#ef4444",
+                    color: "white",
+                    borderRadius: "var(--radius-md)",
+                    border: "none",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Clear Chat
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 });

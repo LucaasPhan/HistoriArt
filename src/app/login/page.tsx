@@ -88,19 +88,6 @@ export default function LoginPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <GoogleSignInButton />
         </div>
-
-        <div style={{ marginTop: 24, textAlign: "center" }}>
-          <TransitionLink
-            href="/library"
-            style={{
-              fontSize: 13,
-              color: "var(--text-tertiary)",
-              textDecoration: "none",
-            }}
-          >
-            Skip for now → Browse Library
-          </TransitionLink>
-        </div>
       </motion.div>
     </div>
     <PageMountSignaler/></>

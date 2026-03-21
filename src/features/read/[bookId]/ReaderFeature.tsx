@@ -212,6 +212,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               onInputChange={c.onInputChange}
               onSubmitChat={() => c.onSendMessage()}
               onStopResponse={c.onStopResponse}
+              onClearChat={c.onClearChat}
               onClose={() => c.setChatOpen(false)}
               onToggleVoice={c.toggleVoice}
               onLastMessageFinished={c.onLastMessageFinished}
@@ -227,6 +228,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               highlights={c.highlights}
               onClose={() => c.setHighlightsSidebarOpen(false)}
               onDeleteHighlight={c.onDeleteHighlight}
+              onClearAll={c.onClearAllHighlights}
               onSendToChat={(text) => {
                 c.setChatOpen(true);
                 const currentInput = c.input.trim();

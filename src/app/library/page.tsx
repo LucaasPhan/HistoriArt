@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Clock, Star, Plus, Sparkles, Heart, Link2, Clipboard, Trash2, BookOpen, ExternalLink, AlertTriangle } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { Clock, Star, Plus, Sparkles, Heart, Link2, Clipboard, Trash2, BookOpen, ExternalLink, AlertTriangle, Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -37,6 +37,7 @@ interface Book {
   coverUrl?: string | null;
   coverGradient: [string, string];
   totalPages: number;
+  totalChunks?: number;
   fileName?: string | null;
 }
 
@@ -66,6 +67,33 @@ export default function LibraryPage() {
   });
 
   const books = booksData?.books ?? [];
+
+  // Auto-poll every 5s while any book is still processing
+  const hasProcessingBooks = useMemo(
+    () => books.some((b) => b.fileName && b.totalChunks === 0),
+    [books],
+  );
+
+  useQuery({
+    queryKey: ["books-poll"],
+    queryFn: async (): Promise<BooksResponse> => {
+      const res = await fetch("/api/books");
+      if (!res.ok) throw new Error("poll failed");
+      const data = (await res.json()) as BooksResponse;
+      // Sync the main cache
+      queryClient.setQueryData(["books"], data);
+      return data;
+    },
+    enabled: hasProcessingBooks,
+    refetchInterval: hasProcessingBooks ? 5000 : false,
+  });
+
+  const isProcessing = useCallback(
+    (book: Book) => !!book.fileName && (book.totalChunks === 0 || book.totalChunks === undefined),
+    [],
+  );
+
+
 
   // ── Favorites ──────────────────────────────────────────────────────────
   const { data: favoritesData } = useQuery({
@@ -167,6 +195,7 @@ export default function LibraryPage() {
     const cardId = isContinue ? `continue-${book.id}` : book.id;
     const href = isContinue ? `/read/${book.id}?page=${lastPages[book.id]}` : `/read/${book.id}?page=1`;
     const isFav = favoriteIds.has(book.id);
+    const processing = isProcessing(book);
 
     return (
       <ContextMenu key={cardId}>
@@ -180,7 +209,7 @@ export default function LibraryPage() {
             whileHover={{ y: -8 }}
             style={{ height: "100%" }}
           >
-            <TransitionLink href={href} className="no-underline">
+            <TransitionLink href={processing ? "#" : href} className="no-underline" onClick={processing ? (e: React.MouseEvent) => e.preventDefault() : undefined} style={processing ? { cursor: "default" } : undefined}>
               <div className="book-card" style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden", borderRadius: "var(--radius-lg)", background: "var(--bg-card)", boxShadow: "var(--shadow-card)", transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)", position: "relative" }}>
                 {/* Favorite badge */}
                 <AnimatePresence>
@@ -249,6 +278,41 @@ export default function LibraryPage() {
                       />
                       <Sparkles size={40} color="rgba(255,255,255,0.85)" />
                     </>
+                  )}
+
+                  {/* Processing overlay */}
+                  {processing && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        background: "rgba(0,0,0,0.55)",
+                        backdropFilter: "blur(4px)",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 8,
+                        zIndex: 5,
+                      }}
+                    >
+                      <Loader2
+                        size={28}
+                        color="white"
+                        style={{ animation: "spin 1.2s linear infinite" }}
+                      />
+                      <span
+                        style={{
+                          color: "white",
+                          fontSize: 12,
+                          fontWeight: 600,
+                          letterSpacing: "0.03em",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        Downloading…
+                      </span>
+                    </div>
                   )}
                 </motion.div>
 
@@ -321,14 +385,23 @@ export default function LibraryPage() {
                         color: "var(--text-tertiary)",
                       }}
                     >
-                      <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                        <Clock size={12} />
-                        {book.totalPages}p
-                      </span>
-                      <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                        <Star size={12} fill="var(--accent-primary)" stroke="var(--accent-primary)" />
-                        4.8
-                      </span>
+                      {processing ? (
+                        <span style={{ display: "flex", alignItems: "center", gap: 4, color: "var(--accent-primary)", fontWeight: 600 }}>
+                          <Loader2 size={12} style={{ animation: "spin 1.2s linear infinite" }} />
+                          Processing…
+                        </span>
+                      ) : (
+                        <>
+                          <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                            <Clock size={12} />
+                            {book.totalPages}p
+                          </span>
+                          <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                            <Star size={12} fill="var(--accent-primary)" stroke="var(--accent-primary)" />
+                            4.8
+                          </span>
+                        </>
+                      )}
                     </div>
 
                     {isContinue ? (

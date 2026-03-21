@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
-import { X, ChevronDown, Check } from "lucide-react";
+import { X, ChevronDown, Check, Trash2 } from "lucide-react";
 import { HighlightItem } from "./HighlightItem";
 import styles from "./HighlightsSidebar.module.css";
 
@@ -18,6 +18,7 @@ type HighlightsSidebarProps = {
   highlights: Highlight[];
   onClose: () => void;
   onDeleteHighlight?: (id: string) => void;
+  onClearAll?: () => void;
   onSendToChat?: (text: string) => void;
   onNavigate?: (pageNumber: number) => void;
 };
@@ -84,6 +85,7 @@ export default function HighlightsSidebar({
   highlights,
   onClose,
   onDeleteHighlight,
+  onClearAll,
   onSendToChat,
   onNavigate,
 }: HighlightsSidebarProps) {
@@ -131,6 +133,8 @@ export default function HighlightsSidebar({
     return "custom";
   }, [orderedHighlights, sortOrder]);
 
+  const [showConfirm, setShowConfirm] = useState(false);
+
   return (
     <motion.div
       initial={{ x: -320, opacity: 0 }}
@@ -142,6 +146,7 @@ export default function HighlightsSidebar({
       <div className={styles.header}>
         <h2 className={styles.title}>Highlights</h2>
         <div className={styles.headerControls}>
+
           <CustomFilterDropdown
             value={detectedOrder}
             onChange={handleSortChange}
@@ -180,6 +185,94 @@ export default function HighlightsSidebar({
           </Reorder.Group>
         )}
       </div>
+
+      {highlights.length > 0 && onClearAll && (
+        <div style={{ padding: "16px", display: "flex", justifyContent: "flex-end", borderTop: "1px solid var(--border-subtle)", marginTop: "auto" }}>
+          <button
+            onClick={() => setShowConfirm(true)}
+            className="btn-secondary"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: 13,
+            }}
+            title="Clear All Highlights"
+          >
+            <Trash2 size={14} />
+            Clear All
+          </button>
+        </div>
+      )}
+
+      {/* Custom Confirmation Modal */}
+      <AnimatePresence>
+        {showConfirm && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "rgba(0,0,0,0.5)",
+              backdropFilter: "blur(2px)",
+              zIndex: 50,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 24,
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              style={{
+                background: "var(--bg-card)",
+                borderRadius: "var(--radius-lg)",
+                padding: 24,
+                boxShadow: "var(--shadow-elevated)",
+                border: "1px solid var(--border-subtle)",
+                width: "100%",
+                maxWidth: 320,
+              }}
+            >
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)", marginBottom: 8 }}>
+                Clear All Highlights
+              </h3>
+              <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 24 }}>
+                Are you sure you want to delete all highlights in this book? This action cannot be undone.
+              </p>
+              <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
+                <button
+                  onClick={() => setShowConfirm(false)}
+                  className="btn-ghost"
+                  style={{ padding: "8px 16px", fontSize: 13 }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    setShowConfirm(false);
+                    onClearAll?.();
+                  }}
+                  style={{
+                    padding: "8px 16px",
+                    fontSize: 13,
+                    background: "#ef4444",
+                    color: "white",
+                    borderRadius: "var(--radius-md)",
+                    border: "none",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Delete All
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

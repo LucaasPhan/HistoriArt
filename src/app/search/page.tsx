@@ -13,10 +13,13 @@ import {
   AlertCircle,
   Library,
   X,
+  LogIn,
 } from "lucide-react";
 import PageMountSignaler from "@/components/PageMountSignaler";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 interface SearchResult {
   gutenbergId: number;
@@ -38,6 +41,7 @@ interface SearchResponse {
 type AddingState = "idle" | "fetching" | "saving" | "done" | "error";
 
 export default function SearchPage() {
+  const { data: session } = authClient.useSession();
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [addingBooks, setAddingBooks] = useState<
@@ -46,6 +50,7 @@ export default function SearchPage() {
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const router = useRouter();
+  const isLoggedIn = !!session?.user;
 
   const hasSearched = debouncedQuery.trim().length > 0;
 
@@ -173,6 +178,11 @@ export default function SearchPage() {
 
   // Add book to library
   const addToLibrary = async (book: SearchResult) => {
+    if (!isLoggedIn) {
+      toast.error("Sign in to add books to your library.");
+      return;
+    }
+
     setAddingBooks((prev) => ({
       ...prev,
       [book.gutenbergId]: { state: "fetching" },
@@ -613,11 +623,7 @@ export default function SearchPage() {
                       <div style={{ marginTop: "auto" }}>
                         {addingBooks[book.gutenbergId]?.state === "done" ? (
                           <button
-                            onClick={() =>
-                              router.push(
-                                `/read/${addingBooks[book.gutenbergId].bookId}`
-                              )
-                            }
+                            onClick={() => router.push("/library")}
                             style={{
                               width: "100%",
                               padding: "10px 16px",
@@ -636,7 +642,30 @@ export default function SearchPage() {
                             }}
                           >
                             <Library size={14} />
-                            Open in Reader
+                            Open in Library
+                          </button>
+                        ) : !isLoggedIn ? (
+                          <button
+                            onClick={() => toast.error("Sign in to add books to your library.")}
+                            style={{
+                              width: "100%",
+                              padding: "10px 16px",
+                              background: "var(--bg-tertiary)",
+                              color: "var(--text-secondary)",
+                              border: "1px solid var(--border-subtle)",
+                              borderRadius: "var(--radius-md)",
+                              fontSize: 13,
+                              fontWeight: 600,
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              gap: 8,
+                              transition: "0.3s ease",
+                            }}
+                          >
+                            <LogIn size={14} />
+                            Sign in to Add
                           </button>
                         ) : (
                           <button
