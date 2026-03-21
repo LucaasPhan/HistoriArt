@@ -2,11 +2,13 @@
 
 import React, { memo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import type { Highlight } from "./HighlightsSidebar";
 
 type ReaderContentProps = {
   content: string;
   currentPage: number;
   pageDirection: "next" | "prev";
+  highlights: Highlight[];
   onMouseUp: () => void;
   onDoubleClick: () => void;
 };
@@ -15,6 +17,7 @@ const ReaderContent = memo(function ReaderContent({
   content,
   currentPage,
   pageDirection,
+  highlights,
   onMouseUp,
   onDoubleClick,
 }: ReaderContentProps) {
@@ -60,14 +63,52 @@ const ReaderContent = memo(function ReaderContent({
             Page {currentPage}
           </div>
           <div className="reading-text">
-            {content.split("\n\n").map((paragraph, i) => (
-              <p
-                key={i}
-                style={{ marginBottom: 20, textIndent: i > 0 ? "2em" : 0 }}
-              >
-                {paragraph}
-              </p>
-            ))}
+            {content.split("\n\n").map((paragraph, i) => {
+              let elements: (string | React.ReactNode)[] = [paragraph];
+              
+              highlights.forEach((h) => {
+                const searchString = h.text;
+                if (!searchString) return;
+                
+                const newElements: (string | React.ReactNode)[] = [];
+                elements.forEach((el, index) => {
+                  if (typeof el === "string") {
+                    const parts = el.split(searchString);
+                    parts.forEach((part, partIndex) => {
+                      newElements.push(part);
+                      if (partIndex < parts.length - 1) {
+                        newElements.push(
+                          <mark
+                            key={`${i}-${index}-${partIndex}`}
+                            style={{
+                              backgroundColor: h.color,
+                              color: "#000",
+                              padding: "2px 0",
+                              borderRadius: "2px",
+                              mixBlendMode: "multiply",
+                            }}
+                          >
+                            {searchString}
+                          </mark>
+                        );
+                      }
+                    });
+                  } else {
+                    newElements.push(el);
+                  }
+                });
+                elements = newElements;
+              });
+
+              return (
+                <p
+                  key={i}
+                  style={{ marginBottom: 20, textIndent: i > 0 ? "2em" : 0, textAlign: "justify" }}
+                >
+                  {elements}
+                </p>
+              );
+            })}
           </div>
         </motion.div>
       </AnimatePresence>

@@ -1,10 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { ConversationMode } from "@/lib/prompts";
 import { buildAssistantChatMessage, buildUserChatMessage, getChatStorageKey } from "../helpers";
 import type { ChatMessage, InteractionMode } from "../types";
 import type { BookData } from "@/lib/sample-books";
+import { toast } from "sonner";
+import type { Highlight } from "../components/HighlightsSidebar";
+
+function cleanTextForSpeech(text: string): string {
+  if (!text) return "";
+  return text
+    .replace(/[*_~`#]/g, "") // Remove bold, italic, strikethrough, code, headers
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Keep link text, remove URL
+    .replace(/^\s*[-+]\s/gm, "") // Remove bullet points
+    .replace(/\s{2,}/g, " ") // Collapse multiple spaces
+    .trim();
+}
 
 type UseReaderControllerArgs = {
   bookId: string;
@@ -39,8 +52,16 @@ export default function useReaderController({
   bookId,
   sampleBook,
 }: UseReaderControllerArgs) {
-  const [currentPage, setCurrentPage] = useState(1);
+  const searchParams = useSearchParams();
+  const initialPage = parseInt(searchParams.get("page") || "1", 10);
+  
+  const [currentPage, setCurrentPage] = useState(!isNaN(initialPage) && initialPage >= 1 ? initialPage : 1);
   const [chatOpen, setChatOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem(`last_page_${bookId}`, currentPage.toString());
+  }, [currentPage, bookId]);
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -57,6 +78,55 @@ export default function useReaderController({
   const [dictatedText, setDictatedText] = useState("");
   const [pageDirection, setPageDirection] = useState<"next" | "prev">("next");
   const [interactionMode, setInteractionMode] = useState<InteractionMode>("chat");
+
+  // --- Highlights (Local Storage Only) ---
+  const [highlights, setHighlights] = useState<Highlight[]>([]);
+  const [highlightsLoaded, setHighlightsLoaded] = useState(false);
+  const [highlightsSidebarOpen, setHighlightsSidebarOpen] = useState(false);
+
+  const getHighlightsStorageKey = useCallback((bid: string) => `highlights_v2_${bid}`, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(getHighlightsStorageKey(bookId));
+    if (saved) {
+      try {
+        setHighlights(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse saved highlights", e);
+      }
+    }
+    setHighlightsLoaded(true);
+  }, [bookId, getHighlightsStorageKey]);
+
+  useEffect(() => {
+    if (!highlightsLoaded) return;
+    localStorage.setItem(getHighlightsStorageKey(bookId), JSON.stringify(highlights));
+  }, [highlights, bookId, highlightsLoaded, getHighlightsStorageKey]);
+
+  const handleHighlight = useCallback(
+    (color: string) => {
+      if (!selectedText) return;
+      const newHighlight: Highlight = {
+        id: crypto.randomUUID(),
+        bookId,
+        userId: "local",
+        text: selectedText,
+        color,
+        pageNumber: currentPage,
+        createdAt: new Date().toISOString(),
+      };
+      setHighlights((prev) => [...prev, newHighlight]);
+      setSelectionCoords(null);
+      toast.success("Highlight saved locally");
+    },
+    [selectedText, currentPage, bookId],
+  );
+
+  const handleDeleteHighlight = useCallback((id: string) => {
+    setHighlights((prev) => prev.filter((h) => h.id !== id));
+    toast.success("Highlight removed");
+  }, []);
+  // ----------------------------------------
 
   // Dynamic book state (for Gutenberg books)
   const [dynamicContent, setDynamicContent] = useState<string>("");
@@ -114,7 +184,7 @@ export default function useReaderController({
     setIsLoading(false);
   }, []);
 
-  // Load from local storage
+  // Load chat from local storage
   useEffect(() => {
     const saved = localStorage.getItem(getChatStorageKey(bookId));
     if (saved) {
@@ -130,7 +200,7 @@ export default function useReaderController({
     setIsChatLoaded(true);
   }, [bookId]);
 
-  // Save to local storage
+  // Save chat to local storage
   useEffect(() => {
     if (!isChatLoaded) return;
     localStorage.setItem(getChatStorageKey(bookId), JSON.stringify(messages));
@@ -203,10 +273,11 @@ export default function useReaderController({
 
       setIsSpeaking(true);
       try {
+        const voiceId = localStorage.getItem("elevenlabs_voice_id") || undefined;
         const response = await fetch("/api/tts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: text.slice(0, 500) }),
+          body: JSON.stringify({ text: text.slice(0, 2000), voiceId }),
         });
 
         if (!response.ok) throw new Error("TTS failed");
@@ -289,7 +360,7 @@ export default function useReaderController({
 
         setMessages((prev) => [...prev, aiMsg]);
         setIsTyping(true);
-        speakText(aiMsg.content);
+        speakText(cleanTextForSpeech(aiMsg.content));
       } catch (err: unknown) {
         const errLike = err as { name?: string; message?: string };
         if (errLike?.name === "AbortError") {
@@ -545,6 +616,13 @@ export default function useReaderController({
     // Close / stop
     mode,
 
+    // Highlights
+    highlights,
+    highlightsSidebarOpen,
+    setHighlightsSidebarOpen,
+    onHighlight: handleHighlight,
+    onDeleteHighlight: handleDeleteHighlight,
+
     // For ChatSidebar
     onInputChange: setInput,
 
@@ -553,4 +631,3 @@ export default function useReaderController({
     }, []),
   };
 }
-

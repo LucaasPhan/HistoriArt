@@ -1,6 +1,7 @@
 "use client";
 
 import React, { memo, useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 type TypewriterTextProps = {
   text: string;
@@ -46,7 +47,11 @@ const TypewriterText = memo(function TypewriterText({
     return () => window.clearInterval(interval);
   }, [text, messageIndex, finishedRef, onUpdate, onFinished]);
 
-  return <span>{displayedText}</span>;
+  return (
+    <div className="react-markdown-prose">
+      <ReactMarkdown>{displayedText}</ReactMarkdown>
+    </div>
+  );
 });
 
 TypewriterText.displayName = "TypewriterText";

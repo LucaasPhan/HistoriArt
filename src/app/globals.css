@@ -36,7 +36,66 @@
   --font-sans: "Inter", -apple-system, system-ui, sans-serif;
   --font-serif: "Playfair Display", Georgia, serif;
   --font-mono: "JetBrains Mono", monospace;
+
+  --cursor-default: url("/cursor/default.svg") 0 0, auto;
+  --cursor-pointer: url("/cursor/pointer.svg") 0 0, pointer;
+  --cursor-text: url("/cursor/text.svg") 12 16, text;
+  --cursor-grab: url("/cursor/grab.svg") 12 12, grab;
+  --cursor-grabbing: url("/cursor/grabbed.svg") 12 12, grabbing;
 }
+
+body {
+  overflow-x: hidden !important;
+  cursor: var(--cursor-default);
+}
+
+html {
+  overflow-x: hidden !important;
+}
+
+button:disabled,
+button[aria-disabled="true"],
+[aria-disabled="true"],
+[disabled],
+.pointer-events-none,
+.pointer-event-none,
+[data-disabled="true"] {
+  cursor: var(--cursor-default) !important;
+}
+
+
+a,
+button,
+[role="button"],
+[data-cursor="pointer"],
+.cursor-pointer {
+  cursor: var(--cursor-pointer) !important;
+}
+
+input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not(
+    [type="radio"]
+  ):not([type="range"]):not([type="file"]),
+textarea,
+[contenteditable="true"],
+[data-cursor="text"],
+.cursor-text {
+  cursor: var(--cursor-text) !important;
+}
+
+[data-cursor="grab"],
+.cursor-grab,
+[data-draggable="true"] {
+  cursor: var(--cursor-grab) !important;
+}
+
+[data-cursor="grabbing"],
+.cursor-grabbing,
+[data-cursor="grab"]:active,
+.cursor-grab:active,
+[data-draggable="true"].is-dragging {
+  cursor: var(--cursor-grabbing) !important;
+}
+
 
 .dark {
   /* DARK THEME (Claude) */
@@ -290,7 +349,6 @@ body {
   border-radius: var(--radius-lg);
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.2, 0, 0.2, 1);
-  cursor: pointer;
 }
 .book-card:hover {
   transform: translateY(-6px);
@@ -409,4 +467,22 @@ body {
   to {
     transform: translateX(300%);
   }
+}
+
+/* ─── React Markdown ───────────────────────────────────────── */
+.react-markdown-prose > p:first-child {
+  margin-top: 0;
+}
+.react-markdown-prose > p:last-child {
+  margin-bottom: 0;
+}
+.react-markdown-prose p {
+  margin-bottom: 0.5rem;
+}
+.react-markdown-prose strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.react-markdown-prose em {
+  font-style: italic;
 }

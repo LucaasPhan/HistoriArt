@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
-import { ArrowLeft, BookOpen, MessageCircle } from "lucide-react";
+import { ArrowLeft, BookOpen, MessageCircle, Highlighter } from "lucide-react";
 import { SAMPLE_BOOKS } from "@/lib/sample-books";
 import { ThemeButton } from "@/components/ThemeButton";
 import { TransitionLink } from "@/components/TransitionLink";
@@ -11,6 +11,7 @@ import SelectionTooltip from "./components/SelectionTooltip";
 import ReaderContent from "./components/ReaderContent";
 import ReaderNavigation from "./components/ReaderNavigation";
 import ChatSidebar from "./components/ChatSidebar";
+import HighlightsSidebar from "./components/HighlightsSidebar";
 import useReaderController from "./hooks/useReaderController";
 import type { BookData } from "@/lib/sample-books";
 
@@ -45,6 +46,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             const prefix = currentInput ? currentInput + " " : "";
             c.setInput(`${prefix}"${c.selectedText}"`);
           }}
+          onHighlight={c.onHighlight}
           interactionMode={c.interactionMode}
         />
 
@@ -55,8 +57,9 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             flexDirection: "column",
             position: "relative",
             minHeight: "100vh",
-            transition: "margin-right 0.4s cubic-bezier(0.4,0,0.2,1)",
+            transition: "margin-right 0.4s cubic-bezier(0.4,0,0.2,1), margin-left 0.4s cubic-bezier(0.4,0,0.2,1)",
             marginRight: c.chatOpen ? 380 : 0,
+            marginLeft: c.highlightsSidebarOpen ? 320 : 0,
           }}
         >
           {/* Top bar */}
@@ -97,10 +100,20 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
 
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <ThemeButton />
-              <span style={{ fontSize: 13, color: "var(--text-tertiary)" }}>
-                Page {c.currentPage} of {c.totalPages}
-              </span>
-
+               <button
+                className="btn-ghost"
+                onClick={() => c.setHighlightsSidebarOpen((o: boolean) => !o)}
+                style={{
+                  padding: "6px 14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontSize: 13,
+                }}
+              >
+                <Highlighter size={14} />
+                Highlights
+              </button>
               {!c.chatOpen && (
                 <button
                   className="btn-ghost"
@@ -117,6 +130,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                   AI Chat
                 </button>
               )}
+             
             </div>
           </div>
 
@@ -124,6 +138,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             content={c.content}
             currentPage={c.currentPage}
             pageDirection={c.pageDirection}
+            highlights={c.highlights.filter((h) => h.pageNumber === c.currentPage)}
             onMouseUp={c.handleTextSelection}
             onDoubleClick={c.handleDoubleClick}
           />
@@ -135,6 +150,10 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             onPrev={c.goPrev}
             onNext={c.goNext}
             onJumpTo={c.jumpToPage}
+            content={c.content}
+            bookTitle={c.bookTitle}
+            bookId={bookId}
+            highlightedText={c.selectedText}
           />
         </div>
 
@@ -163,9 +182,22 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               onModeSwitchChange={c.setInteractionMode}
             />
           )}
+          {c.highlightsSidebarOpen && (
+            <HighlightsSidebar
+              highlights={c.highlights}
+              onClose={() => c.setHighlightsSidebarOpen(false)}
+              onDeleteHighlight={c.onDeleteHighlight}
+              onSendToChat={(text) => {
+                c.setChatOpen(true);
+                const currentInput = c.input.trim();
+                const prefix = currentInput ? currentInput + " " : "";
+                c.setInput(`${prefix}"${text}"`);
+              }}
+              onNavigate={c.jumpToPage}
+            />
+          )}
         </AnimatePresence>
       </div>
-
       <PageMountSignaler />
     </>
   );

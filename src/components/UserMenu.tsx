@@ -165,15 +165,15 @@ const User = memo(
 
           <DropdownMenuContent
             align="end"
-            className="bg-(--bg-card) text-foreground p-2! relative z-100001 flex w-[200px] flex-col border-white/50 px-1"
+            className="bg-(--bg-card) text-foreground p-2! relative z-100001 flex w-[200px] flex-col px-1"
           >
             <div className="flex w-full items-center justify-start gap-2 px-4 py-2">
               <Avatar>
                 <AvatarImage
-                  className="h-[32px] w-[32px]"
+                  className="h-[32px] w-[32px] border-0!"
                   src={user.image || "/assets/avatar/blue.webp"}
                 />
-                <AvatarFallback className="h-[32px] w-[32px]">
+                <AvatarFallback className="h-[32px] w-[32px] border-0!">
                   {user.name.split(" ")[0]?.charAt(0) + user.name.split(" ")[1]?.charAt(0)}
                 </AvatarFallback>
               </Avatar>

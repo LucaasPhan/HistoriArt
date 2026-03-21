@@ -16,6 +16,7 @@ type SelectionTooltipProps = {
   showCopied: boolean;
   onCopy: () => void;
   onSendToChat: () => void;
+  onHighlight: (color: string) => void;
   interactionMode: InteractionMode;
 };
 
@@ -24,6 +25,7 @@ const SelectionTooltip = memo(function SelectionTooltip({
   showCopied,
   onCopy,
   onSendToChat,
+  onHighlight,
   interactionMode,
 }: SelectionTooltipProps) {
   return (
@@ -78,6 +80,30 @@ const SelectionTooltip = memo(function SelectionTooltip({
               align="center"
               className="bg-(--bg-secondary) border-(--border-subtle) text-(--text-primary) min-w-48 shadow-lg backdrop-blur-md flex flex-col gap-4 p-2!"
             >
+              <div style={{ display: "flex", gap: 8, padding: "4px 8px", justifyContent: "center" }}>
+                {["#fef08a", "#bbf7d0", "#fbcfe8", "#bfdbfe"].map(color => (
+                  <button
+                    key={color}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onHighlight(color);
+                    }}
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: "50%",
+                      backgroundColor: color,
+                      border: "1px solid rgba(0,0,0,0.1)",
+                      cursor: "pointer",
+                      transition: "transform 0.1s",
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                    aria-label={`Highlight with ${color}`}
+                  />
+                ))}
+              </div>
+              <div style={{ height: 1, background: "var(--border-subtle)", margin: "4px 0" }} />
               <DropdownMenuItem
                 onClick={(e) => {
                   e.stopPropagation();
