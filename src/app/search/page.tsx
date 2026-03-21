@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import {
   Search as SearchIcon,
   TrendingUp,
@@ -32,6 +32,7 @@ interface SearchResponse {
   books: SearchResult[];
   totalCount: number;
   hasMore: boolean;
+  nextPage: string | null;
 }
 
 type AddingState = "idle" | "fetching" | "saving" | "done" | "error";
@@ -48,18 +49,47 @@ export default function SearchPage() {
 
   const hasSearched = debouncedQuery.trim().length > 0;
 
+  // Sync library books with addingBooks state to show "Added!" or "Open in Reader"
+  const { data: libraryData } = useQuery({
+    queryKey: ["library"],
+    queryFn: async () => {
+      const res = await fetch("/api/books");
+      if (!res.ok) throw new Error("Failed to load library");
+      return await res.json();
+    },
+  });
+
+  useEffect(() => {
+    if (libraryData?.books) {
+      const addedStates: Record<number, { state: AddingState; bookId?: string }> = {};
+      libraryData.books.forEach((book: any) => {
+        if (book.fileName && book.fileName.startsWith("gutenberg-")) {
+          const gutenbergId = parseInt(book.fileName.split("-")[1]);
+          if (!isNaN(gutenbergId)) {
+            addedStates[gutenbergId] = { state: "done", bookId: book.id };
+          }
+        }
+      });
+      setAddingBooks((prev) => ({ ...prev, ...addedStates }));
+    }
+  }, [libraryData]);
+
   const {
     data: trendingData,
     isPending: trendingLoading,
     isError: isTrendingError,
-  } = useQuery<SearchResponse>({
+    fetchNextPage: fetchNextTrending,
+    hasNextPage: hasNextTrending,
+    isFetchingNextPage: isFetchingNextTrending,
+  } = useInfiniteQuery<SearchResponse>({
     queryKey: ["search", "trending"],
-    queryFn: async () => {
-      const res = await fetch("/api/search?q=");
+    queryFn: async ({ pageParam = 1 }) => {
+      const res = await fetch(`/api/search?q=&page=${pageParam}`);
       if (!res.ok) throw new Error("Failed to load trending books");
       return (await res.json()) as SearchResponse;
     },
-    retry: 2,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -67,21 +97,56 @@ export default function SearchPage() {
     data: searchData,
     isPending: searchLoading,
     isError: isSearchError,
-  } = useQuery<SearchResponse>({
+    fetchNextPage: fetchNextSearch,
+    hasNextPage: hasNextSearch,
+    isFetchingNextPage: isFetchingNextSearch,
+  } = useInfiniteQuery<SearchResponse>({
     queryKey: ["search", "results", debouncedQuery],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 1 }) => {
       const q = debouncedQuery.trim();
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&page=${pageParam}`);
       if (!res.ok) throw new Error("Failed to load search results");
       return (await res.json()) as SearchResponse;
     },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
     enabled: hasSearched,
-    retry: 2,
     staleTime: 1000 * 10,
   });
 
-  const results = searchData?.books ?? [];
-  const trending = trendingData?.books.slice(0, 8) ?? [];
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const target = observerTarget.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          if (hasSearched && hasNextSearch && !isFetchingNextSearch) {
+            fetchNextSearch();
+          } else if (!hasSearched && hasNextTrending && !isFetchingNextTrending) {
+            fetchNextTrending();
+          }
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [
+    hasSearched,
+    hasNextSearch,
+    isFetchingNextSearch,
+    fetchNextSearch,
+    hasNextTrending,
+    isFetchingNextTrending,
+    fetchNextTrending,
+  ]);
+
+  const results = searchData?.pages.flatMap((page) => page.books) ?? [];
+  const trending = trendingData?.pages.flatMap((page) => page.books) ?? [];
 
   const scheduleDebouncedQuery = useCallback((value: string) => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -303,7 +368,7 @@ export default function SearchPage() {
           )}
           <button
             type="submit"
-            disabled={searchLoading}
+            disabled={hasSearched && searchLoading}
             style={{
               padding: "10px 24px",
               background: "var(--accent-gradient)",
@@ -319,7 +384,7 @@ export default function SearchPage() {
               fontSize: 14,
             }}
           >
-            {searchLoading ? (
+            {hasSearched && searchLoading ? (
               <Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />
             ) : (
               "Search"
@@ -402,7 +467,7 @@ export default function SearchPage() {
           )}
 
           {/* Book Grid */}
-          {!searchLoading && !trendingLoading && displayBooks.length > 0 && (
+          {!(hasSearched ? searchLoading : trendingLoading) && displayBooks.length > 0 && (
             <div
               style={{
                 display: "grid",
@@ -630,6 +695,25 @@ export default function SearchPage() {
                   </motion.div>
                 ))}
               </AnimatePresence>
+            </div>
+          )}
+
+          {/* Infinite Scroll Observer Target */}
+          {((hasSearched ? hasNextSearch : hasNextTrending) && displayBooks.length > 0) && (
+            <div
+              ref={observerTarget}
+              style={{
+                width: "100%",
+                height: 60,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: 32,
+              }}
+            >
+              {(isFetchingNextSearch || isFetchingNextTrending) && (
+                <Loader2 size={24} style={{ animation: "spin 1s linear infinite", color: "var(--text-tertiary)" }} />
+              )}
             </div>
           )}
         </div>

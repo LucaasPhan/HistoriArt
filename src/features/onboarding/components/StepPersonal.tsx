@@ -12,7 +12,7 @@ interface Props {
 export default function StepPersonal({ data, set }: Props) {
   return (
     <>
-      <p className="ob-step-label">Step 1 of 3</p>
+      <p className="ob-step-label">Step 1 of 6</p>
       <h1 className="ob-title">A little about you</h1>
       <p className="ob-subtitle">Helps us speak your language.</p>
 

@@ -12,7 +12,7 @@ interface Props {
 export default function StepCommStyle({ data, set }: Props) {
   return (
     <>
-      <p className="ob-step-label">Step 3 of 3</p>
+      <p className="ob-step-label">Step 5 of 6</p>
       <h1 className="ob-title">How do you like to talk?</h1>
       <p className="ob-subtitle">We'll match your pace and tone.</p>
 

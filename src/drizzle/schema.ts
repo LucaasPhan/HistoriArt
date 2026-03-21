@@ -96,8 +96,11 @@ export const userProfiles = pgTable("user_profiles", {
   gender: text("gender").$type<Gender>().notNull(),
 
   // ── Onboarding step 2: CBT calibration ────────────────────
-  purposeOfUse: text("purpose_of_use").$type<PurposeOfUse>().notNull(),
+  purposeOfUse: text("purpose_of_use").notNull(),
   customPurpose: varchar("custom_purpose", { length: 500 }),
+  readingGoal: text("reading_goal").notNull().default(""),
+  personality: text("personality").notNull().default(""),
+  genZMode: boolean("gen_z_mode").notNull().default(false),
   communicationPreference: text("communication_preference").$type<CommunicationPreference>().notNull(),
 
   // ── Meta ──────────────────────────────────────────────────

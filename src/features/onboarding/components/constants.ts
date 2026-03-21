@@ -16,12 +16,27 @@ export const STEPS: StepConfig[] = [
   {
     id:       "purpose",
     title:    "What brings you here?",
-    subtitle: "What do you hope to get out of reading with a companion?",
+    subtitle: "Select all that apply to your reading journey.",
+  },
+  {
+    id:       "reading_goal",
+    title:    "What are you seeking?",
+    subtitle: "What do you most want to get out of reading?",
+  },
+  {
+    id:       "personality",
+    title:    "Your reading persona",
+    subtitle: "How would other people describe you?",
   },
   {
     id:       "style",
     title:    "How do you like to talk?",
     subtitle: "We'll match your pace and tone.",
+  },
+  {
+    id:       "science",
+    title:    "Backed by Science",
+    subtitle: "Science shows reading calms the body and mind.",
   },
 ];
 
@@ -107,4 +122,18 @@ export const COMM_PREFS: {
     label:       "Soft & slow",
     description: "Patient, validating — no rush at all",
   },
+];
+
+export const READING_GOALS = [
+  { value: "knowledge", label: "Knowledge", description: "Learning new facts and skills", emoji: "🧠" },
+  { value: "serenity", label: "Serenity", description: "Finding peace and reducing stress", emoji: "🧘" },
+  { value: "ideas", label: "Ideas", description: "Sparking creativity and new thoughts", emoji: "💡" },
+  { value: "escape", label: "Escape", description: "Getting lost in another world", emoji: "🚀" },
+];
+
+export const PERSONALITIES = [
+  { value: "chill", label: "Chill", description: "Relaxed and easygoing", emoji: "😎" },
+  { value: "analytical", label: "Analytical", description: "Logical and detail-oriented", emoji: "🧐" },
+  { value: "creative", label: "Creative", description: "Imaginative and expressive", emoji: "🎨" },
+  { value: "intense", label: "Intense", description: "Passionate and sometimes short-tempered", emoji: "🔥" },
 ];

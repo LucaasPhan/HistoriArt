@@ -57,8 +57,11 @@ export async function POST(req: NextRequest) {
           lastName: profile.lastName || session.user.name?.split(" ").slice(1).join(" ") || "",
           age: profile.age,
           gender: profile.gender as Gender,
-          purposeOfUse: profile.purposeOfUse as PurposeOfUse,
+          purposeOfUse: profile.purposeOfUse,
           customPurpose: profile.customPurpose,
+          readingGoal: profile.readingGoal,
+          personality: profile.personality,
+          genZMode: profile.genZMode,
           communicationPreference: profile.communicationPreference as CommunicationPreference,
         };
       }
@@ -98,6 +101,10 @@ export async function POST(req: NextRequest) {
       supplementaryContext,
       userProfile,           // undefined = graceful fallback to generic prompt
     );
+
+    console.log("\n\n==================== [ START CHAT PROMPT ] ====================");
+    console.log(JSON.stringify(messages, null, 2));
+    console.log("===============================================================\n\n");
 
     // ── LLM call (OpenAI → Gemini fallback) ─────────────────────────────────
     let response = "I'm not sure how to respond to that.";

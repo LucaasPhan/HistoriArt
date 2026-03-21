@@ -12,12 +12,15 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { firstName, lastName, age, gender, purposeOfUse, customPurpose, communicationPreference } = body;
+    const { firstName, lastName, age, gender, purposeOfUse, customPurpose, communicationPreference, readingGoal, personality, genZMode } = body;
 
     // Basic validation
-    if (!firstName || !lastName || age === undefined || !gender || !purposeOfUse || !communicationPreference) {
+    if (!firstName || !lastName || age === undefined || !gender || !purposeOfUse || !communicationPreference || readingGoal === undefined || personality === undefined) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
+
+    const purposeString = Array.isArray(purposeOfUse) ? purposeOfUse.join(", ") : purposeOfUse;
+    const readingGoalString = Array.isArray(readingGoal) ? readingGoal.join(", ") : readingGoal;
 
     await db.insert(userProfiles)
       .values({
@@ -26,8 +29,11 @@ export async function POST(req: NextRequest) {
         lastName,
         age: Number(age),
         gender,
-        purposeOfUse,
+        purposeOfUse: purposeString,
         customPurpose,
+        readingGoal: readingGoalString,
+        personality,
+        genZMode: Boolean(genZMode),
         communicationPreference,
         onboardingComplete: true,
       })
@@ -38,8 +44,11 @@ export async function POST(req: NextRequest) {
           lastName,
           age: Number(age),
           gender,
-          purposeOfUse,
+          purposeOfUse: purposeString,
           customPurpose,
+          readingGoal: readingGoalString,
+          personality,
+          genZMode: Boolean(genZMode),
           communicationPreference,
           onboardingComplete: true,
           updatedAt: new Date(),

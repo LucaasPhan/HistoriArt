@@ -8,4 +8,3 @@ export default async function Page({
   const { bookId } = await params;
   return <ReaderFeature bookId={bookId} />;
 }
-

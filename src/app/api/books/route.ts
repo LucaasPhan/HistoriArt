@@ -22,6 +22,7 @@ export async function GET() {
         coverUrl: b.coverUrl || null,
         coverGradient: ["#667eea", "#764ba2"] as [string, string],
         totalPages: b.totalPages,
+        fileName: b.fileName,
       })),
       ...SAMPLE_BOOKS.map((b) => ({
         id: b.id,
@@ -31,6 +32,7 @@ export async function GET() {
         coverUrl: null as string | null,
         coverGradient: b.coverGradient,
         totalPages: b.totalPages,
+        fileName: null,
       })),
     ];
 

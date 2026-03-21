@@ -68,10 +68,19 @@ function normalizeResults(data: GutendexResponse) {
       ),
     }));
 
+  // Extract page number from next URL
+  let nextPageNumber = null;
+  if (data.next) {
+    try {
+      const nextUrl = new URL(data.next);
+      nextPageNumber = nextUrl.searchParams.get("page");
+    } catch {}
+  }
+
   return {
     books,
     totalCount: data.count,
     hasMore: data.next !== null,
-    nextPage: data.next,
+    nextPage: nextPageNumber,
   };
 }

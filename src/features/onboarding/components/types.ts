@@ -9,8 +9,11 @@ export interface OnboardingData {
   lastName:                string;
   age:                     string;
   gender:                  Gender | "";
-  purposeOfUse:            PurposeOfUse | "";
+  purposeOfUse:            string[];
   customPurpose?:          string;
+  readingGoal:             string[];
+  personality:             string;
+  genZMode:                boolean;
   communicationPreference: CommunicationPreference | "";
 }
 

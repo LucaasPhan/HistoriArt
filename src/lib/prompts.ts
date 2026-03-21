@@ -54,14 +54,14 @@ function genderPronounHint(gender: ChatUserContext["gender"]): string {
 
 /** Maps purposeOfUse to a focus lens for the CBT layer. */
 function purposeLens(
-  purpose: ChatUserContext["purposeOfUse"],
+  purpose: string,
   customPurpose?: string | null,
 ): string {
-  if (purpose === "other" && customPurpose) {
+  if (purpose.includes("other") && customPurpose) {
     return `their specific goal: "${customPurpose}" — remain flexible and tailor the approach to this focus`;
   }
 
-  const map: Record<ChatUserContext["purposeOfUse"], string> = {
+  const map: Record<string, string> = {
     "learn-and-grow":
       "learning and personal growth — focus on drawing out lessons, challenging perspectives gently, and expanding knowledge",
     "find-calm":
@@ -76,7 +76,12 @@ function purposeLens(
       "exploring stories and escaping — prioritize atmosphere, narrative immersion, and shared emotional reactions to plot twists",
     "other": "general engagement — follow their lead, remain flexible, and adapt to their reading style",
   };
-  return map[purpose] ?? map["other"];
+  
+  const purposes = purpose.split(",").map(p => p.trim());
+  const selected = purposes.map(p => map[p]).filter(Boolean);
+  if (selected.length > 0) return selected.join(" AND ");
+
+  return map["other"];
 }
 
 /** Maps communicationPreference to a style directive. */
@@ -94,12 +99,57 @@ function commStyleDirective(pref: CommunicationPreference): string {
   return map[pref] ?? map["warm-and-casual"];
 }
 
+/** Maps a comma-separated readingGoal string to specific LLM directives. */
+function readingGoalDirective(goal: string | null | undefined): string {
+  if (!goal) return "";
+  const map: Record<string, string> = {
+    "knowledge": "Focus on extracting factual information, explaining historical context, and highlighting educational themes.",
+    "serenity": "Keep the discussion peaceful and low-stakes, focusing on the calm and comforting aspects of the text.",
+    "ideas": "Encourage brainstorming, relate the book's concepts to real-world applications, and ask thought-provoking open questions.",
+    "escape": "Prioritize world-building, character immersion, and narrative flow. Lean into the escapism of the story."
+  };
+  
+  const selected = goal.split(",").map(g => map[g.trim()]).filter(Boolean);
+  if (selected.length > 0) return `- **Reading Goal Focus:** ${selected.join(" AND ")}`;
+  return "";
+}
+
+/** Maps a user's personality to a specific tone directive. */
+function personalityDirective(personality: string | null | undefined): string {
+  if (!personality) return "";
+  const map: Record<string, string> = {
+    "chill": "Adopt a laid-back, highly relaxed, and easygoing tone. Avoid rushing or over-explaining.",
+    "analytical": "Be precise, logical, and detail-oriented. Use structured arguments and focus on character motivations and plot mechanics.",
+    "creative": "Be expressive, imaginative, and metaphorical. Encourage creative interpretations and 'what if' scenarios.",
+    "intense": "Match their passion! Be enthusiastic, dramatic, and emotionally engaged with every twist and turn."
+  };
+  
+  const val = map[personality.trim()];
+  if (val) return `- **Reading Persona:** ${val}`;
+  return "";
+}
+
+/** Configures the Gen Z mode toggle. */
+function genZDirective(enabled: boolean | null | undefined): string {
+  if (enabled) {
+    return `- **Gen Z Mode ENABLED:** Use modern, Gen Z slang organically and confidently in your responses (no cap). Don't overdo it, but make it feel natural.`;
+  }
+  return `- **Gen Z Mode DISABLED:** Do not use heavy modern slang or Gen Z terminology.`;
+}
+
 /**
  * Builds the personalisation block injected at the top of every system prompt.
  * Falls back gracefully if no profile is provided (unauthenticated / guest).
  */
 export function buildUserCalibration(user?: ChatUserContext): string {
   if (!user) return "";
+
+  const readingGoalTxt = readingGoalDirective(user.readingGoal);
+  const personalityTxt = personalityDirective(user.personality);
+  const genZTxt = genZDirective(user.genZMode);
+
+  // Filter out empty lines to keep prompt clean
+  const dynamicLines = [readingGoalTxt, personalityTxt, genZTxt].filter(Boolean).join("\n");
 
   return `
 ---
@@ -110,6 +160,7 @@ You are speaking with **${user.firstName} ${user.lastName}**.
 - **Gender / pronouns:** ${genderPronounHint(user.gender)}.
 - **Primary purpose:** ${user.firstName} is here to work on ${purposeLens(user.purposeOfUse, user.customPurpose)}.
 - **Communication style:** ${commStyleDirective(user.communicationPreference)}
+${dynamicLines}
 
 Address ${user.firstName} by name naturally — not in every sentence, but enough to feel personal.
 Consistently apply the communication style above throughout the entire conversation.

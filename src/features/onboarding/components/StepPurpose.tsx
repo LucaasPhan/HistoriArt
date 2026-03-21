@@ -12,18 +12,26 @@ interface Props {
 export default function StepPurpose({ data, set }: Props) {
   return (
     <>
-      <p className="ob-step-label">Step 2 of 3</p>
+      <p className="ob-step-label">Step 2 of 6</p>
       <h1 className="ob-title">What brings you here?</h1>
-      <p className="ob-subtitle">What do you hope to get out of reading with a companion?</p>
+      <p className="ob-subtitle">Select all that apply to your reading journey.</p>
 
       <div className="spu-grid">
         {PURPOSES.map((p) => {
-          const active = data.purposeOfUse === p.value;
+          const active = data.purposeOfUse.includes(p.value);
           return (
             <div
               key={p.value}
               className={`spu-card${active ? " spu-card--active" : ""}`}
-              onClick={() => set("purposeOfUse", p.value as PurposeOfUse)}
+              onClick={() => {
+                const current = new Set(data.purposeOfUse);
+                if (current.has(p.value)) {
+                  current.delete(p.value);
+                } else {
+                  current.add(p.value);
+                }
+                set("purposeOfUse", Array.from(current));
+              }}
             >
               <span className="spu-emoji">{p.emoji}</span>
               <span className="spu-label">{p.label}</span>
@@ -33,7 +41,7 @@ export default function StepPurpose({ data, set }: Props) {
         })}
       </div>
 
-      {data.purposeOfUse === "other" && (
+      {data.purposeOfUse.includes("other") && (
         <div className="spu-custom-wrap">
           <input
             className="spu-input"

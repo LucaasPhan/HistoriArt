@@ -11,10 +11,23 @@
   --sand:      #d6cfc3;
   --bark:      #8c7b6b;
   --ink:       #2d2520;
-  --sage:      #6b8c7a;
-  --sage-lt:   #e8f0ec;
+  --sage:      #df755a;
+  --sage-lt:   #fdf2ee;
+  --card-bg:   #ffffff;
   --radius:    14px;
   --shadow:    0 4px 28px rgba(45,37,32,0.10);
+}
+
+.dark {
+  --cream:     #22201E;
+  --parchment: rgba(255, 255, 255, 0.08);
+  --sand:      rgba(255, 255, 255, 0.15);
+  --bark:      #A6A39D;
+  --ink:       #EBEAE5;
+  --sage:      #df755a;
+  --sage-lt:   rgba(223, 117, 90, 0.15);
+  --card-bg:   #282624;
+  --shadow:    0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
 .ob-bg {
@@ -68,7 +81,7 @@
 
 /* Card */
 .ob-card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 20px;
   padding: 40px;
   box-shadow: var(--shadow);
@@ -186,9 +199,9 @@
 }
 .ob-next:disabled { opacity: 0.35; cursor: not-allowed; }
 .ob-next:not(:disabled):hover {
-  background: #5a7a68;
+  background: #c96248;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(107,140,122,0.32);
+  box-shadow: 0 6px 18px rgba(223,117,90,0.32);
 }
 
 @media (max-width: 480px) {
@@ -267,7 +280,7 @@
 }
 .ob-input::-webkit-inner-spin-button,
 .ob-input::-webkit-outer-spin-button { -webkit-appearance: none; }
-.ob-input:focus { border-color: var(--sage); background: #fff; }
+.ob-input:focus { border-color: var(--sage); background: var(--card-bg); }
 
 .sp-gender-grid {
   display: grid;
@@ -341,7 +354,7 @@
   outline: none;
   transition: border-color 0.2s, background 0.2s;
 }
-.spu-input:focus { border-color: var(--sage); background: #fff; }
+.spu-input:focus { border-color: var(--sage); background: var(--card-bg); }
 
 @media (max-width: 400px) {
   .spu-grid { grid-template-columns: 1fr; }

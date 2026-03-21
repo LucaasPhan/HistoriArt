@@ -32,7 +32,10 @@ export type ChatUserContext = {
   lastName:                string;
   age:                     number;   // from userProfiles.age
   gender:                  Gender;
-  purposeOfUse:            PurposeOfUse;
+  purposeOfUse:            string;
   customPurpose?:          string | null;
+  readingGoal?:            string | null;
+  personality?:            string | null;
+  genZMode?:               boolean | null;
   communicationPreference: CommunicationPreference;
 };

@@ -1,6 +1,7 @@
 // app/onboarding/page.tsx
 // Orchestrates the 3-step onboarding flow.
 
+
 "use client";
 
 import { useState, useRef } from "react";
@@ -9,7 +10,10 @@ import { useMutation } from "@tanstack/react-query";
 import OnboardingShell  from "@/features/onboarding/components/OnboardingShell";
 import StepPersonal     from "@/features/onboarding/components/StepPersonal";
 import StepPurpose      from "@/features/onboarding/components/StepPurpose";
+import StepReadingGoal  from "@/features/onboarding/components/StepReadingGoal";
+import StepPersonality  from "@/features/onboarding/components/StepPersonality";
 import StepCommStyle    from "@/features/onboarding/components/StepCommStyle";
+import StepScienceInfo  from "@/features/onboarding/components/StepScienceInfo";
 import "./onboarding.css";
 import { STEPS } from "@/features/onboarding/components/constants";
 import type { OnboardingData } from "@/features/onboarding/components/types";
@@ -21,8 +25,11 @@ const EMPTY: OnboardingData = {
   lastName:                "",
   age:                     "",
   gender:                  "",
-  purposeOfUse:            "",
+  purposeOfUse:            [],
   customPurpose:           "",
+  readingGoal:             [],
+  personality:             "",
+  genZMode:                false,
   communicationPreference: "",
 };
 
@@ -34,10 +41,13 @@ function isValidAge(age: string) {
 function canAdvance(step: number, data: OnboardingData): boolean {
   if (step === 0) return data.firstName.trim().length > 0 && data.lastName.trim().length > 0 && isValidAge(data.age) && data.gender !== "";
   if (step === 1) {
-    if (data.purposeOfUse === "other") return (data.customPurpose || "").trim().length > 0;
-    return data.purposeOfUse !== "";
+    if (data.purposeOfUse.includes("other")) return (data.customPurpose || "").trim().length > 0;
+    return data.purposeOfUse.length > 0;
   }
-  if (step === 2) return data.communicationPreference !== "";
+  if (step === 2) return data.readingGoal.length > 0;
+  if (step === 3) return data.personality !== "";
+  if (step === 4) return data.communicationPreference !== "";
+  if (step === 5) return true;
   return false;
 }
 
@@ -58,8 +68,11 @@ export default function OnboardingPage() {
       lastName: string;
       age: number;
       gender: string;
-      purposeOfUse: string;
+      purposeOfUse: string[];
       customPurpose: string;
+      readingGoal: string[];
+      personality: string;
+      genZMode: boolean;
       communicationPreference: string;
     }) => {
       const res = await fetch("/api/onboarding", {
@@ -113,6 +126,9 @@ export default function OnboardingPage() {
       gender: data.gender,
       purposeOfUse: data.purposeOfUse,
       customPurpose: data.customPurpose ?? "",
+      readingGoal: data.readingGoal,
+      personality: data.personality,
+      genZMode: data.genZMode,
       communicationPreference: data.communicationPreference,
     });
   };
@@ -125,7 +141,10 @@ export default function OnboardingPage() {
       {/* Step content */}
       {step === 0 && <StepPersonal  {...stepProps} />}
       {step === 1 && <StepPurpose   {...stepProps} />}
-      {step === 2 && <StepCommStyle {...stepProps} />}
+      {step === 2 && <StepReadingGoal {...stepProps} />}
+      {step === 3 && <StepPersonality {...stepProps} />}
+      {step === 4 && <StepCommStyle {...stepProps} />}
+      {step === 5 && <StepScienceInfo {...stepProps} />}
 
       {/* Error */}
       {error && <p className="ob-error">{error}</p>}
