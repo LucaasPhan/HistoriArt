@@ -33,13 +33,7 @@ import {
 } from "./ui/dropdown-menu";
 import { Skeleton } from "./ui/skeleton";
 
-const UnauthenticatedUser = ({
-  setIsMenuOpen,
-  isMenuOpen,
-}: {
-  setIsMenuOpen: (open: boolean) => void;
-  isMenuOpen: boolean;
-}) => {
+const UnauthenticatedUser = () => {
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -50,34 +44,15 @@ const UnauthenticatedUser = ({
           ease: "easeInOut",
         }}
       >
-        <DropdownMenu onOpenChange={setIsMenuOpen} open={isMenuOpen} modal={false}>
-          <DropdownMenuTrigger asChild>
-            <Button
-              className="btn-primary flex items-center justify-center gap-2"
-              style={{ height: "36px", padding: "0 20px", fontSize: "14px" }}
-              title="Sign In & Settings"
-            >
-              <SquareUserRound className="h-4 w-4" />
-              <span className="font-semibold tracking-wide">Sign In</span>
-            </Button>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent
-            align="end"
-            className="bg-(--bg-card) text-foreground relative z-100001 flex w-[200px] flex-col border-white/50 px-1"
+        <Link href="/login">
+          <Button
+            className="btn-primary flex items-center justify-center gap-2"
+            style={{ height: "36px", padding: "0 20px", fontSize: "14px" }}
           >
-            <DropdownMenuItem asChild>
-              <Link
-                href="/login"
-                className="flex w-full cursor-pointer items-center gap-2 px-2 py-1.5"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <SquareUserRound className="h-4 w-4" />
-                Sign In
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <SquareUserRound className="h-4 w-4" />
+            <span className="font-semibold tracking-wide">Sign In</span>
+          </Button>
+        </Link>
       </motion.div>
     </AnimatePresence>
   );
@@ -147,12 +122,7 @@ const User = memo(
       return <Skeleton className="bg-navbar-skelenton! h-8 w-8 rounded-full" />;
     }
     if (!isAuthenticated || !user) {
-      return (
-        <UnauthenticatedUser
-          setIsMenuOpen={setIsMenuOpen}
-          isMenuOpen={isMenuOpen}
-        />
-      );
+      return <UnauthenticatedUser />;
     }
     return (
       <>

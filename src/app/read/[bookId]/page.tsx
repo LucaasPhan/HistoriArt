@@ -10,6 +10,7 @@ import { useParams } from "next/navigation";
 import { SAMPLE_BOOKS } from "@/lib/sample-books";
 import type { ConversationMode } from "@/lib/prompts";
 import { TransitionLink } from "@/components/TransitionLink";
+import { ThemeButton } from "@/components/ThemeButton";
 import PageMountSignaler from "@/components/PageMountSignaler";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -427,6 +428,7 @@ export default function ReaderPage() {
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <ThemeButton />
               <span style={{ fontSize: 13, color: "var(--text-tertiary)" }}>
                 Page {currentPage} of {totalPages}
               </span>

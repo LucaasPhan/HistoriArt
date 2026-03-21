@@ -64,6 +64,7 @@ export function Navbar() {
           <ThemeButton />
 
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            {/* Dashboard removed for hackathon
             <TransitionLink href="/dashboard">
               <button className="btn-ghost" style={{ fontSize: 14 }}>
                 <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -72,6 +73,7 @@ export function Navbar() {
                 </span>
               </button>
             </TransitionLink>
+            */}
 
             <TransitionLink href="/library">
               <button className="btn-ghost" style={{ fontSize: 14 }}>
@@ -90,6 +92,7 @@ export function Navbar() {
               </button>
             </TransitionLink>
 
+            {/* Settings removed for hackathon
             <TransitionLink href="/settings">
               <button className="btn-ghost" style={{ fontSize: 14 }}>
                 <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -98,6 +101,7 @@ export function Navbar() {
                 </span>
               </button>
             </TransitionLink>
+            */}
 
             <UserMenu />
           </div>
