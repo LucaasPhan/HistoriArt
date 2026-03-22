@@ -110,13 +110,16 @@ export function HighlightItem({
       <p
         style={{
           fontSize: 14,
+          color: "var(--text-primary)",
           margin: 0,
           lineHeight: 1.5,
           paddingLeft: 8,
           borderLeft: `3px solid ${highlight.color}`,
+          wordBreak: "break-word",
+          whiteSpace: "pre-wrap",
         }}
       >
-        {highlight.text}
+        {highlight.text || "Empty Highlight"}
       </p>
     </div>
   );
