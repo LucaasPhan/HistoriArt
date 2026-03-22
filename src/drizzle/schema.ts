@@ -115,7 +115,7 @@ export const userProfiles = pgTable("user_profiles", {
 export const books = pgTable(
   "books",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
+    id: text("id").primaryKey(),
     title: varchar("title", { length: 255 }).notNull(),
     author: varchar("author", { length: 255 }).notNull().default("Unknown"),
     fileName: text("file_name").notNull(),

@@ -2,13 +2,14 @@
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Volume2, Loader2, BookX } from "lucide-react";
+import {  Volume2, Loader2, BookX } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
 import styles from "./DictionaryPopup.module.css";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 /* ─── Types from dictionaryapi.dev v2 ─── */
 type Phonetic = {
@@ -135,7 +136,8 @@ export default function DictionaryPopup({ word, onClose }: DictionaryPopupProps)
           boxShadow: "var(--shadow-glow), 0 25px 60px rgba(0,0,0,0.25)",
         }}
       >
-        {/* Accent bar */}
+       <ScrollArea className="h-[50vh]">
+         {/* Accent bar */}
         <div className={styles.accentBar} />
 
         <DialogTitle className="sr-only">
@@ -216,7 +218,7 @@ export default function DictionaryPopup({ word, onClose }: DictionaryPopupProps)
                           <div>
                             <span>{def.definition}</span>
                             {def.example && (
-                              <p className={styles.example}>"{def.example}"</p>
+                              <p className={styles.example}>&quot;{def.example}&quot;</p>
                             )}
                           </div>
                         </li>
@@ -242,6 +244,7 @@ export default function DictionaryPopup({ word, onClose }: DictionaryPopupProps)
             ) : null}
           </AnimatePresence>
         </div>
+       </ScrollArea>
       </DialogContent>
     </Dialog>
   );

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { Clock, Star, Plus, Sparkles, Heart, Link2, Clipboard, Trash2, BookOpen, ExternalLink, AlertTriangle, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { Clock, Star, Plus, Sparkles, Heart, Link2, Clipboard, Trash2, BookOpen, ExternalLink, AlertTriangle, Loader2, Upload } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -52,6 +52,73 @@ export default function LibraryPage() {
   const [lastPages, setLastPages] = useState<Record<string, number>>({});
   const [deleteTarget, setDeleteTarget] = useState<Book | null>(null);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadTitle, setUploadTitle] = useState("");
+
+  const handleUploadClick = () => {
+    if (!session?.user) {
+      toast.error("Please sign in to upload books.");
+      return;
+    }
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      toast.error("Please upload a valid PDF file.");
+      return;
+    }
+
+    setUploadFile(file);
+    setUploadTitle(file.name.replace(/\.pdf$/i, ""));
+    // Reset file input so we can trigger onChange with the same file if needed
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const confirmUpload = async () => {
+    if (!uploadFile) return;
+    if (!uploadTitle.trim()) {
+      toast.error("Please enter a title for the book.");
+      return;
+    }
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append("file", uploadFile);
+    formData.append("title", uploadTitle.trim());
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to upload PDF");
+      }
+
+      toast.success("PDF uploaded successfully!");
+      queryClient.invalidateQueries({ queryKey: ["books"] });
+      setUploadFile(null);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || "An error occurred during upload.");
+      } else {
+        toast.error("An error occurred during upload.");
+      }
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const {
     data: booksData,
     isPending: loading,
@@ -66,7 +133,7 @@ export default function LibraryPage() {
     retry: 3,
   });
 
-  const books = booksData?.books ?? [];
+  const books = useMemo(() => booksData?.books ?? [], [booksData?.books]);
 
   // Auto-poll every 5s while any book is still processing
   const hasProcessingBooks = useMemo(
@@ -174,7 +241,8 @@ export default function LibraryPage() {
   }, [books]);
 
   const continueBooks = books.filter(b => lastPages[b.id]);
-
+  const uploadedBooks = books.filter(b => b.fileName && String(b.fileName).toLowerCase().endsWith(".pdf"));
+  const catalogBooks = books.filter(b => !b.fileName || !String(b.fileName).toLowerCase().endsWith(".pdf"));
   // ── Helpers ────────────────────────────────────────────────────────────
   const isSampleBook = useCallback((book: Book) => {
     return !book.fileName;
@@ -360,7 +428,11 @@ export default function LibraryPage() {
                   >
                     <ReactMarkdown
                       components={{
-                        p: ({ node, ...props }) => <span {...props} />
+                        p: (props) => {
+                          // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+                          const { node, ...rest } = props as any;
+                          return <span {...rest} />;
+                        }
                       }}
                     >
                       {book.description.replace(/--/g, "—")}
@@ -609,13 +681,35 @@ export default function LibraryPage() {
             {books.length} books waiting for you
           </p>
         </div>
-        <TransitionLink 
-          href="/search"
-          className="no-underline"
-          style={{ padding: "12px 24px", background: "var(--accent-gradient)", color: "white", border: "none", borderRadius: "var(--radius-md)", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
-          <Plus size={18} />
-          Add Book
-        </TransitionLink>
+        <div style={{ display: "flex", gap: 12 }}>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            style={{ display: "none" }} 
+            accept="application/pdf" 
+            onChange={handleFileChange} 
+          />
+          <button 
+            onClick={handleUploadClick}
+            disabled={isUploading}
+            style={{ padding: "12px 24px", background: "var(--bg-secondary)", color: "var(--text-primary)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", fontWeight: 600, cursor: isUploading ? "wait" : "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s" }}
+            className="hover:bg-(--bg-tertiary)"
+          >
+            {isUploading ? (
+               <Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} />
+            ) : (
+               <Upload size={18} />
+            )}
+            {isUploading ? "Uploading..." : "Upload PDF"}
+          </button>
+          <TransitionLink 
+            href="/search"
+            className="no-underline"
+            style={{ padding: "12px 24px", background: "var(--accent-gradient)", color: "white", border: "none", borderRadius: "var(--radius-md)", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+            <Plus size={18} />
+            Add Book
+          </TransitionLink>
+        </div>
       </motion.div>
 
       {/* Books Grid */}
@@ -669,11 +763,29 @@ export default function LibraryPage() {
             </div>
           )}
 
-          {/* All Books Section */}
-          <div>
-            {continueBooks.length > 0 && (
+          {/* Uploaded Books Section */}
+          {uploadedBooks.length > 0 && (
+            <div>
               <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 24, fontWeight: 700, marginBottom: 24, color: "var(--text-primary)" }}>
-                All Books
+                Your Uploads
+              </h2>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+                  gap: 28,
+                }}
+              >
+                {uploadedBooks.map((book, i) => renderBookCard(book, i, false))}
+              </div>
+            </div>
+          )}
+
+          {/* Catalog Books Section */}
+          <div>
+            {(continueBooks.length > 0 || uploadedBooks.length > 0) && (
+              <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 24, fontWeight: 700, marginBottom: 24, color: "var(--text-primary)" }}>
+                Library Catalog
               </h2>
             )}
             <div
@@ -683,7 +795,7 @@ export default function LibraryPage() {
                 gap: 28,
               }}
             >
-              {books.map((book, i) => renderBookCard(book, i, false))}
+              {catalogBooks.map((book, i) => renderBookCard(book, i, false))}
               
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -799,7 +911,11 @@ export default function LibraryPage() {
             >
               Cancel
             </AlertDialogCancel>
+
             <AlertDialogAction
+              onClick={() => {
+                if (deleteTarget) deleteMutation.mutate(deleteTarget.id);
+              }}
               style={{
                 borderRadius: 10,
                 padding: "10px 20px",
@@ -810,18 +926,147 @@ export default function LibraryPage() {
                 color: "white",
                 border: "none",
                 cursor: "pointer",
-                boxShadow: "0 2px 8px rgba(239, 68, 68, 0.25)",
                 transition: "all 0.15s ease",
+                display: "flex", alignItems: "center", gap: 6,
               }}
-              onClick={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
-              disabled={deleteMutation.isPending}
             >
-              {deleteMutation.isPending ? "Deleting…" : "Delete Book"}
+              Delete Forever
             </AlertDialogAction>
           </AlertDialogFooter>
         </div>
       </AlertDialogContent>
     </AlertDialog>
+
+    {/* ── Premium Upload Dialog ── */}
+    <AlertDialog open={!!uploadFile} onOpenChange={(open) => { if (!open && !isUploading) setUploadFile(null); }}>
+      <AlertDialogContent
+        style={{
+          background: "var(--bg-card)",
+          border: "1px solid var(--border-subtle)",
+          borderRadius: 16,
+          boxShadow: "0 24px 80px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.08)",
+          padding: 0,
+          overflow: "hidden",
+          maxWidth: 420,
+        }}
+      >
+        {/* Accent bar */}
+        <div style={{
+          height: 3,
+          background: "var(--accent-gradient)",
+          borderRadius: "16px 16px 0 0",
+        }} />
+
+        <div style={{ padding: "28px 28px 24px" }}>
+          <AlertDialogHeader className="gap-3">
+            <div style={{
+              width: 48, height: 48, borderRadius: 12,
+              background: "var(--bg-tertiary)",
+              border: "1px solid var(--border-subtle)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              marginBottom: 4,
+            }}>
+              <Upload size={22} style={{ color: "var(--text-primary)" }} />
+            </div>
+
+            <AlertDialogTitle style={{
+              fontSize: 18,
+              fontWeight: 700,
+              fontFamily: "var(--font-serif)",
+              color: "var(--text-primary)",
+            }}>
+              Name your book
+            </AlertDialogTitle>
+
+            <AlertDialogDescription style={{
+              fontSize: 14,
+              lineHeight: 1.6,
+              color: "var(--text-secondary)",
+              fontFamily: "var(--font-sans)",
+            }}>
+              Enter a title for the book you&apos;re uploading to be displayed in your library.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div style={{ marginTop: 16 }}>
+            <input
+              autoFocus
+              type="text"
+              value={uploadTitle}
+              onChange={(e) => setUploadTitle(e.target.value)}
+              disabled={isUploading}
+              style={{
+                width: "100%",
+                padding: "12px 16px",
+                borderRadius: 10,
+                border: "1px solid var(--border-subtle)",
+                background: "var(--bg-secondary)",
+                color: "var(--text-primary)",
+                fontSize: 14,
+                outline: "none",
+                fontFamily: "var(--font-sans)",
+                transition: "border-color 0.2s ease",
+              }}
+              onFocus={(e) => e.target.style.borderColor = "var(--accent-primary)"}
+              onBlur={(e) => e.target.style.borderColor = "var(--border-subtle)"}
+              placeholder="Book Title"
+            />
+          </div>
+
+          <AlertDialogFooter style={{ marginTop: 24, gap: 10 }}>
+            <AlertDialogCancel
+              disabled={isUploading}
+              style={{
+                borderRadius: 10,
+                padding: "10px 20px",
+                fontSize: 13,
+                fontWeight: 600,
+                fontFamily: "var(--font-sans)",
+                border: "1px solid var(--border-subtle)",
+                background: "var(--bg-secondary)",
+                color: "var(--text-primary)",
+                cursor: isUploading ? "not-allowed" : "pointer",
+                transition: "all 0.15s ease",
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+
+            <AlertDialogAction
+              disabled={isUploading || !uploadTitle.trim()}
+              onClick={(e) => {
+                e.preventDefault();
+                confirmUpload();
+              }}
+              style={{
+                borderRadius: 10,
+                padding: "10px 20px",
+                fontSize: 13,
+                fontWeight: 600,
+                fontFamily: "var(--font-sans)",
+                background: "var(--text-primary)",
+                color: "var(--bg-primary)",
+                border: "none",
+                cursor: isUploading || !uploadTitle.trim() ? "not-allowed" : "pointer",
+                transition: "all 0.15s ease",
+                opacity: isUploading || !uploadTitle.trim() ? 0.7 : 1,
+                display: "flex", alignItems: "center", gap: 6,
+              }}
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} />
+                  Uploading...
+                </>
+              ) : (
+                "Upload Book"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </div>
+      </AlertDialogContent>
+    </AlertDialog>
+
 
     <PageMountSignaler/>
    </>

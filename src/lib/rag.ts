@@ -105,8 +105,13 @@ export async function retrieveContext(
   const pageContent = await getPageContent(bookId, currentPage);
 
   // 2. Vector search for relevant chunks
-  const queryEmbedding = await generateEmbedding(query);
-  const relevantChunks = await searchBookChunks(bookId, queryEmbedding, 3);
+  let relevantChunks: Array<{ content: string; pageNumber: number }> = [];
+  try {
+    const queryEmbedding = await generateEmbedding(query);
+    relevantChunks = await searchBookChunks(bookId, queryEmbedding, 3);
+  } catch (err) {
+    console.warn("Vector search failed (e.g., missing API keys), falling back to page content only.", err);
+  }
 
   // 3. Build book context
   let bookContext = `--- Current Page ${currentPage} ---\n${pageContent}`;
