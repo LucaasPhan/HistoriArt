@@ -6,11 +6,6 @@ import { AuthProvider } from "@/context/AuthContext";
 import NextTopLoader from "nextjs-toploader";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navbar } from "@/components/Navbar";
-
-import { verifySession } from "@/dal/verifySession";
-import { db } from "@/drizzle/db";
-import { userProfiles } from "@/drizzle/schema";
-import { eq } from "drizzle-orm";
 import { OnboardingGuard } from "@/context/OnboardingGuard";
 
 const geistSans = Geist({
@@ -24,13 +19,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LitCompanion — Your Personal Book Companion",
+  title: "Historiart — Lịch sử Việt Nam qua trang sách sống động",
   description:
-    "Upload any book. Talk to it naturally. LitCompanion is a voice-first reading companion that remembers every word and brings literature to life.",
+    "Nền tảng ebook lịch sử Việt Nam với hình ảnh, phim tư liệu và âm nhạc chèn thẳng vào từng trang sách. Đọc — xem — nghe — ôn tập.",
   openGraph: {
-    title: "LitCompanion — Your Personal Book Companion",
+    title: "Historiart — Lịch sử Việt Nam qua trang sách sống động",
     description:
-      "A voice-first reading companion that remembers every word of your book.",
+      "Nền tảng ebook lịch sử Việt Nam với đa phương tiện tương tác.",
     type: "website",
   },
 };
@@ -40,24 +35,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await verifySession();
-  let onboardingComplete = true; // default true for guests or completed users
-
-  if (session?.user?.id) {
-    const profile = await db.query.userProfiles.findFirst({
-      where: eq(userProfiles.userId, session.user.id),
-      columns: { onboardingComplete: true },
-    });
-    // if no profile yet, or it's not complete -> false
-    onboardingComplete = profile?.onboardingComplete ?? false;
-  }
-
   return (
    <ThemeProvider>
-     <html lang="en" className="dark" suppressHydrationWarning>
+     <html lang="vi" className="dark" suppressHydrationWarning data-scroll-behavior="smooth">
       <QueryProvider>
         <AuthProvider>
-          <OnboardingGuard onboardingComplete={onboardingComplete}>
+          <OnboardingGuard>
             <body
               className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >

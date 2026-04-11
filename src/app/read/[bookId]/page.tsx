@@ -1,4 +1,4 @@
-import ReaderFeature from "@/features/read/ReaderFeature";
+import ReaderFeature from "@/features/read/[bookId]/ReaderFeature";
 
 export default async function Page({
   params,

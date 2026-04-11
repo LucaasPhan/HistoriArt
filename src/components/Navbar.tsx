@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Sparkles, Search } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { TransitionLink } from "./TransitionLink";
 import UserMenu from "./UserMenu";
@@ -55,36 +55,17 @@ export function Navbar() {
               color: "var(--text-primary)",
             }}
           >
-            Lit<span className="gradient-text">Companion</span>
+            Histori<span className="gradient-text">art</span>
           </span>
         </TransitionLink>
         
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            {/* Dashboard removed for hackathon
-            <TransitionLink href="/dashboard">
-              <button className="btn-ghost" style={{ fontSize: 14 }}>
-                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <Home size={14} />
-                  Dashboard
-                </span>
-              </button>
-            </TransitionLink>
-            */}
-
             <TransitionLink href="/library">
               <button className="btn-ghost" style={{ fontSize: 14 }}>
                 <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <Sparkles size={14} />
-                  Library
-                </span>
-              </button>
-            </TransitionLink>
-            <TransitionLink href="/search">
-              <button className="btn-ghost" style={{ fontSize: 14 }}>
-                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <Search size={14} />
-                  Search
+                  <BookOpen size={14} />
+                  Thư viện
                 </span>
               </button>
             </TransitionLink>

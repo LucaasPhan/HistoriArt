@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { Clock, Star, Plus, Sparkles, Heart, Link2, Clipboard, Trash2, BookOpen, ExternalLink, AlertTriangle, Loader2, Upload } from "lucide-react";
+import { Clock, Star, Sparkles, Heart, Link2, Clipboard, Trash2, BookOpen, ExternalLink, AlertTriangle, Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -52,72 +52,9 @@ export default function LibraryPage() {
   const [lastPages, setLastPages] = useState<Record<string, number>>({});
   const [deleteTarget, setDeleteTarget] = useState<Book | null>(null);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [uploadTitle, setUploadTitle] = useState("");
 
-  const handleUploadClick = () => {
-    if (!session?.user) {
-      toast.error("Please sign in to upload books.");
-      return;
-    }
-    fileInputRef.current?.click();
-  };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
 
-    if (file.type !== "application/pdf") {
-      toast.error("Please upload a valid PDF file.");
-      return;
-    }
-
-    setUploadFile(file);
-    setUploadTitle(file.name.replace(/\.pdf$/i, ""));
-    // Reset file input so we can trigger onChange with the same file if needed
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const confirmUpload = async () => {
-    if (!uploadFile) return;
-    if (!uploadTitle.trim()) {
-      toast.error("Please enter a title for the book.");
-      return;
-    }
-
-    setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", uploadFile);
-    formData.append("title", uploadTitle.trim());
-
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to upload PDF");
-      }
-
-      toast.success("PDF uploaded successfully!");
-      queryClient.invalidateQueries({ queryKey: ["books"] });
-      setUploadFile(null);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        toast.error(err.message || "An error occurred during upload.");
-      } else {
-        toast.error("An error occurred during upload.");
-      }
-    } finally {
-      setIsUploading(false);
-    }
-  };
 
   const {
     data: booksData,
@@ -675,40 +612,13 @@ export default function LibraryPage() {
               color: "var(--text-primary)",
             }}
           >
-            Your Library
+            Thư viện
           </h1>
           <p style={{ color: "var(--text-secondary)", fontSize: 17, marginBottom: 0 }}>
-            {books.length} books waiting for you
+            {books.length} đầu sách đang chờ bạn
           </p>
         </div>
         <div style={{ display: "flex", gap: 12 }}>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            style={{ display: "none" }} 
-            accept="application/pdf" 
-            onChange={handleFileChange} 
-          />
-          <button 
-            onClick={handleUploadClick}
-            disabled={isUploading}
-            style={{ padding: "12px 24px", background: "var(--bg-secondary)", color: "var(--text-primary)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", fontWeight: 600, cursor: isUploading ? "wait" : "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s" }}
-            className="hover:bg-(--bg-tertiary)"
-          >
-            {isUploading ? (
-               <Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} />
-            ) : (
-               <Upload size={18} />
-            )}
-            {isUploading ? "Uploading..." : "Upload PDF"}
-          </button>
-          <TransitionLink 
-            href="/search"
-            className="no-underline"
-            style={{ padding: "12px 24px", background: "var(--accent-gradient)", color: "white", border: "none", borderRadius: "var(--radius-md)", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
-            <Plus size={18} />
-            Add Book
-          </TransitionLink>
         </div>
       </motion.div>
 
@@ -741,7 +651,7 @@ export default function LibraryPage() {
             color: "var(--text-tertiary)",
           }}
         >
-          Failed to load your library. Please refresh.
+          Không thể tải thư viện. Vui lòng tải lại trang.
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 64 }}>
@@ -749,7 +659,7 @@ export default function LibraryPage() {
           {continueBooks.length > 0 && (
             <div style={{ marginTop: -16 }}>
               <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 24, fontWeight: 700, marginBottom: 24, color: "var(--text-primary)" }}>
-                Continue Reading
+                Đang đọc
               </h2>
               <div
                 style={{
@@ -767,7 +677,7 @@ export default function LibraryPage() {
           {uploadedBooks.length > 0 && (
             <div>
               <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 24, fontWeight: 700, marginBottom: 24, color: "var(--text-primary)" }}>
-                Your Uploads
+                Sách tải lên
               </h2>
               <div
                 style={{
@@ -785,7 +695,7 @@ export default function LibraryPage() {
           <div>
             {(continueBooks.length > 0 || uploadedBooks.length > 0) && (
               <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 24, fontWeight: 700, marginBottom: 24, color: "var(--text-primary)" }}>
-                Library Catalog
+                Tủ sách lịch sử
               </h2>
             )}
             <div
@@ -797,46 +707,7 @@ export default function LibraryPage() {
             >
               {catalogBooks.map((book, i) => renderBookCard(book, i, false))}
               
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: books.length * 0.15 }}
-              >
-                <TransitionLink href="/search" className="no-underline">
-                  <div className="book-card" style={{ height: '100%', minHeight: 420, border: '2px dashed var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', padding: 32 }}>
-                    <div style={{
-                        width: 64,
-                        height: 64,
-                        borderRadius: '50%',
-                        background: 'var(--bg-card)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginBottom: 16,
-                        border: '1px solid var(--border)'
-                    }}>
-                      <Plus size={32} color="var(--text-secondary)" />
-                    </div>
-                    <h2 style={{
-                      fontFamily: "var(--font-serif)",
-                      fontSize: 20,
-                      fontWeight: 600,
-                      color: "var(--text-primary)",
-                      textAlign: "center",
-                      marginBottom: 8
-                    }}>
-                      Add another book
-                    </h2>
-                    <p style={{
-                      color: "var(--text-secondary)",
-                      fontSize: 14,
-                      textAlign: "center"
-                    }}>
-                      {session ? "Search our catalog to add books to your library!" : "Signup to add your own book!"}
-                    </p>
-                  </div>
-                </TransitionLink>
-              </motion.div>
+
             </div>
           </div>
         </div>
@@ -890,7 +761,7 @@ export default function LibraryPage() {
               color: "var(--text-secondary)",
               fontFamily: "var(--font-sans)",
             }}>
-              This will permanently remove the book and all associated data — including highlights, chat history, and scene visualizations. This action cannot be undone.
+              Thao tác này sẽ xóa vĩnh viễn sách và toàn bộ dữ liệu liên quan — bao gồm ghi chú và tiến trình đọc. Không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -937,135 +808,7 @@ export default function LibraryPage() {
       </AlertDialogContent>
     </AlertDialog>
 
-    {/* ── Premium Upload Dialog ── */}
-    <AlertDialog open={!!uploadFile} onOpenChange={(open) => { if (!open && !isUploading) setUploadFile(null); }}>
-      <AlertDialogContent
-        style={{
-          background: "var(--bg-card)",
-          border: "1px solid var(--border-subtle)",
-          borderRadius: 16,
-          boxShadow: "0 24px 80px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.08)",
-          padding: 0,
-          overflow: "hidden",
-          maxWidth: 420,
-        }}
-      >
-        {/* Accent bar */}
-        <div style={{
-          height: 3,
-          background: "var(--accent-gradient)",
-          borderRadius: "16px 16px 0 0",
-        }} />
 
-        <div style={{ padding: "28px 28px 24px" }}>
-          <AlertDialogHeader className="gap-3">
-            <div style={{
-              width: 48, height: 48, borderRadius: 12,
-              background: "var(--bg-tertiary)",
-              border: "1px solid var(--border-subtle)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              marginBottom: 4,
-            }}>
-              <Upload size={22} style={{ color: "var(--text-primary)" }} />
-            </div>
-
-            <AlertDialogTitle style={{
-              fontSize: 18,
-              fontWeight: 700,
-              fontFamily: "var(--font-serif)",
-              color: "var(--text-primary)",
-            }}>
-              Name your book
-            </AlertDialogTitle>
-
-            <AlertDialogDescription style={{
-              fontSize: 14,
-              lineHeight: 1.6,
-              color: "var(--text-secondary)",
-              fontFamily: "var(--font-sans)",
-            }}>
-              Enter a title for the book you&apos;re uploading to be displayed in your library.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <div style={{ marginTop: 16 }}>
-            <input
-              autoFocus
-              type="text"
-              value={uploadTitle}
-              onChange={(e) => setUploadTitle(e.target.value)}
-              disabled={isUploading}
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                borderRadius: 10,
-                border: "1px solid var(--border-subtle)",
-                background: "var(--bg-secondary)",
-                color: "var(--text-primary)",
-                fontSize: 14,
-                outline: "none",
-                fontFamily: "var(--font-sans)",
-                transition: "border-color 0.2s ease",
-              }}
-              onFocus={(e) => e.target.style.borderColor = "var(--accent-primary)"}
-              onBlur={(e) => e.target.style.borderColor = "var(--border-subtle)"}
-              placeholder="Book Title"
-            />
-          </div>
-
-          <AlertDialogFooter style={{ marginTop: 24, gap: 10 }}>
-            <AlertDialogCancel
-              disabled={isUploading}
-              style={{
-                borderRadius: 10,
-                padding: "10px 20px",
-                fontSize: 13,
-                fontWeight: 600,
-                fontFamily: "var(--font-sans)",
-                border: "1px solid var(--border-subtle)",
-                background: "var(--bg-secondary)",
-                color: "var(--text-primary)",
-                cursor: isUploading ? "not-allowed" : "pointer",
-                transition: "all 0.15s ease",
-              }}
-            >
-              Cancel
-            </AlertDialogCancel>
-
-            <AlertDialogAction
-              disabled={isUploading || !uploadTitle.trim()}
-              onClick={(e) => {
-                e.preventDefault();
-                confirmUpload();
-              }}
-              style={{
-                borderRadius: 10,
-                padding: "10px 20px",
-                fontSize: 13,
-                fontWeight: 600,
-                fontFamily: "var(--font-sans)",
-                background: "var(--text-primary)",
-                color: "var(--bg-primary)",
-                border: "none",
-                cursor: isUploading || !uploadTitle.trim() ? "not-allowed" : "pointer",
-                transition: "all 0.15s ease",
-                opacity: isUploading || !uploadTitle.trim() ? 0.7 : 1,
-                display: "flex", alignItems: "center", gap: 6,
-              }}
-            >
-              {isUploading ? (
-                <>
-                  <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} />
-                  Uploading...
-                </>
-              ) : (
-                "Upload Book"
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </div>
-      </AlertDialogContent>
-    </AlertDialog>
 
 
     <PageMountSignaler/>

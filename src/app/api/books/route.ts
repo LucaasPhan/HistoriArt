@@ -1,11 +1,10 @@
-import { NextRequest, NextResponse, after } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { SAMPLE_BOOKS } from "@/lib/sample-books";
 import { db } from "@/drizzle/db";
 import { books } from "@/drizzle/schema";
 import { bookChunks } from "@/drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { verifySession } from "@/dal/verifySession";
-import { fetchAndPaginateGutenbergBook } from "@/lib/gutenberg";
 
 export async function GET() {
   try {
@@ -75,87 +74,7 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id;
 
     const body = await request.json();
-    let { title, author, coverUrl, description, totalPages, gutenbergId, pages } = body;
-
-    // Check if this Gutenberg book was already added
-    if (gutenbergId) {
-      const existing = await db.query.books.findFirst({
-        where: and(eq(books.fileName, `gutenberg-${gutenbergId}`), eq(books.userId, userId)),
-      });
-
-      if (existing) {
-        return NextResponse.json({
-          id: existing.id,
-          alreadyExists: true,
-          message: "This book is already in your library!",
-        });
-      }
-    }
-
-    // If Gutenberg ID is provided but no pages were sent, fetch on the backend using background queues
-    if (gutenbergId && (!pages || Object.keys(pages).length === 0)) {
-      console.log(`Server backgrounding Gutenberg text fetch for ID ${gutenbergId}...`);
-      
-      // 1. Instantly create the database entry
-      const [newBook] = await db
-        .insert(books)
-        .values({
-          title: title || `Book ${gutenbergId}`,
-          author: author || "Unknown",
-          fileName: `gutenberg-${gutenbergId}`,
-          coverUrl: coverUrl || null,
-          description: description || null,
-          totalPages: totalPages || 0,
-          totalChunks: 0, // 0 = Processing
-          userId,
-        })
-        .returning({ id: books.id });
-
-      // 2. Queue the slow networking/parsing job
-      after(async () => {
-        try {
-          console.log(`[Background Queue] Processing ${gutenbergId} for Book ${newBook.id}...`);
-          const bookData = await fetchAndPaginateGutenbergBook(gutenbergId);
-          
-          const pagesToSave = bookData.pages;
-          const chunkInserts = Object.entries(pagesToSave).map(
-            ([pageNum, content]) => ({
-              bookId: newBook.id,
-              chunkIndex: parseInt(pageNum),
-              pageNumber: parseInt(pageNum),
-              content: content as string,
-            })
-          );
-
-          // Insert in chunks
-          for (let i = 0; i < chunkInserts.length; i += 50) {
-             const batch = chunkInserts.slice(i, i + 50);
-             await db.insert(bookChunks).values(batch);
-          }
-
-          // Complete the book record
-          await db.update(books).set({
-            title: title || bookData.title,
-            author: author || bookData.author,
-            description: description || bookData.subjects.join(", "),
-            coverUrl: coverUrl || bookData.coverUrl,
-            totalPages: bookData.totalPages,
-            totalChunks: bookData.totalPages,
-          }).where(eq(books.id, newBook.id));
-          
-          console.log(`[Background Queue] Job finished for ${gutenbergId}!`);
-        } catch (err) {
-          console.error(`[Background Queue] Error processing ${gutenbergId}:`, err);
-        }
-      });
-
-      // 3. Immediately return success to the browser!
-      return NextResponse.json({
-        id: newBook.id,
-        alreadyExists: false,
-        message: "Book added! Text is processing in the background.",
-      });
-    }
+    const { title, author, coverUrl, description, totalPages, pages } = body;
 
     if (!title || !totalPages) {
       return NextResponse.json(
@@ -164,28 +83,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if this Gutenberg book was already added
-    if (gutenbergId) {
-      const existing = await db.query.books.findFirst({
-        where: and(eq(books.fileName, `gutenberg-${gutenbergId}`), eq(books.userId, userId)),
-      });
-
-      if (existing) {
-        return NextResponse.json({
-          id: existing.id,
-          alreadyExists: true,
-          message: "This book is already in your library!",
-        });
-      }
-    }
-
     // Insert the new book
     const [newBook] = await db
       .insert(books)
       .values({
+        id: crypto.randomUUID(),
         title,
         author: author || "Unknown",
-        fileName: gutenbergId ? `gutenberg-${gutenbergId}` : `manual-${Date.now()}`,
+        fileName: `manual-${Date.now()}`,
         coverUrl: coverUrl || null,
         description: description || null,
         totalPages,
@@ -215,7 +120,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       id: newBook.id,
       alreadyExists: false,
-      message: "Book added to library!",
+      message: "Sách đã được thêm vào thư viện!",
     });
   } catch (err) {
     console.error("Error adding book:", err);
@@ -250,11 +155,11 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Delete chunks first, then the book (cascade should handle it, but be explicit)
+    // Delete chunks first, then the book
     await db.delete(bookChunks).where(eq(bookChunks.bookId, bookId));
     await db.delete(books).where(eq(books.id, bookId));
 
-    return NextResponse.json({ success: true, message: "Book deleted." });
+    return NextResponse.json({ success: true, message: "Sách đã được xóa." });
   } catch (err) {
     console.error("Error deleting book:", err);
     return NextResponse.json({ error: "Failed to delete book" }, { status: 500 });

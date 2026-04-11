@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { User } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import GenderDropdown from "../components/GenderDropdown";
+
 
 export default function AccountTab() {
   const router = useRouter();
@@ -89,7 +89,13 @@ export default function AccountTab() {
           </div>
           <div className="settings-form-group">
             <label className="settings-label">Gender</label>
-            <GenderDropdown value={data.gender} onChange={(v) => setData({ ...data, gender: v })} />
+            <select className="settings-input" value={data.gender} onChange={(e) => setData({ ...data, gender: e.target.value })}>
+              <option value="">Chọn giới tính</option>
+              <option value="male">Nam</option>
+              <option value="female">Nữ</option>
+              <option value="non-binary">Khác</option>
+              <option value="prefer-not-to-say">Không muốn nói</option>
+            </select>
           </div>
         </div>
       </section>

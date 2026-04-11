@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Check, Copy, MessageCircle, MoreVertical, Sparkles, BookOpen } from "lucide-react";
+import { Check, Copy, MoreVertical, BookOpen } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   DropdownMenu,
@@ -7,7 +7,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { InteractionMode } from "../types";
 
 type SelectionCoords = { x: number; y: number };
 
@@ -16,10 +15,8 @@ type SelectionTooltipProps = {
   showCopied: boolean;
   selectedText: string;
   onCopy: () => void;
-  onSendToChat: () => void;
   onHighlight: (color: string) => void;
-  onLookUp: () => void;
-  interactionMode: InteractionMode;
+  onLookUp?: () => void;
 };
 
 const SelectionTooltip = memo(function SelectionTooltip({
@@ -27,10 +24,8 @@ const SelectionTooltip = memo(function SelectionTooltip({
   showCopied,
   selectedText,
   onCopy,
-  onSendToChat,
   onHighlight,
   onLookUp,
-  interactionMode,
 }: SelectionTooltipProps) {
   const isSingleWord = selectedText.trim().split(/\s+/).length === 1 && selectedText.trim().length > 0;
   return (
@@ -70,12 +65,12 @@ const SelectionTooltip = memo(function SelectionTooltip({
                 {showCopied ? (
                   <>
                     <Check size={14} color="#10b981" />
-                    <span>Copied!</span>
+                    <span>Đã sao chép!</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles size={14} color="var(--accent-primary)" />
-                    <span>AI Buddy</span>
+                    <BookOpen size={14} color="var(--accent-primary)" />
+                    <span>Tùy chọn</span>
                     <MoreVertical size={14} style={{ marginLeft: 4, opacity: 0.6 }} />
                   </>
                 )}
@@ -109,7 +104,7 @@ const SelectionTooltip = memo(function SelectionTooltip({
                 ))}
               </div>
               <div style={{ height: 1, background: "var(--border-subtle)", margin: "4px 0" }} />
-              {isSingleWord && (
+              {isSingleWord && onLookUp && (
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
@@ -117,7 +112,7 @@ const SelectionTooltip = memo(function SelectionTooltip({
                   }}
                 >
                   <BookOpen size={14} className="mr-2" />
-                  <span>Look Up</span>
+                  <span>Tra cứu</span>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
@@ -127,19 +122,8 @@ const SelectionTooltip = memo(function SelectionTooltip({
                 }}
               >
                 <Copy size={14} className="mr-2" />
-                <span>Copy to Clipboard</span>
+                <span>Sao chép</span>
               </DropdownMenuItem>
-              {interactionMode === "chat" && (
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSendToChat();
-                  }}
-                >
-                  <MessageCircle size={14} className="mr-2" />
-                  <span>Send to AI Chat</span>
-                </DropdownMenuItem>
-              )}
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -165,5 +149,3 @@ const SelectionTooltip = memo(function SelectionTooltip({
 SelectionTooltip.displayName = "SelectionTooltip";
 
 export default SelectionTooltip;
-
-

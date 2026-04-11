@@ -163,8 +163,65 @@ export const conversations = pgTable("conversations", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+// ─── Media Annotations (multimedia tied to text passages) ──────
+export const mediaAnnotations = pgTable(
+  "media_annotations",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    bookId: text("book_id").notNull(),
+    chapterId: text("chapter_id"),
+    pageNumber: integer("page_number"),
+    passageText: text("passage_text"),
+    mediaType: text("media_type").$type<"image" | "video" | "audio" | "annotation">().notNull(),
+    mediaUrl: text("media_url"),
+    caption: text("caption"),
+    thumbnailUrl: text("thumbnail_url"),
+    autoplay: boolean("autoplay").notNull().default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("idx_annotation_book").on(table.bookId),
+    index("idx_annotation_book_page").on(table.bookId, table.pageNumber),
+  ],
+);
 
-// ─── Scene Images (Illuminate Scene cache) ────────────────────
+// ─── Quiz Questions (per-chapter quiz) ────────────────────────
+export const quizQuestions = pgTable(
+  "quiz_questions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    bookId: text("book_id").notNull(),
+    chapterId: text("chapter_id"),
+    pageNumber: integer("page_number"),
+    question: text("question").notNull(),
+    options: jsonb("options").$type<string[]>().notNull(),
+    correctIndex: integer("correct_index").notNull(),
+    explanation: text("explanation"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("idx_quiz_book").on(table.bookId),
+  ],
+);
+
+// ─── Quiz Results (user quiz scores) ──────────────────────────
+export const quizResults = pgTable(
+  "quiz_results",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id").notNull(),
+    bookId: text("book_id").notNull(),
+    chapterId: text("chapter_id"),
+    score: integer("score").notNull(),
+    totalQuestions: integer("total_questions").notNull(),
+    completedAt: timestamp("completed_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("idx_quiz_result_user").on(table.userId, table.bookId),
+  ],
+);
+
+// ─── Scene Images (kept for migration compat) ─────────────────
 
 export const sceneImages = pgTable(
   "scene_images",
@@ -200,3 +257,4 @@ export const favoriteBooks = pgTable(
     index("idx_fav_user_book").on(table.userId, table.bookId),
   ],
 );
+

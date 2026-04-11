@@ -1,22 +1,21 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
-import { ArrowLeft, BookOpen, MessageCircle, Highlighter } from "lucide-react";
+import { ArrowLeft, BookOpen, Film, Highlighter } from "lucide-react";
 import { SAMPLE_BOOKS } from "@/lib/sample-books";
+import { getSeedAnnotationsForPage } from "@/lib/seed-annotations";
 import { ThemeButton } from "@/components/ThemeButton";
 import { TransitionLink } from "@/components/TransitionLink";
 import PageMountSignaler from "@/components/PageMountSignaler";
 import SelectionTooltip from "./components/SelectionTooltip";
 import ReaderContent from "./components/ReaderContent";
 import ReaderNavigation from "./components/ReaderNavigation";
-import ChatSidebar from "./components/ChatSidebar";
 import HighlightsSidebar from "./components/HighlightsSidebar";
-import DictionaryPopup from "./components/DictionaryPopup";
+import MediaPanel from "./components/MediaPanel";
 import useReaderController from "./hooks/useReaderController";
 import { useAuth } from "@/context/AuthContext";
 import type { BookData } from "@/lib/sample-books";
-import VisualizeButton from "./components/VisualizeButton";
 
 export default function ReaderFeature({ bookId }: { bookId: string }) {
   const sampleBook = useMemo(
@@ -26,10 +25,14 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
 
   const c = useReaderController({ bookId, sampleBook });
   const { isAuthenticated } = useAuth();
-  const [dictionaryWord, setDictionaryWord] = useState<string | null>(null);
 
-  // If the book isn't known locally and dynamic loading is disabled, render nothing.
-  // In practice `isDynamic` becomes true for unknown book IDs.
+  // Load annotations for the current page
+  useEffect(() => {
+    const annotations = getSeedAnnotationsForPage(bookId, c.currentPage);
+    c.setActiveAnnotations(annotations);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bookId, c.currentPage]);
+
   if (!sampleBook && !c.isDynamic) return null;
 
   return (
@@ -42,24 +45,11 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
         }}
       >
         <SelectionTooltip
-          selectionCoords={dictionaryWord ? null : c.selectionCoords}
+          selectionCoords={c.selectionCoords}
           showCopied={c.showCopied}
           selectedText={c.selectedText}
           onCopy={c.copyToClipboard}
-          onSendToChat={() => {
-            c.setChatOpen(true);
-            const currentInput = c.input.trim();
-            const prefix = currentInput ? currentInput + " " : "";
-            c.setInput(`${prefix}"${c.selectedText}"`);
-          }}
           onHighlight={c.onHighlight}
-          onLookUp={() => setDictionaryWord(c.selectedText)}
-          interactionMode={c.interactionMode}
-        />
-
-        <DictionaryPopup
-          word={dictionaryWord}
-          onClose={() => setDictionaryWord(null)}
         />
 
         <div
@@ -70,7 +60,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             position: "relative",
             minHeight: "100vh",
             transition: "margin-right 0.4s cubic-bezier(0.4,0,0.2,1), margin-left 0.4s cubic-bezier(0.4,0,0.2,1)",
-            marginRight: c.chatOpen ? 380 : 0,
+            marginRight: c.mediaPanelOpen ? 380 : 0,
             marginLeft: c.highlightsSidebarOpen ? 320 : 0,
           }}
         >
@@ -99,27 +89,19 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                   }}
                 >
                   <ArrowLeft size={16} />
-                  Library
+                  Thư viện
                 </button>
               </TransitionLink>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <BookOpen size={16} color="var(--accent-primary)" />
                 <span style={{ fontSize: 14, fontWeight: 600 }}>
-                  {c.bookTitle || "Loading..."}
+                  {c.bookTitle || "Đang tải..."}
                 </span>
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <ThemeButton />
-              <VisualizeButton 
-                    content={c.content} 
-                    bookTitle={c.bookTitle} 
-                    bookId={bookId} 
-                    currentPage={c.currentPage} 
-                    highlightedText={c.selectedText}
-                    isAuthenticated={isAuthenticated}
-              />  
-               <button
+              <button
                 className="btn-ghost"
                 onClick={() => c.setHighlightsSidebarOpen((o: boolean) => !o)}
                 style={{
@@ -131,12 +113,12 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                 }}
               >
                 <Highlighter size={14} />
-                Highlights
+                Ghi chú
               </button>
-              {!c.chatOpen && (
+              {!c.mediaPanelOpen && (
                 <button
                   className="btn-ghost"
-                  onClick={() => c.setChatOpen(true)}
+                  onClick={() => c.setMediaPanelOpen(true)}
                   style={{
                     padding: "6px 14px",
                     display: "flex",
@@ -146,18 +128,33 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                     color: "var(--accent-primary)",
                   }}
                 >
-                  <MessageCircle size={14} />
-                  Fable Chat
+                  <Film size={14} />
+                  Tư liệu
+                  {c.activeAnnotations.length > 0 && (
+                    <span style={{
+                      width: 18,
+                      height: 18,
+                      borderRadius: "50%",
+                      background: "var(--accent-gradient)",
+                      color: "white",
+                      fontSize: 10,
+                      fontWeight: 700,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}>
+                      {c.activeAnnotations.length}
+                    </span>
+                  )}
                 </button>
               )}
-             
             </div>
           </div>
 
           <ReaderNavigation
             currentPage={c.currentPage}
             totalPages={c.totalPages}
-            chatOpen={c.chatOpen}
+            chatOpen={c.mediaPanelOpen}
             highlightsSidebarOpen={c.highlightsSidebarOpen}
             onPrev={c.goPrev}
             onNext={c.goNext}
@@ -181,7 +178,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
           <ReaderNavigation
             currentPage={c.currentPage}
             totalPages={c.totalPages}
-            chatOpen={c.chatOpen}
+            chatOpen={c.mediaPanelOpen}
             highlightsSidebarOpen={c.highlightsSidebarOpen}
             onPrev={c.goPrev}
             onNext={c.goNext}
@@ -195,31 +192,11 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
         </div>
 
         <AnimatePresence>
-          {c.chatOpen && (
-            <ChatSidebar
-              key="chat-sidebar"
-              interactionMode={c.interactionMode}
-              chatEndRef={c.chatEndRef}
-              messages={c.messages}
-              typewriterFinishedRef={c.typewriterFinishedRef}
-              isLoading={c.isLoading}
-              isTyping={c.isTyping}
-              isListening={c.isListening}
-              isSpeaking={c.isSpeaking}
-              interimTranscript={c.interimTranscript}
-              dictatedText={c.dictatedText}
-              input={c.input}
-              onInputChange={c.onInputChange}
-              onSubmitChat={() => c.onSendMessage()}
-              onStopResponse={c.onStopResponse}
-              onClearChat={c.onClearChat}
-              onClose={() => c.setChatOpen(false)}
-              onToggleVoice={c.toggleVoice}
-              onLastMessageFinished={c.onLastMessageFinished}
-              scrollToEnd={c.scrollToEnd}
-              modeSwitchMode={c.interactionMode}
-              onModeSwitchChange={c.setInteractionMode}
-              isAuthenticated={isAuthenticated}
+          {c.mediaPanelOpen && (
+            <MediaPanel
+              key="media-panel"
+              annotations={c.activeAnnotations}
+              onClose={() => c.setMediaPanelOpen(false)}
             />
           )}
           {c.highlightsSidebarOpen && (
@@ -229,12 +206,6 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               onClose={() => c.setHighlightsSidebarOpen(false)}
               onDeleteHighlight={c.onDeleteHighlight}
               onClearAll={c.onClearAllHighlights}
-              onSendToChat={(text) => {
-                c.setChatOpen(true);
-                const currentInput = c.input.trim();
-                const prefix = currentInput ? currentInput + " " : "";
-                c.setInput(`${prefix}"${text}"`);
-              }}
               onNavigate={c.jumpToPage}
             />
           )}
@@ -244,4 +215,3 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
     </>
   );
 }
-

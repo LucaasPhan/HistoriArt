@@ -25,7 +25,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { memo, useCallback, useState } from "react";
 import { toast } from "sonner";
-import GlareHover from "./react-bits/GlareHover";
+// GlareHover removed (react-bits cleanup)
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import {
@@ -143,16 +143,7 @@ const User = memo(
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >
                 <Avatar>
-                  <GlareHover
-                    glareAngle={-30}
-                    glareColor="#ffffff"
-                    glareOpacity={0.3}
-                    glareSize={300}
-                    playOnce={false}
-                    title="Account Settings"
-                    transitionDuration={800}
-                    className="z-1 rounded-full"
-                  >
+                    <div className="z-1 rounded-full" title="Account Settings">
                     <AvatarImage
                       className="h-[32px] w-[32px]"
                       src={user.image || "/assets/avatar/blue.webp"}
@@ -160,7 +151,7 @@ const User = memo(
                     <AvatarFallback className="h-[32px] w-[32px]">
                       {user.name.split(" ")[0]?.charAt(0) + user.name.split(" ")[1]?.charAt(0)}
                     </AvatarFallback>
-                  </GlareHover>
+                    </div>
                 </Avatar>
               </motion.div>
             </AnimatePresence>

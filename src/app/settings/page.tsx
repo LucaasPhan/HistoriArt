@@ -1,6 +1,6 @@
 "use client";
 
-import { User, BookOpen, Settings, Volume2, Lock } from "lucide-react";
+import { User, BookOpen, Settings, Lock } from "lucide-react";
 import PageMountSignaler from "@/components/PageMountSignaler";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/AuthContext";
@@ -9,7 +9,6 @@ import "./settings.css";
 import GeneralTab from "./tabs/GeneralTab";
 import AccountTab from "./tabs/AccountTab";
 import PreferencesTab from "./tabs/PreferencesTab";
-import VoiceTTSTab from "./tabs/VoiceTTSTab";
 import SecurityTab from "./tabs/SecurityTab";
 
 /* ── Main Settings Page ────────────────────────────────────── */
@@ -38,10 +37,6 @@ export default function SettingsPage() {
                     <BookOpen size={18} style={{ marginRight: 12 }} />
                     Reader Preferences
                   </TabsTrigger>
-                  <TabsTrigger value="voice-tts" className="settings-nav-item" style={{ justifyContent: "flex-start", border: "none" }}>
-                    <Volume2 size={18} style={{ marginRight: 12 }} />
-                    Voice & TTS
-                  </TabsTrigger>
                   <TabsTrigger value="security" className="settings-nav-item" style={{ justifyContent: "flex-start", border: "none" }}>
                     <Lock size={18} style={{ marginRight: 12 }} />
                     Security
@@ -63,9 +58,6 @@ export default function SettingsPage() {
                 </TabsContent>
                 <TabsContent value="preferences" className="mt-0 outline-none">
                   <PreferencesTab />
-                </TabsContent>
-                <TabsContent value="voice-tts" className="mt-0 outline-none">
-                  <VoiceTTSTab />
                 </TabsContent>
                 <TabsContent value="security" className="mt-0 outline-none">
                   <SecurityTab />

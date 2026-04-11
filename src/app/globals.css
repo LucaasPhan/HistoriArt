@@ -491,3 +491,14 @@ body {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* ─── Passage Trigger (Multimedia Annotations) ─────────────── */
+.passage-trigger {
+  border-bottom: 1px dashed var(--accent-primary);
+  cursor: default;
+  transition: background 0.2s ease;
+}
+.passage-trigger:hover {
+  background: var(--accent-glow);
+}
+
