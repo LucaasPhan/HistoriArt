@@ -1,8 +1,8 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
 import { memo, useState } from "react";
 import { Button } from "./ui/button";
-import { authClient } from "@/lib/auth-client";
 
 export const GoogleSignInButton = memo(() => {
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +53,7 @@ export const GoogleSignInButton = memo(() => {
           <span>Sign in with Google</span>
         </>
       </Button>
-      {error && <span className="text-red-500 text-sm">{error}</span>}
+      {error && <span className="text-sm text-red-500">{error}</span>}
     </div>
   );
 });

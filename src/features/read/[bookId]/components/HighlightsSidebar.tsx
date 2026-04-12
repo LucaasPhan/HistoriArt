@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
-import { motion, AnimatePresence, Reorder } from "framer-motion";
-import { X, ChevronDown, Check, Trash2 } from "lucide-react";
+import { AnimatePresence, motion, Reorder } from "framer-motion";
+import { Check, ChevronDown, Trash2, X } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 import { HighlightItem } from "./HighlightItem";
 import styles from "./HighlightsSidebar.module.css";
 
@@ -23,10 +23,16 @@ type HighlightsSidebarProps = {
   onNavigate?: (pageNumber: number) => void;
 };
 
-function CustomFilterDropdown({ value, onChange }: { value: "desc" | "asc" | "custom", onChange: (val: "desc" | "asc") => void }) {
+function CustomFilterDropdown({
+  value,
+  onChange,
+}: {
+  value: "desc" | "asc" | "custom";
+  onChange: (val: "desc" | "asc") => void;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -39,15 +45,14 @@ function CustomFilterDropdown({ value, onChange }: { value: "desc" | "asc" | "cu
 
   return (
     <div className={styles.dropdownContainer} ref={dropdownRef}>
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className={styles.dropdownTrigger}
-      >
+      <button type="button" onClick={() => setIsOpen(!isOpen)} className={styles.dropdownTrigger}>
         <span>
           {value === "desc" ? "Newest First" : value === "asc" ? "Oldest First" : "Custom Order"}
         </span>
-        <ChevronDown size={14} className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown
+          size={14}
+          className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
       <AnimatePresence>
@@ -62,11 +67,14 @@ function CustomFilterDropdown({ value, onChange }: { value: "desc" | "asc" | "cu
             <div className="flex flex-col">
               {[
                 { label: "Newest First", val: "desc" },
-                { label: "Oldest First", val: "asc" }
+                { label: "Oldest First", val: "asc" },
               ].map((item) => (
                 <button
                   key={item.val}
-                  onClick={() => { onChange(item.val as "desc" | "asc"); setIsOpen(false); }}
+                  onClick={() => {
+                    onChange(item.val as "desc" | "asc");
+                    setIsOpen(false);
+                  }}
                   className={`${styles.dropdownItem} ${value === item.val ? styles.dropdownItemActive : ""}`}
                 >
                   {item.label}
@@ -101,11 +109,13 @@ export default function HighlightsSidebar({
 
   if (highlights !== prevHighlights) {
     setPrevHighlights(highlights);
-    setOrderedHighlights([...highlights].sort((a, b) => {
-      const timeA = new Date(a.createdAt).getTime();
-      const timeB = new Date(b.createdAt).getTime();
-      return sortOrder === "desc" ? timeB - timeA : timeA - timeB;
-    }));
+    setOrderedHighlights(
+      [...highlights].sort((a, b) => {
+        const timeA = new Date(a.createdAt).getTime();
+        const timeB = new Date(b.createdAt).getTime();
+        return sortOrder === "desc" ? timeB - timeA : timeA - timeB;
+      }),
+    );
   }
 
   const handleSortChange = (val: "desc" | "asc") => {
@@ -123,10 +133,10 @@ export default function HighlightsSidebar({
     let isDesc = true;
     let isAsc = true;
     for (let i = 0; i < orderedHighlights.length - 1; i++) {
-        const timeA = new Date(orderedHighlights[i].createdAt).getTime();
-        const timeB = new Date(orderedHighlights[i+1].createdAt).getTime();
-        if (timeA < timeB) isDesc = false;
-        if (timeA > timeB) isAsc = false;
+      const timeA = new Date(orderedHighlights[i].createdAt).getTime();
+      const timeB = new Date(orderedHighlights[i + 1].createdAt).getTime();
+      if (timeA < timeB) isDesc = false;
+      if (timeA > timeB) isAsc = false;
     }
     if (isDesc) return "desc";
     if (isAsc) return "asc";
@@ -146,15 +156,8 @@ export default function HighlightsSidebar({
       <div className={styles.header}>
         <h2 className={styles.title}>Highlights</h2>
         <div className={styles.headerControls}>
-
-          <CustomFilterDropdown
-            value={detectedOrder}
-            onChange={handleSortChange}
-          />
-          <button
-            onClick={onClose}
-            className={styles.closeButton}
-          >
+          <CustomFilterDropdown value={detectedOrder} onChange={handleSortChange} />
+          <button onClick={onClose} className={styles.closeButton}>
             <X size={18} />
           </button>
         </div>
@@ -170,7 +173,14 @@ export default function HighlightsSidebar({
             axis="y"
             values={orderedHighlights}
             onReorder={setOrderedHighlights}
-            style={{ display: "flex", flexDirection: "column", gap: 12, padding: 0, margin: 0, listStyle: "none" }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 12,
+              padding: 0,
+              margin: 0,
+              listStyle: "none",
+            }}
           >
             {orderedHighlights.map((h, i) => (
               <Reorder.Item key={h.id || `highlight-${i}`} value={h}>
@@ -187,7 +197,15 @@ export default function HighlightsSidebar({
       </div>
 
       {highlights.length > 0 && onClearAll && (
-        <div style={{ padding: "16px", display: "flex", justifyContent: "flex-end", borderTop: "1px solid var(--border-subtle)", marginTop: "auto" }}>
+        <div
+          style={{
+            padding: "16px",
+            display: "flex",
+            justifyContent: "flex-end",
+            borderTop: "1px solid var(--border-subtle)",
+            marginTop: "auto",
+          }}
+        >
           <button
             onClick={() => setShowConfirm(true)}
             className="btn-secondary"
@@ -236,11 +254,19 @@ export default function HighlightsSidebar({
                 maxWidth: 320,
               }}
             >
-              <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)", marginBottom: 8 }}>
+              <h3
+                style={{
+                  fontSize: 16,
+                  fontWeight: 600,
+                  color: "var(--text-primary)",
+                  marginBottom: 8,
+                }}
+              >
                 Clear All Highlights
               </h3>
               <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 24 }}>
-                Are you sure you want to delete all highlights in this book? This action cannot be undone.
+                Are you sure you want to delete all highlights in this book? This action cannot be
+                undone.
               </p>
               <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
                 <button

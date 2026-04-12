@@ -1,12 +1,12 @@
-import React, { memo } from "react";
-import { Check, Copy, MoreVertical, BookOpen } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AnimatePresence, motion } from "framer-motion";
+import { BookOpen, Check, Copy, Film, MoreVertical } from "lucide-react";
+import { memo } from "react";
 
 type SelectionCoords = { x: number; y: number };
 
@@ -17,6 +17,8 @@ type SelectionTooltipProps = {
   onCopy: () => void;
   onHighlight: (color: string) => void;
   onLookUp?: () => void;
+  isAdmin?: boolean;
+  onAddMedia?: () => void;
 };
 
 const SelectionTooltip = memo(function SelectionTooltip({
@@ -26,8 +28,11 @@ const SelectionTooltip = memo(function SelectionTooltip({
   onCopy,
   onHighlight,
   onLookUp,
+  isAdmin,
+  onAddMedia,
 }: SelectionTooltipProps) {
-  const isSingleWord = selectedText.trim().split(/\s+/).length === 1 && selectedText.trim().length > 0;
+  const isSingleWord =
+    selectedText.trim().split(/\s+/).length === 1 && selectedText.trim().length > 0;
   return (
     <AnimatePresence>
       {selectionCoords && (
@@ -78,10 +83,12 @@ const SelectionTooltip = memo(function SelectionTooltip({
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="center"
-              className="bg-(--bg-secondary) border-(--border-subtle) text-(--text-primary) min-w-48 shadow-lg backdrop-blur-md flex flex-col gap-4 p-2!"
+              className="flex min-w-48 flex-col gap-4 border-(--border-subtle) bg-(--bg-secondary) p-2! text-(--text-primary) shadow-lg backdrop-blur-md"
             >
-              <div style={{ display: "flex", gap: 8, padding: "4px 8px", justifyContent: "center" }}>
-                {["#fef08a", "#bbf7d0", "#fbcfe8", "#bfdbfe"].map(color => (
+              <div
+                style={{ display: "flex", gap: 8, padding: "4px 8px", justifyContent: "center" }}
+              >
+                {["#fef08a", "#bbf7d0", "#fbcfe8", "#bfdbfe"].map((color) => (
                   <button
                     key={color}
                     onClick={(e) => {
@@ -97,8 +104,8 @@ const SelectionTooltip = memo(function SelectionTooltip({
                       cursor: "pointer",
                       transition: "transform 0.1s",
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                     aria-label={`Highlight with ${color}`}
                   />
                 ))}
@@ -113,6 +120,17 @@ const SelectionTooltip = memo(function SelectionTooltip({
                 >
                   <BookOpen size={14} className="mr-2" />
                   <span>Tra cứu</span>
+                </DropdownMenuItem>
+              )}
+              {isAdmin && onAddMedia && (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddMedia();
+                  }}
+                >
+                  <Film size={14} className="mr-2" />
+                  <span className="font-medium text-[var(--accent-primary)]">Thêm tư liệu</span>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem

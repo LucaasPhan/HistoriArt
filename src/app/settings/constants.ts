@@ -1,16 +1,35 @@
 "use client";
 
 export const PURPOSES = [
-  { value: "curiosity", label: "Curiosity", emoji: "🧐", description: "Learning for the sake of it." },
-  { value: "career", label: "Career Growth", emoji: "🚀", description: "Advancing my professional path." },
+  {
+    value: "curiosity",
+    label: "Curiosity",
+    emoji: "🧐",
+    description: "Learning for the sake of it.",
+  },
+  {
+    value: "career",
+    label: "Career Growth",
+    emoji: "🚀",
+    description: "Advancing my professional path.",
+  },
   { value: "exam", label: "Exam Prep", emoji: "📚", description: "Studying for a specific goal." },
-  { value: "hobby", label: "New Hobby", emoji: "🎨", description: "Exploring a personal interest." },
+  {
+    value: "hobby",
+    label: "New Hobby",
+    emoji: "🎨",
+    description: "Exploring a personal interest.",
+  },
   { value: "other", label: "Something else", emoji: "✨", description: "I have my own reasons." },
 ];
 
 export const COMM_PREFS = [
   { value: "concise", label: "Clear & Concise", description: "Get straight to the point." },
-  { value: "detailed", label: "Detailed & Exploratory", description: "Dive deep into every concept." },
+  {
+    value: "detailed",
+    label: "Detailed & Exploratory",
+    description: "Dive deep into every concept.",
+  },
   { value: "analogies", label: "Rich in Analogies", description: "Use stories to explain stuff." },
   { value: "socratic", label: "Socratic Method", description: "Guide me with questions." },
 ];

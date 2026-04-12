@@ -1,13 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import { SAMPLE_BOOKS } from "@/lib/sample-books";
 import { db } from "@/drizzle/db";
 import { bookChunks } from "@/drizzle/schema";
-import { eq, asc } from "drizzle-orm";
+import { SAMPLE_BOOKS } from "@/lib/sample-books";
+import { asc, eq } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ bookId: string }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ bookId: string }> }) {
   const { bookId } = await params;
   const page = parseInt(req.nextUrl.searchParams.get("page") || "1");
 
@@ -32,19 +29,19 @@ export async function GET(
     if (!chunk) {
       // Check if the book exists but is still processing
       const hasBook = await db.query.books.findFirst({
-         where: (books, { eq: eqFn }) => eqFn(books.id, bookId)
+        where: (books, { eq: eqFn }) => eqFn(books.id, bookId),
       });
       if (hasBook) {
-         if (hasBook.totalChunks === 0) {
-            // Processing state
-            return NextResponse.json({ 
-              content: null, 
-              isProcessing: true, 
-              pageNumber: page, 
-              totalPages: 1 
-            });
-         }
-         return NextResponse.json({ error: "Page out of bounds" }, { status: 404 });
+        if (hasBook.totalChunks === 0) {
+          // Processing state
+          return NextResponse.json({
+            content: null,
+            isProcessing: true,
+            pageNumber: page,
+            totalPages: 1,
+          });
+        }
+        return NextResponse.json({ error: "Page out of bounds" }, { status: 404 });
       }
     }
 

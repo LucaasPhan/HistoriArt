@@ -1,13 +1,13 @@
 "use client";
 
-import { User, BookOpen, Settings, Lock } from "lucide-react";
 import PageMountSignaler from "@/components/PageMountSignaler";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/AuthContext";
+import { BookOpen, Lock, Settings, User } from "lucide-react";
 import "./settings.css";
 
-import GeneralTab from "./tabs/GeneralTab";
 import AccountTab from "./tabs/AccountTab";
+import GeneralTab from "./tabs/GeneralTab";
 import PreferencesTab from "./tabs/PreferencesTab";
 import SecurityTab from "./tabs/SecurityTab";
 
@@ -22,22 +22,50 @@ export default function SettingsPage() {
           {/* ── Sidebar ── */}
           <aside className="settings-sidebar">
             <h1 className="settings-sidebar-title">Settings</h1>
-            <TabsList style={{ display: "flex", flexDirection: "column", gap: 4, background: "transparent", border: "none", padding: 0, height: "auto", width: "100%", alignItems: "stretch" }}>
-              <TabsTrigger value="general" className="settings-nav-item" style={{ justifyContent: "flex-start", border: "none" }}>
+            <TabsList
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 4,
+                background: "transparent",
+                border: "none",
+                padding: 0,
+                height: "auto",
+                width: "100%",
+                alignItems: "stretch",
+              }}
+            >
+              <TabsTrigger
+                value="general"
+                className="settings-nav-item"
+                style={{ justifyContent: "flex-start", border: "none" }}
+              >
                 <Settings size={18} style={{ marginRight: 12 }} />
                 General
               </TabsTrigger>
               {user && (
                 <>
-                  <TabsTrigger value="account" className="settings-nav-item" style={{ justifyContent: "flex-start", border: "none" }}>
+                  <TabsTrigger
+                    value="account"
+                    className="settings-nav-item"
+                    style={{ justifyContent: "flex-start", border: "none" }}
+                  >
                     <User size={18} style={{ marginRight: 12 }} />
                     Account
                   </TabsTrigger>
-                  <TabsTrigger value="preferences" className="settings-nav-item" style={{ justifyContent: "flex-start", border: "none" }}>
+                  <TabsTrigger
+                    value="preferences"
+                    className="settings-nav-item"
+                    style={{ justifyContent: "flex-start", border: "none" }}
+                  >
                     <BookOpen size={18} style={{ marginRight: 12 }} />
                     Reader Preferences
                   </TabsTrigger>
-                  <TabsTrigger value="security" className="settings-nav-item" style={{ justifyContent: "flex-start", border: "none" }}>
+                  <TabsTrigger
+                    value="security"
+                    className="settings-nav-item"
+                    style={{ justifyContent: "flex-start", border: "none" }}
+                  >
                     <Lock size={18} style={{ marginRight: 12 }} />
                     Security
                   </TabsTrigger>

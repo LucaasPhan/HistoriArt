@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { MessageCircle, Trash2, GripVertical } from "lucide-react";
+import { GripVertical, MessageCircle, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { Highlight } from "./HighlightsSidebar";
 
 type HighlightItemProps = {
@@ -73,7 +73,12 @@ export function HighlightItem({
               fontWeight: 500,
             }}
           >
-            Page {highlight.pageNumber} • {new Date(highlight.createdAt).toLocaleDateString()} {new Date(highlight.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            Page {highlight.pageNumber} • {new Date(highlight.createdAt).toLocaleDateString()}{" "}
+            {new Date(highlight.createdAt).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+            })}
           </span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>

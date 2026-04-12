@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
 import { User } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
-
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function AccountTab() {
   const router = useRouter();
@@ -35,29 +34,56 @@ export default function AccountTab() {
 
   const handleSave = async () => {
     const ageNum = parseInt(data.age, 10);
-    if (!data.firstName.trim() || !data.lastName.trim() || isNaN(ageNum) || ageNum < 16 || ageNum > 99 || !data.gender) {
+    if (
+      !data.firstName.trim() ||
+      !data.lastName.trim() ||
+      isNaN(ageNum) ||
+      ageNum < 16 ||
+      ageNum > 99 ||
+      !data.gender
+    ) {
       setError("Please ensure all fields are valid.");
       setTimeout(() => setError(null), 3000);
       return;
     }
-    setSaving(true); setError(null); setSuccess(false);
+    setSaving(true);
+    setError(null);
+    setSuccess(false);
     try {
       const res = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ firstName: data.firstName.trim(), lastName: data.lastName.trim(), age: ageNum, gender: data.gender }),
+        body: JSON.stringify({
+          firstName: data.firstName.trim(),
+          lastName: data.lastName.trim(),
+          age: ageNum,
+          gender: data.gender,
+        }),
       });
       if (!res.ok) throw new Error("Failed to save profile.");
-      setSuccess(true); router.refresh(); setTimeout(() => setSuccess(false), 3000);
-    } catch (err: any) { setError(err.message); } finally { setSaving(false); }
+      setSuccess(true);
+      router.refresh();
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
-  if (loading) return <div style={{ padding: "40px 0", color: "var(--text-secondary)" }}>Loading profile...</div>;
+  if (loading)
+    return (
+      <div style={{ padding: "40px 0", color: "var(--text-secondary)" }}>Loading profile...</div>
+    );
 
   const initials = (data.firstName[0] || "") + (data.lastName[0] || "");
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
       <section className="settings-section">
         <h2 className="settings-section-title">Profile</h2>
 
@@ -67,29 +93,57 @@ export default function AccountTab() {
             <div className="settings-input-wrapper">
               <div className="settings-avatar-placeholder">
                 {user?.image ? (
-                  <img src={user.image} alt="Avatar" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
+                  <img
+                    src={user.image}
+                    alt="Avatar"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                  />
                 ) : (
                   initials || <User size={16} />
                 )}
               </div>
-              <input type="text" className="settings-input" value={data.firstName} onChange={(e) => setData({ ...data, firstName: e.target.value })} />
+              <input
+                type="text"
+                className="settings-input"
+                value={data.firstName}
+                onChange={(e) => setData({ ...data, firstName: e.target.value })}
+              />
             </div>
           </div>
           <div className="settings-form-group">
             <label className="settings-label">Last name</label>
-            <input type="text" className="settings-input" value={data.lastName} onChange={(e) => setData({ ...data, lastName: e.target.value })} />
+            <input
+              type="text"
+              className="settings-input"
+              value={data.lastName}
+              onChange={(e) => setData({ ...data, lastName: e.target.value })}
+            />
           </div>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
           <div className="settings-form-group">
             <label className="settings-label">Age</label>
-            <input type="number" className="settings-input" value={data.age} onChange={(e) => setData({ ...data, age: e.target.value })} />
+            <input
+              type="number"
+              className="settings-input"
+              value={data.age}
+              onChange={(e) => setData({ ...data, age: e.target.value })}
+            />
             <p className="settings-hint">Must be between 16 and 99.</p>
           </div>
           <div className="settings-form-group">
             <label className="settings-label">Gender</label>
-            <select className="settings-input" value={data.gender} onChange={(e) => setData({ ...data, gender: e.target.value })}>
+            <select
+              className="settings-input"
+              value={data.gender}
+              onChange={(e) => setData({ ...data, gender: e.target.value })}
+            >
               <option value="">Chọn giới tính</option>
               <option value="male">Nam</option>
               <option value="female">Nữ</option>
@@ -104,8 +158,16 @@ export default function AccountTab() {
         <button onClick={handleSave} disabled={saving} className="settings-btn-primary">
           {saving ? "Saving..." : "Save Profile"}
         </button>
-        {error && <span className="settings-status" style={{ color: "var(--status-error)" }}>{error}</span>}
-        {success && <span className="settings-status" style={{ color: "var(--status-success)" }}>Profile saved!</span>}
+        {error && (
+          <span className="settings-status" style={{ color: "var(--status-error)" }}>
+            {error}
+          </span>
+        )}
+        {success && (
+          <span className="settings-status" style={{ color: "var(--status-success)" }}>
+            Profile saved!
+          </span>
+        )}
       </div>
     </motion.div>
   );

@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
 import { verifySession } from "@/dal/verifySession";
 import { db } from "@/drizzle/db";
 import { favoriteBooks } from "@/drizzle/schema";
 import { and, eq } from "drizzle-orm";
+import { NextResponse } from "next/server";
 
 // GET — return all favorite book IDs for the current user
 export async function GET() {
@@ -43,24 +43,14 @@ export async function POST(req: Request) {
     const existing = await db
       .select()
       .from(favoriteBooks)
-      .where(
-        and(
-          eq(favoriteBooks.userId, session.user.id),
-          eq(favoriteBooks.bookId, bookId)
-        )
-      )
+      .where(and(eq(favoriteBooks.userId, session.user.id), eq(favoriteBooks.bookId, bookId)))
       .limit(1);
 
     if (existing.length > 0) {
       // Un-favorite
       await db
         .delete(favoriteBooks)
-        .where(
-          and(
-            eq(favoriteBooks.userId, session.user.id),
-            eq(favoriteBooks.bookId, bookId)
-          )
-        );
+        .where(and(eq(favoriteBooks.userId, session.user.id), eq(favoriteBooks.bookId, bookId)));
       return NextResponse.json({ favorited: false });
     } else {
       // Favorite

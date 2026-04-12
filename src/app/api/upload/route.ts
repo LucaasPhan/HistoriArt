@@ -1,8 +1,8 @@
+import { verifySession } from "@/dal/verifySession";
 import { db } from "@/drizzle/db";
-import { books, bookChunks } from "@/drizzle/schema";
+import { bookChunks, books } from "@/drizzle/schema";
 import { NextRequest, NextResponse } from "next/server";
 import { extractText } from "unpdf";
-import { verifySession } from "@/dal/verifySession";
 
 /**
  * POST /api/upload
@@ -23,17 +23,12 @@ export async function POST(req: NextRequest) {
     const author = (formData.get("author") as string) || "Unknown";
 
     if (!file || file.type !== "application/pdf") {
-      return NextResponse.json(
-        { error: "Please upload a valid PDF file" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Please upload a valid PDF file" }, { status: 400 });
     }
 
     // 1. Extract text from PDF
     const arrayBuffer = await file.arrayBuffer();
-    const { text, totalPages } = await extractText(
-      new Uint8Array(arrayBuffer),
-    );
+    const { text, totalPages } = await extractText(new Uint8Array(arrayBuffer));
     const fullText = Array.isArray(text) ? text.join("\n") : text;
 
     if (!fullText.trim()) {
@@ -116,11 +111,7 @@ interface TextChunk {
  * Split text into overlapping chunks of approximately `maxChars` characters.
  * Tries to break at sentence boundaries.
  */
-function chunkText(
-  text: string,
-  maxChars: number,
-  overlap: number,
-): TextChunk[] {
+function chunkText(text: string, maxChars: number, overlap: number): TextChunk[] {
   const chunks: TextChunk[] = [];
   const sentences = text.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g) || [text];
 

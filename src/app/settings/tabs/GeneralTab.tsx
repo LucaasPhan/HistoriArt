@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
 import { ThemeButton } from "@/components/ThemeButton";
+import { motion } from "framer-motion";
+import { useState } from "react";
 
 export default function GeneralTab() {
   const [settings, setSettings] = useState({
@@ -16,13 +16,17 @@ export default function GeneralTab() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
       <section className="settings-section">
         <h2 className="settings-section-title">General</h2>
 
         <div className="settings-form-group">
           <label className="settings-label">Appearance</label>
-          <ThemeButton/>
+          <ThemeButton />
           <p className="settings-hint">Choose how LitCompanion looks to you.</p>
         </div>
 
@@ -48,7 +52,9 @@ export default function GeneralTab() {
         <div className="settings-toggle-group">
           <div className="settings-toggle-label-wrap">
             <span className="settings-toggle-title">Auto-play TTS</span>
-            <span className="settings-toggle-desc">Automatically start text-to-speech when opening a new page.</span>
+            <span className="settings-toggle-desc">
+              Automatically start text-to-speech when opening a new page.
+            </span>
           </div>
           <label className="settings-switch">
             <input

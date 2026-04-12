@@ -1,23 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { Clock, Star, Sparkles, Heart, Link2, Clipboard, Trash2, BookOpen, ExternalLink, AlertTriangle, Loader2 } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
-import { motion, AnimatePresence } from "framer-motion";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import PageMountSignaler from "@/components/PageMountSignaler";
 import { TransitionLink } from "@/components/TransitionLink";
-import Image from "next/image";
-import ReactMarkdown from "react-markdown";
-import { toast } from "sonner";
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
-  ContextMenuLabel,
-} from "@/components/ui/context-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +12,34 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import { authClient } from "@/lib/auth-client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  AlertTriangle,
+  BookOpen,
+  Clipboard,
+  Clock,
+  ExternalLink,
+  Heart,
+  Link2,
+  Loader2,
+  Sparkles,
+  Star,
+  Trash2,
+} from "lucide-react";
+import Image from "next/image";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import { toast } from "sonner";
 
 interface Book {
   id: string;
@@ -38,6 +50,7 @@ interface Book {
   coverGradient: [string, string];
   totalPages: number;
   totalChunks?: number;
+  estimatedReadTime?: number;
   fileName?: string | null;
 }
 
@@ -51,10 +64,6 @@ export default function LibraryPage() {
   const [hoveredBook, setHoveredBook] = useState<string | null>(null);
   const [lastPages, setLastPages] = useState<Record<string, number>>({});
   const [deleteTarget, setDeleteTarget] = useState<Book | null>(null);
-
-
-
-
 
   const {
     data: booksData,
@@ -96,8 +105,6 @@ export default function LibraryPage() {
     (book: Book) => !!book.fileName && (book.totalChunks === 0 || book.totalChunks === undefined),
     [],
   );
-
-
 
   // ── Favorites ──────────────────────────────────────────────────────────
   const { data: favoritesData } = useQuery({
@@ -167,7 +174,7 @@ export default function LibraryPage() {
   useEffect(() => {
     if (books.length === 0) return;
     const pages: Record<string, number> = {};
-    books.forEach(b => {
+    books.forEach((b) => {
       const saved = localStorage.getItem(`last_page_${b.id}`);
       if (saved) {
         const val = parseInt(saved, 10);
@@ -177,9 +184,13 @@ export default function LibraryPage() {
     setLastPages(pages);
   }, [books]);
 
-  const continueBooks = books.filter(b => lastPages[b.id]);
-  const uploadedBooks = books.filter(b => b.fileName && String(b.fileName).toLowerCase().endsWith(".pdf"));
-  const catalogBooks = books.filter(b => !b.fileName || !String(b.fileName).toLowerCase().endsWith(".pdf"));
+  const continueBooks = books.filter((b) => lastPages[b.id]);
+  const uploadedBooks = books.filter(
+    (b) => b.fileName && String(b.fileName).toLowerCase().endsWith(".pdf"),
+  );
+  const catalogBooks = books.filter(
+    (b) => !b.fileName || !String(b.fileName).toLowerCase().endsWith(".pdf"),
+  );
   // ── Helpers ────────────────────────────────────────────────────────────
   const isSampleBook = useCallback((book: Book) => {
     return !book.fileName;
@@ -198,7 +209,9 @@ export default function LibraryPage() {
 
   const renderBookCard = (book: Book, i: number, isContinue: boolean) => {
     const cardId = isContinue ? `continue-${book.id}` : book.id;
-    const href = isContinue ? `/read/${book.id}?page=${lastPages[book.id]}` : `/read/${book.id}?page=1`;
+    const href = isContinue
+      ? `/read/${book.id}?page=${lastPages[book.id]}`
+      : `/read/${book.id}?page=1`;
     const isFav = favoriteIds.has(book.id);
     const processing = isProcessing(book);
 
@@ -214,8 +227,26 @@ export default function LibraryPage() {
             whileHover={{ y: -8 }}
             style={{ height: "100%" }}
           >
-            <TransitionLink href={processing ? "#" : href} className="no-underline" onClick={processing ? (e: React.MouseEvent) => e.preventDefault() : undefined} style={processing ? { cursor: "default" } : undefined}>
-              <div className="book-card" style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden", borderRadius: "var(--radius-lg)", background: "var(--bg-card)", boxShadow: "var(--shadow-card)", transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)", position: "relative" }}>
+            <TransitionLink
+              href={processing ? "#" : href}
+              className="no-underline"
+              onClick={processing ? (e: React.MouseEvent) => e.preventDefault() : undefined}
+              style={processing ? { cursor: "default" } : undefined}
+            >
+              <div
+                className="book-card"
+                style={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflow: "hidden",
+                  borderRadius: "var(--radius-lg)",
+                  background: "var(--bg-card)",
+                  boxShadow: "var(--shadow-card)",
+                  transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  position: "relative",
+                }}
+              >
                 {/* Favorite badge */}
                 <AnimatePresence>
                   {isFav && (
@@ -278,7 +309,8 @@ export default function LibraryPage() {
                         style={{
                           position: "absolute",
                           inset: 0,
-                          background: "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent 70%)",
+                          background:
+                            "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent 70%)",
                         }}
                       />
                       <Sparkles size={40} color="rgba(255,255,255,0.85)" />
@@ -369,7 +401,7 @@ export default function LibraryPage() {
                           // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
                           const { node, ...rest } = props as any;
                           return <span {...rest} />;
-                        }
+                        },
                       }}
                     >
                       {book.description.replace(/--/g, "—")}
@@ -395,7 +427,15 @@ export default function LibraryPage() {
                       }}
                     >
                       {processing ? (
-                        <span style={{ display: "flex", alignItems: "center", gap: 4, color: "var(--accent-primary)", fontWeight: 600 }}>
+                        <span
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 4,
+                            color: "var(--accent-primary)",
+                            fontWeight: 600,
+                          }}
+                        >
                           <Loader2 size={12} style={{ animation: "spin 1.2s linear infinite" }} />
                           Processing…
                         </span>
@@ -403,10 +443,14 @@ export default function LibraryPage() {
                         <>
                           <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
                             <Clock size={12} />
-                            {book.totalPages}p
+                            {book.estimatedReadTime || book.totalPages}p
                           </span>
                           <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                            <Star size={12} fill="var(--accent-primary)" stroke="var(--accent-primary)" />
+                            <Star
+                              size={12}
+                              fill="var(--accent-primary)"
+                              stroke="var(--accent-primary)"
+                            />
                             4.8
                           </span>
                         </>
@@ -414,7 +458,16 @@ export default function LibraryPage() {
                     </div>
 
                     {isContinue ? (
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "var(--accent-primary)", display: "flex", alignItems: "center", gap: 4 }}>
+                      <span
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 600,
+                          color: "var(--accent-primary)",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 4,
+                        }}
+                      >
                         Page {lastPages[book.id]}
                       </span>
                     ) : (
@@ -456,7 +509,7 @@ export default function LibraryPage() {
               textTransform: "uppercase",
               color: "var(--text-tertiary)",
               fontFamily: "var(--font-sans)",
-              padding: "5px 10px 5px 10px"
+              padding: "5px 10px 5px 10px",
             }}
           >
             {book.title.length > 28 ? book.title.slice(0, 28) + "…" : book.title}
@@ -465,15 +518,21 @@ export default function LibraryPage() {
           <div style={{ padding: "2px 4px 4px" }}>
             {/* Open Book */}
             <ContextMenuItem
-              className="cursor-pointer rounded-lg px-2.5 py-2 gap-2.5 transition-colors duration-150"
+              className="cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 transition-colors duration-150"
               style={{ fontSize: 13, fontWeight: 500, fontFamily: "var(--font-sans)" }}
-              onSelect={() => window.location.href = href}
+              onSelect={() => (window.location.href = href)}
             >
-              <div style={{
-                width: 28, height: 28, borderRadius: 8,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                flexShrink: 0,
-              }}>
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
                 <BookOpen size={14} style={{ color: "var(--text-secondary)" }} />
               </div>
               <span>Open Book</span>
@@ -481,15 +540,21 @@ export default function LibraryPage() {
             <ContextMenuSeparator className="my-1" style={{ background: "var(--border-subtle)" }} />
             {/* Open in New Tab */}
             <ContextMenuItem
-              className="cursor-pointer rounded-lg px-2.5 py-2 gap-2.5 transition-colors duration-150"
+              className="cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 transition-colors duration-150"
               style={{ fontSize: 13, fontWeight: 500, fontFamily: "var(--font-sans)" }}
               onSelect={() => window.open(href, "_blank")}
             >
-              <div style={{
-                width: 28, height: 28, borderRadius: 8,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                flexShrink: 0,
-              }}>
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
                 <ExternalLink size={14} style={{ color: "var(--text-secondary)" }} />
               </div>
               <span>Open in New Tab</span>
@@ -499,7 +564,7 @@ export default function LibraryPage() {
 
             {/* Favorite */}
             <ContextMenuItem
-              className="cursor-pointer rounded-lg px-2.5 py-2 gap-2.5 transition-colors duration-150"
+              className="cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 transition-colors duration-150"
               style={{ fontSize: 13, fontWeight: 500, fontFamily: "var(--font-sans)" }}
               onSelect={() => {
                 if (!session?.user) {
@@ -509,16 +574,25 @@ export default function LibraryPage() {
                 toggleFavMutation.mutate(book.id);
               }}
             >
-              <div style={{
-                width: 28, height: 28, borderRadius: 8,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                flexShrink: 0,
-                transition: "background 0.2s ease",
-              }}>
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  transition: "background 0.2s ease",
+                }}
+              >
                 <Heart
                   size={14}
                   fill={isFav ? "var(--accent-primary)" : "none"}
-                  style={{ color: isFav ? "var(--accent-primary)" : "var(--text-secondary)", transition: "all 0.2s ease" }}
+                  style={{
+                    color: isFav ? "var(--accent-primary)" : "var(--text-secondary)",
+                    transition: "all 0.2s ease",
+                  }}
                 />
               </div>
               <span>{isFav ? "Unfavorite" : "Favorite"}</span>
@@ -528,15 +602,21 @@ export default function LibraryPage() {
 
             {/* Copy Link */}
             <ContextMenuItem
-              className="cursor-pointer rounded-lg px-2.5 py-2 gap-2.5 transition-colors duration-150"
+              className="cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 transition-colors duration-150"
               style={{ fontSize: 13, fontWeight: 500, fontFamily: "var(--font-sans)" }}
               onSelect={() => copyLink(book)}
             >
-              <div style={{
-                width: 28, height: 28, borderRadius: 8,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                flexShrink: 0,
-              }}>
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
                 <Link2 size={14} style={{ color: "var(--text-secondary)" }} />
               </div>
               <span>Copy Link</span>
@@ -544,15 +624,21 @@ export default function LibraryPage() {
             <ContextMenuSeparator className="my-1" style={{ background: "var(--border-subtle)" }} />
             {/* Copy Title */}
             <ContextMenuItem
-              className="cursor-pointer rounded-lg px-2.5 py-2 gap-2.5 transition-colors duration-150"
+              className="cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 transition-colors duration-150"
               style={{ fontSize: 13, fontWeight: 500, fontFamily: "var(--font-sans)" }}
               onSelect={() => copyTitle(book)}
             >
-              <div style={{
-                width: 28, height: 28, borderRadius: 8,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                flexShrink: 0,
-              }}>
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
                 <Clipboard size={14} style={{ color: "var(--text-secondary)" }} />
               </div>
               <span>Copy Title & Author</span>
@@ -561,17 +647,31 @@ export default function LibraryPage() {
             {/* Delete (DB books only) */}
             {!isSampleBook(book) && (
               <>
-                <ContextMenuSeparator className="my-1" style={{ background: "var(--border-subtle)" }} />
+                <ContextMenuSeparator
+                  className="my-1"
+                  style={{ background: "var(--border-subtle)" }}
+                />
                 <ContextMenuItem
-                  className="cursor-pointer rounded-lg px-2.5 py-2 gap-2.5 transition-colors duration-150"
-                  style={{ fontSize: 13, fontWeight: 500, fontFamily: "var(--font-sans)", color: "#ef4444" }}
+                  className="cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 transition-colors duration-150"
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 500,
+                    fontFamily: "var(--font-sans)",
+                    color: "#ef4444",
+                  }}
                   onSelect={() => setDeleteTarget(book)}
                 >
-                  <div style={{
-                    width: 28, height: 28, borderRadius: 8,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    flexShrink: 0,
-                  }}>
+                  <div
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: 8,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
                     <Trash2 size={14} style={{ color: "#ef4444" }} />
                   </div>
                   <span>Delete from Library</span>
@@ -585,233 +685,276 @@ export default function LibraryPage() {
   };
 
   return (
-   <>
-    <div
-      style={{
-        minHeight: "100vh",
-        padding: "100px 32px 80px",
-        maxWidth: 1300,
-        margin: "0 auto",
-        background: "var(--bg-primary)",
-      }}
-    >
-      {/* Header with Action */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        style={{ marginBottom: 56, display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}
-      >
-        <div>
-          <h1
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: "clamp(36px, 5vw, 52px)",
-              fontWeight: 700,
-              marginBottom: 8,
-              color: "var(--text-primary)",
-            }}
-          >
-            Thư viện
-          </h1>
-          <p style={{ color: "var(--text-secondary)", fontSize: 17, marginBottom: 0 }}>
-            {books.length} đầu sách đang chờ bạn
-          </p>
-        </div>
-        <div style={{ display: "flex", gap: 12 }}>
-        </div>
-      </motion.div>
-
-      {/* Books Grid */}
-      {loading ? (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-            gap: 28,
-          }}
-        >
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="shimmer"
-              style={{
-                height: 380,
-                borderRadius: "var(--radius-lg)",
-                background: "var(--bg-card)",
-              }}
-            />
-          ))}
-        </div>
-      ) : isBooksError ? (
-        <div
-          style={{
-            padding: "60px 20px",
-            textAlign: "center",
-            color: "var(--text-tertiary)",
-          }}
-        >
-          Không thể tải thư viện. Vui lòng tải lại trang.
-        </div>
-      ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 64 }}>
-          {/* Continue Reading Section */}
-          {continueBooks.length > 0 && (
-            <div style={{ marginTop: -16 }}>
-              <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 24, fontWeight: 700, marginBottom: 24, color: "var(--text-primary)" }}>
-                Đang đọc
-              </h2>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-                  gap: 28,
-                }}
-              >
-                {continueBooks.map((book, i) => renderBookCard(book, i, true))}
-              </div>
-            </div>
-          )}
-
-          {/* Uploaded Books Section */}
-          {uploadedBooks.length > 0 && (
-            <div>
-              <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 24, fontWeight: 700, marginBottom: 24, color: "var(--text-primary)" }}>
-                Sách tải lên
-              </h2>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-                  gap: 28,
-                }}
-              >
-                {uploadedBooks.map((book, i) => renderBookCard(book, i, false))}
-              </div>
-            </div>
-          )}
-
-          {/* Catalog Books Section */}
-          <div>
-            {(continueBooks.length > 0 || uploadedBooks.length > 0) && (
-              <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 24, fontWeight: 700, marginBottom: 24, color: "var(--text-primary)" }}>
-                Tủ sách lịch sử
-              </h2>
-            )}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-                gap: 28,
-              }}
-            >
-              {catalogBooks.map((book, i) => renderBookCard(book, i, false))}
-              
-
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-
-    {/* ── Premium Delete Confirmation Dialog ── */}
-    <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
-      <AlertDialogContent
+    <>
+      <div
         style={{
-          background: "var(--bg-card)",
-          border: "1px solid var(--border-subtle)",
-          borderRadius: 16,
-          boxShadow: "0 24px 80px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.08)",
-          padding: 0,
-          overflow: "hidden",
-          maxWidth: 420,
+          minHeight: "100vh",
+          padding: "100px 32px 80px",
+          maxWidth: 1300,
+          margin: "0 auto",
+          background: "var(--bg-primary)",
         }}
       >
-        {/* Accent danger bar */}
-        <div style={{
-          height: 3,
-          background: "linear-gradient(90deg, #ef4444, #f97316)",
-          borderRadius: "16px 16px 0 0",
-        }} />
-
-        <div style={{ padding: "28px 28px 24px" }}>
-          <AlertDialogHeader className="gap-3">
-            <div style={{
-              width: 48, height: 48, borderRadius: 12,
-              background: "rgba(239, 68, 68, 0.08)",
-              border: "1px solid rgba(239, 68, 68, 0.12)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              marginBottom: 4,
-            }}>
-              <AlertTriangle size={22} style={{ color: "#ef4444" }} />
-            </div>
-
-            <AlertDialogTitle style={{
-              fontSize: 18,
-              fontWeight: 700,
-              fontFamily: "var(--font-serif)",
-              color: "var(--text-primary)",
-            }}>
-              Delete &ldquo;{deleteTarget?.title}&rdquo;?
-            </AlertDialogTitle>
-
-            <AlertDialogDescription style={{
-              fontSize: 14,
-              lineHeight: 1.6,
-              color: "var(--text-secondary)",
-              fontFamily: "var(--font-sans)",
-            }}>
-              Thao tác này sẽ xóa vĩnh viễn sách và toàn bộ dữ liệu liên quan — bao gồm ghi chú và tiến trình đọc. Không thể hoàn tác.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <AlertDialogFooter style={{ marginTop: 24, gap: 10 }}>
-            <AlertDialogCancel
+        {/* Header with Action */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          style={{
+            marginBottom: 56,
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <h1
               style={{
-                borderRadius: 10,
-                padding: "10px 20px",
-                fontSize: 13,
-                fontWeight: 600,
-                fontFamily: "var(--font-sans)",
-                border: "1px solid var(--border-subtle)",
-                background: "var(--bg-secondary)",
+                fontFamily: "var(--font-serif)",
+                fontSize: "clamp(36px, 5vw, 52px)",
+                fontWeight: 700,
+                marginBottom: 8,
                 color: "var(--text-primary)",
-                cursor: "pointer",
-                transition: "all 0.15s ease",
               }}
             >
-              Cancel
-            </AlertDialogCancel>
+              Thư viện
+            </h1>
+            <p style={{ color: "var(--text-secondary)", fontSize: 17, marginBottom: 0 }}>
+              {books.length} đầu sách đang chờ bạn
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: 12 }}></div>
+        </motion.div>
 
-            <AlertDialogAction
-              onClick={() => {
-                if (deleteTarget) deleteMutation.mutate(deleteTarget.id);
-              }}
-              style={{
-                borderRadius: 10,
-                padding: "10px 20px",
-                fontSize: 13,
-                fontWeight: 600,
-                fontFamily: "var(--font-sans)",
-                background: "#ef4444",
-                color: "white",
-                border: "none",
-                cursor: "pointer",
-                transition: "all 0.15s ease",
-                display: "flex", alignItems: "center", gap: 6,
-              }}
-            >
-              Delete Forever
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </div>
-      </AlertDialogContent>
-    </AlertDialog>
+        {/* Books Grid */}
+        {loading ? (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+              gap: 28,
+            }}
+          >
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="shimmer"
+                style={{
+                  height: 380,
+                  borderRadius: "var(--radius-lg)",
+                  background: "var(--bg-card)",
+                }}
+              />
+            ))}
+          </div>
+        ) : isBooksError ? (
+          <div
+            style={{
+              padding: "60px 20px",
+              textAlign: "center",
+              color: "var(--text-tertiary)",
+            }}
+          >
+            Không thể tải thư viện. Vui lòng tải lại trang.
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 64 }}>
+            {/* Continue Reading Section */}
+            {continueBooks.length > 0 && (
+              <div style={{ marginTop: -16 }}>
+                <h2
+                  style={{
+                    fontFamily: "var(--font-serif)",
+                    fontSize: 24,
+                    fontWeight: 700,
+                    marginBottom: 24,
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  Đang đọc
+                </h2>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+                    gap: 28,
+                  }}
+                >
+                  {continueBooks.map((book, i) => renderBookCard(book, i, true))}
+                </div>
+              </div>
+            )}
 
+            {/* Uploaded Books Section */}
+            {uploadedBooks.length > 0 && (
+              <div>
+                <h2
+                  style={{
+                    fontFamily: "var(--font-serif)",
+                    fontSize: 24,
+                    fontWeight: 700,
+                    marginBottom: 24,
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  Sách tải lên
+                </h2>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+                    gap: 28,
+                  }}
+                >
+                  {uploadedBooks.map((book, i) => renderBookCard(book, i, false))}
+                </div>
+              </div>
+            )}
 
+            {/* Catalog Books Section */}
+            <div>
+              {(continueBooks.length > 0 || uploadedBooks.length > 0) && (
+                <h2
+                  style={{
+                    fontFamily: "var(--font-serif)",
+                    fontSize: 24,
+                    fontWeight: 700,
+                    marginBottom: 24,
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  Tủ sách lịch sử
+                </h2>
+              )}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+                  gap: 28,
+                }}
+              >
+                {catalogBooks.map((book, i) => renderBookCard(book, i, false))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
+      {/* ── Premium Delete Confirmation Dialog ── */}
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+      >
+        <AlertDialogContent
+          style={{
+            background: "var(--bg-card)",
+            border: "1px solid var(--border-subtle)",
+            borderRadius: 16,
+            boxShadow: "0 24px 80px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.08)",
+            padding: 0,
+            overflow: "hidden",
+            maxWidth: 420,
+          }}
+        >
+          {/* Accent danger bar */}
+          <div
+            style={{
+              height: 3,
+              background: "linear-gradient(90deg, #ef4444, #f97316)",
+              borderRadius: "16px 16px 0 0",
+            }}
+          />
 
-    <PageMountSignaler/>
-   </>
+          <div style={{ padding: "28px 28px 24px" }}>
+            <AlertDialogHeader className="gap-3">
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 12,
+                  background: "rgba(239, 68, 68, 0.08)",
+                  border: "1px solid rgba(239, 68, 68, 0.12)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 4,
+                }}
+              >
+                <AlertTriangle size={22} style={{ color: "#ef4444" }} />
+              </div>
+
+              <AlertDialogTitle
+                style={{
+                  fontSize: 18,
+                  fontWeight: 700,
+                  fontFamily: "var(--font-serif)",
+                  color: "var(--text-primary)",
+                }}
+              >
+                Delete &ldquo;{deleteTarget?.title}&rdquo;?
+              </AlertDialogTitle>
+
+              <AlertDialogDescription
+                style={{
+                  fontSize: 14,
+                  lineHeight: 1.6,
+                  color: "var(--text-secondary)",
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                Thao tác này sẽ xóa vĩnh viễn sách và toàn bộ dữ liệu liên quan — bao gồm ghi chú và
+                tiến trình đọc. Không thể hoàn tác.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <AlertDialogFooter style={{ marginTop: 24, gap: 10 }}>
+              <AlertDialogCancel
+                style={{
+                  borderRadius: 10,
+                  padding: "10px 20px",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  fontFamily: "var(--font-sans)",
+                  border: "1px solid var(--border-subtle)",
+                  background: "var(--bg-secondary)",
+                  color: "var(--text-primary)",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                Cancel
+              </AlertDialogCancel>
+
+              <AlertDialogAction
+                onClick={() => {
+                  if (deleteTarget) deleteMutation.mutate(deleteTarget.id);
+                }}
+                style={{
+                  borderRadius: 10,
+                  padding: "10px 20px",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  fontFamily: "var(--font-sans)",
+                  background: "#ef4444",
+                  color: "white",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
+                Delete Forever
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <PageMountSignaler />
+    </>
   );
 }

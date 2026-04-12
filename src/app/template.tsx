@@ -2,10 +2,9 @@
 
 import { GlobalNavigationHandler } from "@/components/TransitionLink";
 import { useIsMobile } from "@/hooks/useMobile";
-import { gsap, useGSAP } from "@/lib/gsap";
 import { usePreventBodyScroll } from "@/hooks/usePreventBodyScroll";
+import { gsap, useGSAP } from "@/lib/gsap";
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 
 let isInitialMount = true;
 
@@ -23,7 +22,7 @@ export const LogoLoading = ({
     >
       <div className="flex flex-col items-center justify-center gap-4 p-[20px]" ref={logoRef}>
         <p className="text-xs font-semibold tracking-[0.2em] text-white/80 uppercase md:text-sm">
-          <Image src="/litcompanion-textonly.svg" alt="Logo" width={300} height={300} />
+          HistoriArt
         </p>
 
         <div className="relative mt-2 h-px w-24 overflow-hidden bg-white/20">

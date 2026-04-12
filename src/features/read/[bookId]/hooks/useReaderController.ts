@@ -1,26 +1,26 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import type { BookData } from "@/lib/sample-books";
-import type { MediaAnnotation } from "../types";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { Highlight } from "../components/HighlightsSidebar";
+import type { MediaAnnotation } from "../types";
 
 type UseReaderControllerArgs = {
   bookId: string;
   sampleBook?: BookData;
 };
 
-export default function useReaderController({
-  bookId,
-  sampleBook,
-}: UseReaderControllerArgs) {
+export default function useReaderController({ bookId, sampleBook }: UseReaderControllerArgs) {
   const searchParams = useSearchParams();
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
-  
-  const [currentPage, setCurrentPage] = useState(!isNaN(initialPage) && initialPage >= 1 ? initialPage : 1);
+
+  const [currentPage, setCurrentPage] = useState(
+    !isNaN(initialPage) && initialPage >= 1 ? initialPage : 1,
+  );
   const [mediaPanelOpen, setMediaPanelOpen] = useState(false);
+  const [chaptersSidebarOpen, setChaptersSidebarOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(`last_page_${bookId}`, currentPage.toString());
@@ -110,6 +110,26 @@ export default function useReaderController({
     [sampleBook, dynamicBookTitle],
   );
 
+  // Parse chapters from sampleBook pages
+  const chapters = useMemo(() => {
+    if (!sampleBook) return [];
+    const chaps: { title: string; page: number }[] = [];
+
+    // Look for lines that start with "Chương" or "Phần"
+    const chapterRegex = /^(Chương|Phần)\s+[IVXLCDMC0-9]+\b/i;
+
+    for (let i = 1; i <= sampleBook.totalPages; i++) {
+      const text = sampleBook.pages[i];
+      if (text) {
+        const firstLine = text.trim().split("\n")[0];
+        if (firstLine && chapterRegex.test(firstLine)) {
+          chaps.push({ title: firstLine.trim(), page: i });
+        }
+      }
+    }
+    return chaps;
+  }, [sampleBook]);
+
   // Fetch page content for dynamic books
   useEffect(() => {
     if (!isDynamic) return;
@@ -127,9 +147,9 @@ export default function useReaderController({
         if (data.isProcessing) {
           setDynamicContent("Sách đang được xử lý. Vui lòng chờ...");
           setDynamicTotalPages(data.totalPages || 1);
-          
+
           timeoutId = setTimeout(() => {
-             setRetryTick(t => t + 1);
+            setRetryTick((t) => t + 1);
           }, 2000);
         } else if (data.content) {
           setDynamicContent(data.content);
@@ -235,18 +255,21 @@ export default function useReaderController({
       if (currentPage > 1) {
         setPageDirection("prev");
         setCurrentPage((p) => p - 1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }, [currentPage]),
     goNext: useCallback(() => {
       if (currentPage < totalPages) {
         setPageDirection("next");
         setCurrentPage((p) => p + 1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }, [currentPage, totalPages]),
     jumpToPage: useCallback(
       (page: number) => {
         setPageDirection(page > currentPage ? "next" : "prev");
         setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       },
       [currentPage],
     ),
@@ -275,5 +298,10 @@ export default function useReaderController({
       setHighlights([]);
       toast.success("Đã xóa tất cả ghi chú");
     }, []),
+
+    // Chapters
+    chapters,
+    chaptersSidebarOpen,
+    setChaptersSidebarOpen,
   };
 }

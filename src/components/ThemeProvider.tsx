@@ -17,10 +17,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as Theme | null;
     const initialTheme =
-      savedTheme ||
-      (window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light");
+      savedTheme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(initialTheme);
 
@@ -43,11 +40,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {

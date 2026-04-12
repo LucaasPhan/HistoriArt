@@ -87,17 +87,16 @@ async function callCloudflareAI<T>(
 export async function embedTexts(texts: string[]): Promise<number[][]> {
   if (!CLOUDFLARE_ACCOUNT_ID || CLOUDFLARE_ACCOUNT_ID.includes("CHANGE_ME")) {
     throw new Error(
-      "Missing or invalid CLOUDFLARE_ACCOUNT_ID. You forgot to replace 'CHANGE_ME' in your .env file!"
+      "Missing or invalid CLOUDFLARE_ACCOUNT_ID. You forgot to replace 'CHANGE_ME' in your .env file!",
     );
   }
   if (!CLOUDFLARE_API_TOKEN) {
     throw new Error("Missing CLOUDFLARE_API_TOKEN in .env file.");
   }
 
-  const response = await callCloudflareAI<{ data: number[][] }>(
-    "@cf/baai/bge-base-en-v1.5",
-    { text: texts }
-  );
+  const response = await callCloudflareAI<{ data: number[][] }>("@cf/baai/bge-base-en-v1.5", {
+    text: texts,
+  });
 
   return response.data;
 }

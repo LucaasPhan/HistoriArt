@@ -12,7 +12,7 @@ export function Navbar() {
   if (isReader) return null; // hide nav in reader mode
 
   return (
-    <nav className="nav-glass fixed top-0 left-0 right-0 z-50">
+    <nav className="nav-glass fixed top-0 right-0 left-0 z-50">
       <div
         style={{
           maxWidth: "1200px",
@@ -55,10 +55,10 @@ export function Navbar() {
               color: "var(--text-primary)",
             }}
           >
-            Histori<span className="gradient-text">art</span>
+            Histori<span className="gradient-text">Art</span>
           </span>
         </TransitionLink>
-        
+
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <TransitionLink href="/library">

@@ -1,10 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { SAMPLE_BOOKS } from "@/lib/sample-books";
-import { db } from "@/drizzle/db";
-import { books } from "@/drizzle/schema";
-import { bookChunks } from "@/drizzle/schema";
-import { eq, and } from "drizzle-orm";
 import { verifySession } from "@/dal/verifySession";
+import { db } from "@/drizzle/db";
+import { bookChunks, books } from "@/drizzle/schema";
+import { SAMPLE_BOOKS } from "@/lib/sample-books";
+import { and, eq } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
   try {
@@ -20,6 +19,7 @@ export async function GET() {
       coverUrl: null as string | null,
       coverGradient: b.coverGradient,
       totalPages: b.totalPages,
+      estimatedReadTime: b.estimatedReadTime,
       fileName: null,
     }));
 
@@ -43,6 +43,7 @@ export async function GET() {
         coverGradient: ["#667eea", "#764ba2"] as [string, string],
         totalPages: b.totalPages,
         totalChunks: b.totalChunks,
+        estimatedReadTime: b.estimatedReadTime,
         fileName: b.fileName,
       })),
       ...sampleBooksMapped,
@@ -59,6 +60,7 @@ export async function GET() {
       coverUrl: null,
       coverGradient: b.coverGradient,
       totalPages: b.totalPages,
+      estimatedReadTime: b.estimatedReadTime,
     }));
 
     return NextResponse.json({ books: sampleBooks });
@@ -79,7 +81,7 @@ export async function POST(request: NextRequest) {
     if (!title || !totalPages) {
       return NextResponse.json(
         { error: "Missing required fields: title, totalPages" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -95,20 +97,21 @@ export async function POST(request: NextRequest) {
         description: description || null,
         totalPages,
         totalChunks: totalPages,
+        estimatedReadTime: pages
+          ? Math.ceil(Object.values(pages).join(" ").trim().split(/\s+/).length / 200)
+          : null,
         userId,
       })
       .returning({ id: books.id });
 
     // Save pages as book_chunks for retrieval
     if (pages && typeof pages === "object") {
-      const chunkInserts = Object.entries(pages).map(
-        ([pageNum, content]) => ({
-          bookId: newBook.id,
-          chunkIndex: parseInt(pageNum),
-          pageNumber: parseInt(pageNum),
-          content: content as string,
-        })
-      );
+      const chunkInserts = Object.entries(pages).map(([pageNum, content]) => ({
+        bookId: newBook.id,
+        chunkIndex: parseInt(pageNum),
+        pageNumber: parseInt(pageNum),
+        content: content as string,
+      }));
 
       // Insert in batches of 50 to avoid query size limits
       for (let i = 0; i < chunkInserts.length; i += 50) {
@@ -124,10 +127,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (err) {
     console.error("Error adding book:", err);
-    return NextResponse.json(
-      { error: "Failed to add book" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to add book" }, { status: 500 });
   }
 }
 

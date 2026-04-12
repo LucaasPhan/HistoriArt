@@ -2,17 +2,17 @@ import {
   boolean,
   index,
   integer,
+  jsonb,
   pgTable,
-  smallint,
   serial,
+  smallint,
   text,
   timestamp,
   uuid,
   varchar,
   vector,
-  jsonb,
 } from "drizzle-orm/pg-core";
-import { Gender, PurposeOfUse, CommunicationPreference } from "./constants";
+import { CommunicationPreference, Gender } from "./constants";
 
 // ─── Auth Tables ──────────────────────────────────────────────
 
@@ -101,14 +101,15 @@ export const userProfiles = pgTable("user_profiles", {
   readingGoal: text("reading_goal").notNull().default(""),
   personality: text("personality").notNull().default(""),
   genZMode: boolean("gen_z_mode").notNull().default(false),
-  communicationPreference: text("communication_preference").$type<CommunicationPreference>().notNull(),
+  communicationPreference: text("communication_preference")
+    .$type<CommunicationPreference>()
+    .notNull(),
 
   // ── Meta ──────────────────────────────────────────────────
   onboardingComplete: boolean("onboarding_complete").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
-
 
 // ─── Book & App Tables ──────────────────────────────────────────────
 
@@ -123,6 +124,7 @@ export const books = pgTable(
     description: text("description"),
     totalPages: integer("total_pages").notNull().default(0),
     totalChunks: integer("total_chunks").notNull().default(0),
+    estimatedReadTime: integer("estimated_read_time"),
     userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     lastPageRead: integer("last_page_read").notNull().default(0),
@@ -130,12 +132,11 @@ export const books = pgTable(
   (table) => [index("idx_book_user").on(table.userId)],
 );
 
-
 export const bookChunks = pgTable(
   "book_chunks",
   {
     id: serial("id").primaryKey(),
-    bookId: uuid("book_id")
+    bookId: text("book_id")
       .notNull()
       .references(() => books.id, { onDelete: "cascade" }),
     chunkIndex: integer("chunk_index").notNull(),
@@ -153,9 +154,11 @@ export const bookChunks = pgTable(
 );
 
 export const conversations = pgTable("conversations", {
-  id:      uuid("id").defaultRandom().primaryKey(),
-  userId:  text("user_id").notNull().references(() => user.id),
-  bookId:  text("book_id").notNull(),
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id),
+  bookId: text("book_id").notNull(),
   messages: jsonb("messages")
     .$type<Array<{ role: "user" | "assistant"; content: string; timestamp: string }>>()
     .default([]),
@@ -178,6 +181,7 @@ export const mediaAnnotations = pgTable(
     thumbnailUrl: text("thumbnail_url"),
     autoplay: boolean("autoplay").notNull().default(true),
     createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => [
     index("idx_annotation_book").on(table.bookId),
@@ -199,9 +203,7 @@ export const quizQuestions = pgTable(
     explanation: text("explanation"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => [
-    index("idx_quiz_book").on(table.bookId),
-  ],
+  (table) => [index("idx_quiz_book").on(table.bookId)],
 );
 
 // ─── Quiz Results (user quiz scores) ──────────────────────────
@@ -216,9 +218,7 @@ export const quizResults = pgTable(
     totalQuestions: integer("total_questions").notNull(),
     completedAt: timestamp("completed_at").notNull().defaultNow(),
   },
-  (table) => [
-    index("idx_quiz_result_user").on(table.userId, table.bookId),
-  ],
+  (table) => [index("idx_quiz_result_user").on(table.userId, table.bookId)],
 );
 
 // ─── Scene Images (kept for migration compat) ─────────────────
@@ -236,9 +236,7 @@ export const sceneImages = pgTable(
     prompt: text("prompt").notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => [
-    index("idx_scene_user_book_page").on(table.userId, table.bookId, table.pageNumber),
-  ],
+  (table) => [index("idx_scene_user_book_page").on(table.userId, table.bookId, table.pageNumber)],
 );
 
 // ─── Favorite Books ───────────────────────────────────────────
@@ -253,8 +251,5 @@ export const favoriteBooks = pgTable(
     bookId: text("book_id").notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => [
-    index("idx_fav_user_book").on(table.userId, table.bookId),
-  ],
+  (table) => [index("idx_fav_user_book").on(table.userId, table.bookId)],
 );
-

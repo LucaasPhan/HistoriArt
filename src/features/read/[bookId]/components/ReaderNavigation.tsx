@@ -1,7 +1,7 @@
 "use client";
 
-import React, { memo, useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import React, { memo, useEffect, useRef, useState } from "react";
 
 type ReaderNavigationProps = {
   currentPage: number;
@@ -49,7 +49,7 @@ const ReaderNavigation = memo(function ReaderNavigation({
 
   const handlePageSubmit = (e?: React.SyntheticEvent) => {
     if (e && "preventDefault" in e) e.preventDefault();
-    
+
     if (pageInput.trim() === "") {
       setPageInput(currentPage.toString());
       setIsEditingPage(false);
@@ -70,8 +70,25 @@ const ReaderNavigation = memo(function ReaderNavigation({
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "16px 0", padding: "8px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: "14px", color: "var(--text-secondary)", fontFamily: "var(--font-mono, monospace)" }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        margin: "16px 0",
+        padding: "8px",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 16,
+          fontSize: "14px",
+          color: "var(--text-secondary)",
+          fontFamily: "var(--font-mono, monospace)",
+        }}
+      >
         <button
           onClick={() => {
             if (currentPage > 1) onPrev();
@@ -85,9 +102,9 @@ const ReaderNavigation = memo(function ReaderNavigation({
             display: "flex",
             alignItems: "center",
             padding: "4px",
-            color: "var(--text-primary)"
+            color: "var(--text-primary)",
           }}
-          aria-label="Previous Page"
+          aria-label="Trang trước"
         >
           <ChevronLeft size={20} />
         </button>
@@ -116,15 +133,22 @@ const ReaderNavigation = memo(function ReaderNavigation({
               />
             </form>
           ) : (
-            <span 
+            <span
               onClick={() => setIsEditingPage(true)}
-              style={{ cursor: "pointer", fontWeight: 600, color: "var(--text-primary)", textDecoration: "underline", textUnderlineOffset: 4, textDecorationColor: "var(--border-subtle)" }}
-              title="Jump to page"
+              style={{
+                cursor: "pointer",
+                fontWeight: 600,
+                color: "var(--text-primary)",
+                textDecoration: "underline",
+                textUnderlineOffset: 4,
+                textDecorationColor: "var(--border-subtle)",
+              }}
+              title="Nhảy đến trang"
             >
               {currentPage}
             </span>
           )}
-          <span>of {totalPages}</span>
+          <span>/ {totalPages}</span>
         </div>
 
         <button
@@ -140,9 +164,9 @@ const ReaderNavigation = memo(function ReaderNavigation({
             display: "flex",
             alignItems: "center",
             padding: "4px",
-            color: "var(--text-primary)"
+            color: "var(--text-primary)",
           }}
-          aria-label="Next Page"
+          aria-label="Trang sau"
         >
           <ChevronRight size={20} />
         </button>

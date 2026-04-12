@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
 import { Moon, Sun } from "lucide-react";
+import React from "react";
 import { useTheme } from "./ThemeProvider";
 
 export function ThemeButton() {

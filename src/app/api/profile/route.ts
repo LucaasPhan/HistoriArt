@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { verifySession } from "@/dal/verifySession";
 import { db } from "@/drizzle/db";
 import { userProfiles } from "@/drizzle/schema";
-import { verifySession } from "@/dal/verifySession";
 import { eq } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
   try {
@@ -28,12 +28,26 @@ export async function PUT(req: NextRequest) {
     if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await req.json();
-    const { purposeOfUse, customPurpose, communicationPreference, firstName, lastName, age, gender, readingGoal, personality, genZMode } = body;
+    const {
+      purposeOfUse,
+      customPurpose,
+      communicationPreference,
+      firstName,
+      lastName,
+      age,
+      gender,
+      readingGoal,
+      personality,
+      genZMode,
+    } = body;
 
-    const updates: Partial<Record<keyof typeof userProfiles._.columns, any>> = { updatedAt: new Date() };
+    const updates: Partial<Record<keyof typeof userProfiles._.columns, any>> = {
+      updatedAt: new Date(),
+    };
     if (purposeOfUse !== undefined) updates.purposeOfUse = purposeOfUse;
     if (customPurpose !== undefined) updates.customPurpose = customPurpose;
-    if (communicationPreference !== undefined) updates.communicationPreference = communicationPreference;
+    if (communicationPreference !== undefined)
+      updates.communicationPreference = communicationPreference;
     if (firstName !== undefined) updates.firstName = firstName;
     if (lastName !== undefined) updates.lastName = lastName;
     if (age !== undefined) updates.age = Number(age);
@@ -42,9 +56,7 @@ export async function PUT(req: NextRequest) {
     if (personality !== undefined) updates.personality = personality;
     if (genZMode !== undefined) updates.genZMode = genZMode;
 
-    await db.update(userProfiles)
-      .set(updates)
-      .where(eq(userProfiles.userId, session.user.id));
+    await db.update(userProfiles).set(updates).where(eq(userProfiles.userId, session.user.id));
 
     return NextResponse.json({ success: true });
   } catch (error) {
