@@ -75,6 +75,7 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   position: relative;
+  flex-shrink: 0;
   transition:
     border-color 0.25s ease,
     box-shadow 0.25s ease;
@@ -89,15 +90,14 @@
 
 .imageWrapper {
   width: 100%;
-  aspect-ratio: 16 / 9;
   overflow: hidden;
   background: var(--bg-tertiary);
 }
 
 .image {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  display: block;
   transition: transform 0.5s ease;
 }
 
@@ -140,7 +140,7 @@
 }
 
 .annotationText {
-  font-size: 15px;
+  font-size: 17px;
   line-height: 1.8;
   color: var(--text-secondary);
   font-family: var(--font-serif);
@@ -149,7 +149,7 @@
 
 .caption {
   padding: 14px 18px;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.7;
   color: var(--text-secondary);
   margin: 0;
