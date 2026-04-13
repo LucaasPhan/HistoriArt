@@ -50,7 +50,7 @@ export default function FeaturesSection() {
             margin: "12px auto 0",
           }}
         >
-          Trải nghiệm học lịch sử hoàn toàn mới với công nghệ ebook đa phương tiện.
+          Trải nghiệm học lịch sử hoàn toàn mới với công nghệ eBook đa phương tiện.
         </p>
       </div>
 
