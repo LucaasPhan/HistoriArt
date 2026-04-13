@@ -70,6 +70,7 @@ export async function POST(request: NextRequest) {
         mediaType,
         mediaUrl: mediaUrl || null,
         caption: caption || null,
+        authorId: session.user.id,
       })
       .returning();
 

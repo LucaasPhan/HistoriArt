@@ -24,6 +24,13 @@ export default function useReaderController({ bookId, sampleBook }: UseReaderCon
 
   useEffect(() => {
     localStorage.setItem(`last_page_${bookId}`, currentPage.toString());
+    
+    // Sync to DB
+    fetch("/api/reading-progress", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookId, pageNumber: currentPage })
+    }).catch(console.error);
   }, [currentPage, bookId]);
 
   const [selectedText, setSelectedText] = useState("");

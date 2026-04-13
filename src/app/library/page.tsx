@@ -171,9 +171,22 @@ export default function LibraryPage() {
     },
   });
 
+  // ── Reading Progress ───────────────────────────────────────────────────
+  const { data: progressData } = useQuery({
+    queryKey: ["reading-progress"],
+    queryFn: async () => {
+      const res = await fetch("/api/reading-progress");
+      if (!res.ok) return { progress: {} };
+      return (await res.json()) as { progress: Record<string, number> };
+    },
+    enabled: !!session?.user,
+  });
+
   useEffect(() => {
     if (books.length === 0) return;
     const pages: Record<string, number> = {};
+    
+    // First apply local storage backup
     books.forEach((b) => {
       const saved = localStorage.getItem(`last_page_${b.id}`);
       if (saved) {
@@ -181,10 +194,19 @@ export default function LibraryPage() {
         if (val > 1 && val < b.totalPages) pages[b.id] = val;
       }
     });
-    setLastPages(pages);
-  }, [books]);
 
-  const continueBooks = books.filter((b) => lastPages[b.id]);
+    // Override with DB progress if available
+    if (progressData?.progress) {
+      books.forEach((b) => {
+        const val = progressData.progress[b.id];
+        if (val && val > 1 && val < b.totalPages) pages[b.id] = val;
+      });
+    }
+
+    setLastPages(pages);
+  }, [books, progressData]);
+
+  const continueBooks = session?.user ? books.filter((b) => lastPages[b.id]) : [];
   const uploadedBooks = books.filter(
     (b) => b.fileName && String(b.fileName).toLowerCase().endsWith(".pdf"),
   );

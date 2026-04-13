@@ -8,6 +8,7 @@ import {
   smallint,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
   varchar,
   vector,
@@ -180,6 +181,7 @@ export const mediaAnnotations = pgTable(
     caption: text("caption"),
     thumbnailUrl: text("thumbnail_url"),
     autoplay: boolean("autoplay").notNull().default(true),
+    authorId: text("author_id").references(() => user.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
@@ -252,4 +254,20 @@ export const favoriteBooks = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [index("idx_fav_user_book").on(table.userId, table.bookId)],
+);
+
+// ─── Reading Progress ─────────────────────────────────────────
+
+export const readingProgress = pgTable(
+  "reading_progress",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    bookId: text("book_id").notNull(),
+    lastPageRead: integer("last_page_read").notNull().default(1),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex("idx_reading_progress_user_book").on(table.userId, table.bookId)],
 );

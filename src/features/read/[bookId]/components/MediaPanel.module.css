@@ -141,10 +141,14 @@
 .annotationBlock {
   display: flex;
   gap: 14px;
-  padding: 40px 20px 20px 20px;
+  padding: 20px 20px 20px 20px;
   text-align: justify;
   background: var(--accent-glow);
   border-left: 3px solid var(--accent-primary);
+}
+
+.annotationBlockAdmin {
+  padding-top: 40px;
 }
 
 .annotationText {

@@ -106,35 +106,12 @@ function MediaCard({
       )}
 
       {mediaType === "annotation" && (
-        <div className={styles.annotationBlock}>
+        <div className={`${styles.annotationBlock} ${isAdmin ? styles.annotationBlockAdmin : ""}`}>
           <p className={styles.annotationText}>{caption}</p>
         </div>
       )}
 
       {mediaType !== "annotation" && caption && <p className={styles.caption}>{caption}</p>}
-
-      <div className={styles.typeBadge}>
-        {mediaType === "image" && (
-          <>
-            <ImageIcon size={10} /> Hình ảnh
-          </>
-        )}
-        {mediaType === "video" && (
-          <>
-            <Play size={10} /> Video
-          </>
-        )}
-        {mediaType === "audio" && (
-          <>
-            <Volume2 size={10} /> Âm thanh
-          </>
-        )}
-        {mediaType === "annotation" && (
-          <>
-            <FileText size={10} /> Chú thích
-          </>
-        )}
-      </div>
     </motion.div>
   );
 }
