@@ -551,3 +551,19 @@ body {
   background: rgba(212, 110, 86, 0.3);
   border-bottom: 1px solid var(--accent-primary); /* Solid line on hover for emphasis */
 }
+
+@keyframes pulse-highlight {
+  0% {
+    background: rgba(212, 110, 86, 0.15);
+  }
+  50% {
+    background: rgba(212, 110, 86, 0.6);
+  }
+  100% {
+    background: rgba(212, 110, 86, 0.15);
+  }
+}
+
+.pulse-highlight {
+  animation: pulse-highlight 2s ease;
+}

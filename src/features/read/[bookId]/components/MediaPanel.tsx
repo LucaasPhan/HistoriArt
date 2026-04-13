@@ -29,14 +29,33 @@ function MediaCard({
   onEdit?: (annotation: MediaAnnotation) => void;
   onDelete?: (id: string) => void;
 }) {
-  const { mediaType, mediaUrl, caption } = annotation;
+  const { mediaType, mediaUrl, caption, passageText } = annotation;
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (!passageText) return;
+
+    // Prevent scrolling if clicking on buttons or interactive media
+    if ((e.target as HTMLElement).closest("button, iframe, audio")) {
+      return;
+    }
+
+    const activeEl = document.querySelector(`[data-passage-id="${annotation.id}"]`);
+    if (activeEl) {
+      activeEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      activeEl.classList.add("pulse-highlight");
+      setTimeout(() => {
+        activeEl.classList.remove("pulse-highlight");
+      }, 2000);
+    }
+  };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       id={`media-card-${annotation.id}`}
-      className={`${styles.card} ${isFocused ? styles.cardFocused : ""}`}
+      className={`${styles.card} ${isFocused ? styles.cardFocused : ""} ${passageText ? styles.cardClickable : ""}`}
+      onClick={handleCardClick}
     >
       {/* Admin Actions */}
       {isAdmin && (
