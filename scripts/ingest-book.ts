@@ -4,6 +4,7 @@
  *
  * Usage:
  *   PDF from URL:  npx tsx scripts/ingest-book.ts --url <pdf-url> --title "..." --author "..." --era "..." [--id <slug>] [--description "..."]
+ *   PDF from File: npx tsx scripts/ingest-book.ts --pdf <local-path.pdf> --title "..." --author "..." --era "..." [--id <slug>] [--description "..."]
  *   Raw text file: npx tsx scripts/ingest-book.ts --raw <file.txt> --title "..." --author "..." --era "..." [--id <slug>] [--description "..."]
  *
  * The raw .txt file must use ---PAGE--- on its own line to delimit pages.
@@ -62,14 +63,15 @@ function validateArgs(args: Record<string, string>): void {
   for (const required of ["title", "author", "era"]) {
     if (!args[required]) missing.push(`--${required}`);
   }
-  if (!args.url && !args.raw) missing.push("--url or --raw");
+  if (!args.url && !args.raw && !args.pdf) missing.push("--url, --pdf, or --raw");
 
   if (missing.length > 0) {
     console.error(`\nMissing required arguments: ${missing.join(", ")}`);
     console.error(`
 Usage:
-  PDF:  npx tsx scripts/ingest-book.ts --url <pdf-url> --title "..." --author "..." --era "..." [--id <slug>] [--description "..."]
-  Raw:  npx tsx scripts/ingest-book.ts --raw <file.txt> --title "..." --author "..." --era "..." [--id <slug>] [--description "..."]
+  PDF URL:   npx tsx scripts/ingest-book.ts --url <pdf-url> --title "..." --author "..." --era "..."
+  PDF File:  npx tsx scripts/ingest-book.ts --pdf <local-path.pdf> --title "..." --author "..." --era "..."
+  Raw Text:  npx tsx scripts/ingest-book.ts --raw <file.txt> --title "..." --author "..." --era "..."
 
 Era options:
   "Chống Mông Nguyên"
@@ -199,7 +201,17 @@ async function ingestPdfFromUrl(url: string): Promise<Record<number, string>> {
   console.log(`\nFetching PDF from: ${url}`);
   const buffer = await fetchBuffer(url);
   console.log(`Downloaded ${(buffer.length / 1024).toFixed(1)} KB`);
+  return ingestPdfBuffer(buffer);
+}
 
+async function ingestPdfFromFile(filePath: string): Promise<Record<number, string>> {
+  console.log(`\nReading PDF from: ${filePath}`);
+  const buffer = fs.readFileSync(filePath);
+  console.log(`Read ${(buffer.length / 1024).toFixed(1)} KB from disk`);
+  return ingestPdfBuffer(buffer);
+}
+
+async function ingestPdfBuffer(buffer: Buffer): Promise<Record<number, string>> {
   const pdfParse = await ensurePdfParse();
   const pages: Record<number, string> = {};
   let pageCount = 0;
@@ -418,7 +430,7 @@ function printPreview(pages: Record<number, string>, count = 3): void {
 }
 
 function writeToJson(entry: BookEntry): void {
-  const jsonPath = path.resolve(process.cwd(), "data/books.json");
+  const jsonPath = path.resolve(process.cwd(), "src/data/books.json");
 
   let books: BookEntry[] = [];
   if (fs.existsSync(jsonPath)) {
@@ -460,6 +472,10 @@ async function main() {
   let pages: Record<number, string>;
   if (args.url) {
     pages = await ingestPdfFromUrl(args.url);
+    // Auto-trim front matter for PDF mode only
+    pages = findChapterOneStart(pages);
+  } else if (args.pdf) {
+    pages = await ingestPdfFromFile(args.pdf);
     // Auto-trim front matter for PDF mode only
     pages = findChapterOneStart(pages);
   } else {
