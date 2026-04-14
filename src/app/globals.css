@@ -41,7 +41,7 @@
   --cursor-text: url("/cursor/text.svg") 12 16, text;
   --cursor-grab: url("/cursor/grab.svg") 12 12, grab;
   --cursor-grabbing: url("/cursor/grabbed.svg") 12 12, grabbing;
-  
+
   --sidebar-left-width: 320px;
   --sidebar-right-width: 480px;
 }
@@ -152,7 +152,7 @@ body {
     --sidebar-left-width: 0px;
     --sidebar-right-width: 0px;
   }
-  
+
   .mobile-hide-text {
     display: none !important;
   }
@@ -374,6 +374,20 @@ body {
   border-color: var(--text-secondary);
   color: var(--text-primary);
   background: var(--bg-secondary);
+}
+
+/* ─── Generic Input Overrides ──────────────────────────────── */
+.page-number-input {
+  -moz-appearance: textfield;
+}
+.page-number-input::-webkit-outer-spin-button,
+.page-number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.page-number-input:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 /* ─── Reading Mode ─────────────────────────────────────────── */

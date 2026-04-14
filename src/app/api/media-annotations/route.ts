@@ -1,8 +1,16 @@
 import { verifySession } from "@/dal/verifySession";
 import { db } from "@/drizzle/db";
 import { mediaAnnotations } from "@/drizzle/schema";
+import { v2 as cloudinary } from "cloudinary";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export const dynamic = "force-dynamic";
 
@@ -97,6 +105,39 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Missing id param" }, { status: 400 });
     }
 
+    // Retrieve the annotation first to check if there's a Cloudinary URL to clean up
+    const existingAnnotations = await db
+      .select()
+      .from(mediaAnnotations)
+      .where(eq(mediaAnnotations.id, id));
+
+    if (existingAnnotations.length > 0) {
+      const url = existingAnnotations[0].mediaUrl;
+      if (url && url.includes("cloudinary.com") && url.includes("historiart_media/")) {
+        // Parse "historiart_media/something.ext"
+        const parts = url.split("historiart_media/");
+        if (parts.length > 1) {
+          const filenameWithExt = parts[1];
+          // Strip extension to get the raw public_id
+          const publicId = "historiart_media/" + filenameWithExt.split(".")[0];
+
+          try {
+            // Destroy the file from Cloudinary (using resource_type: "raw" as it doesn't hurt for other types, but wait actually we probably need to specify image/video, or we can just send "image" and "video" to make sure one works)
+            await cloudinary.uploader.destroy(publicId, {
+              resource_type:
+                existingAnnotations[0].mediaType === "video" ||
+                existingAnnotations[0].mediaType === "audio"
+                  ? "video"
+                  : "image",
+            });
+          } catch (cloudinaryErr) {
+            console.error("Failed to destroy from Cloudinary:", cloudinaryErr);
+            // We continue to delete from Postgres even if Cloudinary fails
+          }
+        }
+      }
+    }
+
     await db.delete(mediaAnnotations).where(eq(mediaAnnotations.id, id));
 
     return NextResponse.json({ success: true });
@@ -121,6 +162,41 @@ export async function PUT(request: NextRequest) {
         { error: "Missing required fields (id, mediaType)" },
         { status: 400 },
       );
+    }
+
+    // Retrieve existing annotation to check if we need to clean up old Cloudinary file
+    const existingAnnotations = await db
+      .select()
+      .from(mediaAnnotations)
+      .where(eq(mediaAnnotations.id, id));
+
+    if (existingAnnotations.length > 0) {
+      const oldUrl = existingAnnotations[0].mediaUrl;
+      // If the URL has changed and the old one was a Cloudinary URL
+      if (
+        oldUrl &&
+        oldUrl !== mediaUrl &&
+        oldUrl.includes("cloudinary.com") &&
+        oldUrl.includes("historiart_media/")
+      ) {
+        const parts = oldUrl.split("historiart_media/");
+        if (parts.length > 1) {
+          const filenameWithExt = parts[1];
+          const publicId = "historiart_media/" + filenameWithExt.split(".")[0];
+
+          try {
+            await cloudinary.uploader.destroy(publicId, {
+              resource_type:
+                existingAnnotations[0].mediaType === "video" ||
+                existingAnnotations[0].mediaType === "audio"
+                  ? "video"
+                  : "image",
+            });
+          } catch (cloudinaryErr) {
+            console.error("Failed to destroy old media from Cloudinary during PUT:", cloudinaryErr);
+          }
+        }
+      }
     }
 
     const updatedAnnotation = await db

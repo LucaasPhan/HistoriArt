@@ -1,16 +1,19 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Film, Pen, Trash2, Volume2, X } from "lucide-react";
+import { Film, Pen, Trash2, X } from "lucide-react";
 import { memo, useEffect } from "react";
 import type { MediaAnnotation } from "../types";
-import styles from "./MediaPanel.module.css";
+import CustomAudioPlayer from "./CustomAudioPlayer";
+import styles from "./styles/MediaPanel.module.css";
 
 type MediaPanelProps = {
   annotations: MediaAnnotation[];
   onClose: () => void;
   focusedAnnotationId?: string | null;
   isAdmin?: boolean;
+  playingMedia?: MediaAnnotation | null;
+  onPlayMedia?: (media: MediaAnnotation | null) => void;
   onEdit?: (annotation: MediaAnnotation) => void;
   onDelete?: (id: string) => void;
   onAddGeneralMedia?: () => void;
@@ -20,12 +23,16 @@ function MediaCard({
   annotation,
   isFocused,
   isAdmin,
+  playingMedia,
+  onPlayMedia,
   onEdit,
   onDelete,
 }: {
   annotation: MediaAnnotation;
   isFocused?: boolean;
   isAdmin?: boolean;
+  playingMedia?: MediaAnnotation | null;
+  onPlayMedia?: (media: MediaAnnotation | null) => void;
   onEdit?: (annotation: MediaAnnotation) => void;
   onDelete?: (id: string) => void;
 }) {
@@ -86,22 +93,42 @@ function MediaCard({
 
       {mediaType === "video" && mediaUrl && (
         <div className={styles.videoWrapper}>
-          <iframe
-            src={mediaUrl}
-            title={caption || "Video tư liệu"}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className={styles.iframe}
-          />
+          {playingMedia?.id === annotation.id ? (
+            <iframe
+              src={mediaUrl}
+              title={caption || "Video tư liệu"}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className={styles.iframe}
+            />
+          ) : (
+            <div
+              className={styles.videoPlaceholder}
+              onClick={(e) => {
+                e.stopPropagation();
+                onPlayMedia?.(annotation);
+              }}
+            >
+              <Film size={24} color="var(--text-tertiary)" />
+              <div className={styles.playOverlay}>
+                <div className={styles.playButton}>▶</div>
+              </div>
+              <span style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 12 }}>
+                Bấm để phát video
+              </span>
+            </div>
+          )}
         </div>
       )}
 
       {mediaType === "audio" && mediaUrl && (
-        <div className={styles.audioWrapper}>
-          <Volume2 size={20} color="var(--accent-primary)" />
-          <audio controls src={mediaUrl} className={styles.audio}>
-            Trình duyệt không hỗ trợ audio.
-          </audio>
+        <div className={`${styles.audioWrapper} ${isAdmin ? styles.audioWrapperAdmin : ""}`}>
+          <CustomAudioPlayer
+            src={mediaUrl}
+            annotation={annotation}
+            isActive={playingMedia?.id === annotation.id}
+            onPlayStart={() => onPlayMedia?.(annotation)}
+          />
         </div>
       )}
 
@@ -121,6 +148,8 @@ const MediaPanel = memo(function MediaPanel({
   onClose,
   focusedAnnotationId,
   isAdmin,
+  playingMedia,
+  onPlayMedia,
   onEdit,
   onDelete,
   onAddGeneralMedia,
@@ -192,6 +221,8 @@ const MediaPanel = memo(function MediaPanel({
               annotation={a}
               isFocused={focusedAnnotationId === a.id}
               isAdmin={isAdmin}
+              playingMedia={playingMedia}
+              onPlayMedia={onPlayMedia}
               onEdit={onEdit}
               onDelete={onDelete}
             />

@@ -2,7 +2,7 @@ import { AnimatePresence, motion, Reorder } from "framer-motion";
 import { Check, ChevronDown, Trash2, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { HighlightItem } from "./HighlightItem";
-import styles from "./HighlightsSidebar.module.css";
+import styles from "./styles/HighlightsSidebar.module.css";
 
 export type Highlight = {
   id: string;

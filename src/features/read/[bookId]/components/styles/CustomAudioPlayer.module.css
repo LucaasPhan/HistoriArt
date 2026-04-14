@@ -1,0 +1,161 @@
+.playerContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.playPauseBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--accent-gradient, var(--accent-primary));
+  color: white;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.playPauseBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb, 124, 58, 237), 0.3);
+}
+
+.progressContainer {
+  flex: 1;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.progressBarTrack {
+  width: 100%;
+  height: 6px;
+  background: rgba(100, 100, 100, 0.2);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  transition: height 0.2s ease;
+}
+
+.progressContainer:hover .progressBarTrack {
+  height: 8px;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: var(--accent-primary);
+  border-radius: 4px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+.progressBarFill::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.progressContainer:hover .progressBarFill::after {
+  opacity: 1;
+}
+
+.timeInfo {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  min-width: 70px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.muteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.muteBtn:hover {
+  color: var(--text-primary);
+}
+
+.volumeControl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.volumeSliderContainer {
+  width: 0px;
+  opacity: 0;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  transition:
+    width 0.3s ease,
+    opacity 0.3s ease;
+  overflow: hidden;
+}
+
+.volumeControl:hover .volumeSliderContainer,
+.volumeControl:focus-within .volumeSliderContainer {
+  width: 60px;
+  opacity: 1;
+}
+
+.volumeTrack {
+  width: 100%;
+  height: 4px;
+  background: rgba(100, 100, 100, 0.2);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  transition: height 0.2s ease;
+}
+
+.volumeSliderContainer:hover .volumeTrack {
+  height: 6px;
+}
+
+.volumeFill {
+  height: 100%;
+  background: var(--text-secondary);
+  border-radius: 2px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  transition: background 0.2s ease;
+}
+
+.volumeSliderContainer:hover .volumeFill {
+  background: var(--text-primary);
+}

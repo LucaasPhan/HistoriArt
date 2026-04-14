@@ -1,7 +1,8 @@
 "use client";
 
-import { Play } from "lucide-react";
+import { Film, Play, Volume2 } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";
+import styles from "./DemoPreviewSection.module.css";
 
 export default function DemoPreviewSection() {
   return (
@@ -30,25 +31,9 @@ export default function DemoPreviewSection() {
       </div>
 
       {/* Mock reader + sidebar */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 320px",
-          gap: 0,
-          background: "var(--bg-card)",
-          border: "1px solid var(--border-subtle)",
-          borderRadius: "var(--radius-lg)",
-          overflow: "hidden",
-          minHeight: 350,
-        }}
-      >
+      <div className={styles.demoGrid}>
         {/* Mock reader content */}
-        <div
-          style={{
-            padding: "32px 36px",
-            borderRight: "1px solid var(--border-subtle)",
-          }}
-        >
+        <div className={styles.readerContent}>
           <p
             style={{
               fontSize: 14,
@@ -108,7 +93,7 @@ export default function DemoPreviewSection() {
               fontWeight: 600,
             }}
           >
-            <Play size={14} color="var(--accent-primary)" />
+            <Film size={14} color="var(--accent-primary)" />
             Tư liệu liên quan
           </div>
 
@@ -144,11 +129,12 @@ export default function DemoPreviewSection() {
                   style={{
                     width: "40%",
                     height: "100%",
-                    background: "var(--accent-gradient)",
+                    background: "var(--accent-primary)",
                     borderRadius: 4,
                   }}
                 />
               </div>
+              <Volume2 size={16} />
             </div>
             <p
               style={{

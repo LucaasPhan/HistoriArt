@@ -120,6 +120,7 @@ const ReaderNavigation = memo(function ReaderNavigation({
                 value={pageInput}
                 onChange={(e) => setPageInput(e.target.value)}
                 onBlur={handlePageSubmit}
+                className="page-number-input"
                 style={{
                   width: "50px",
                   textAlign: "center",

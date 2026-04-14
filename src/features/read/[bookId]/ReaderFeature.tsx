@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, BookOpen, Film, Highlighter, List, Pencil } from "lucide-react";
 import React, { useEffect } from "react";
 import AddMediaModal from "./components/AddMediaModal";
+import AudioIsland from "./components/AudioIsland";
 import ChaptersSidebar from "./components/ChaptersSidebar";
 import HighlightsSidebar from "./components/HighlightsSidebar";
 import MediaPanel from "./components/MediaPanel";
@@ -16,6 +17,7 @@ import PinVerifyModal from "./components/PinVerifyModal";
 import ReaderContent from "./components/ReaderContent";
 import ReaderNavigation from "./components/ReaderNavigation";
 import SelectionTooltip from "./components/SelectionTooltip";
+import VideoPopup from "./components/VideoPopup";
 import useReaderController from "./hooks/useReaderController";
 import type { MediaAnnotation } from "./types";
 
@@ -27,6 +29,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
   const [isAddMediaModalOpen, setIsAddMediaModalOpen] = React.useState(false);
   const [isAddingMedia, setIsAddingMedia] = React.useState(false);
   const [editingAnnotation, setEditingAnnotation] = React.useState<MediaAnnotation | null>(null);
+  const [playingMedia, setPlayingMedia] = React.useState<MediaAnnotation | null>(null);
 
   // Admin page editing state
   const [pinVerified, setPinVerified] = React.useState(false);
@@ -139,6 +142,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
 
   return (
     <>
+      <audio id="historiart-global-audio" preload="metadata" />
       <div
         style={{
           minHeight: "100vh",
@@ -166,7 +170,8 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             transition:
               "margin-right 0.4s cubic-bezier(0.4,0,0.2,1), margin-left 0.4s cubic-bezier(0.4,0,0.2,1)",
             marginRight: c.mediaPanelOpen ? "var(--sidebar-right-width)" : 0,
-            marginLeft: c.highlightsSidebarOpen || c.chaptersSidebarOpen ? "var(--sidebar-left-width)" : 0,
+            marginLeft:
+              c.highlightsSidebarOpen || c.chaptersSidebarOpen ? "var(--sidebar-left-width)" : 0,
           }}
         >
           {/* Top bar */}
@@ -380,6 +385,8 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               }}
               focusedAnnotationId={focusedAnnotationId}
               isAdmin={isAdmin}
+              playingMedia={playingMedia}
+              onPlayMedia={setPlayingMedia}
               onEdit={handleEditAnnotation}
               onDelete={handleDeleteAnnotation}
               onAddGeneralMedia={() => {
@@ -406,6 +413,23 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               currentPage={c.currentPage}
               onClose={() => c.setChaptersSidebarOpen(false)}
               onNavigate={c.jumpToPage}
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {!c.mediaPanelOpen && playingMedia?.mediaType === "audio" && (
+            <AudioIsland
+              key="audio-island"
+              annotation={playingMedia}
+              onClose={() => setPlayingMedia(null)}
+            />
+          )}
+          {!c.mediaPanelOpen && playingMedia?.mediaType === "video" && (
+            <VideoPopup
+              key="video-popup"
+              annotation={playingMedia}
+              onClose={() => setPlayingMedia(null)}
             />
           )}
         </AnimatePresence>

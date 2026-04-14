@@ -2,7 +2,7 @@
 
 import { Lock } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import styles from "./PinVerifyModal.module.css";
+import styles from "./styles/PinVerifyModal.module.css";
 
 interface PinVerifyModalProps {
   isOpen: boolean;

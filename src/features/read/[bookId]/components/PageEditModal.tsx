@@ -2,7 +2,7 @@
 
 import { Check, Pencil, Save, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import styles from "./PageEditModal.module.css";
+import styles from "./styles/PageEditModal.module.css";
 
 interface PageEditModalProps {
   isOpen: boolean;

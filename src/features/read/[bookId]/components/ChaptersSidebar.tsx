@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Book, X } from "lucide-react";
-import styles from "./HighlightsSidebar.module.css";
+import styles from "./styles/HighlightsSidebar.module.css";
 
 export type ChapterInfo = {
   title: string;

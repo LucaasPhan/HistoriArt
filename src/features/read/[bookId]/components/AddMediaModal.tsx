@@ -1,12 +1,8 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import React, { useEffect, useState } from "react";
+import imageCompression from "browser-image-compression";
+import { Film, Save, X } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 import type { MediaAnnotation } from "../types";
+import styles from "./styles/AddMediaModal.module.css";
 
 type AddMediaModalProps = {
   isOpen: boolean;
@@ -32,10 +28,96 @@ export default function AddMediaModal({
   const [mediaType, setMediaType] = useState<"image" | "video" | "audio" | "annotation">("image");
   const [mediaUrl, setMediaUrl] = useState("");
   const [caption, setCaption] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | Blob | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({ mediaType, mediaUrl, caption });
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setPendingFile(null);
+      return;
+    }
+
+    // 100MB limit check
+    if (file.size > 100 * 1024 * 1024) {
+      alert("Kích thước file vượt quá giới hạn 100MB");
+      e.target.value = "";
+      setPendingFile(null);
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      let fileToUpload: File | Blob = file;
+
+      // Automatically compress if it's an image
+      if (file.type.startsWith("image/")) {
+        try {
+          const options = {
+            maxSizeMB: 2,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+          };
+          fileToUpload = await imageCompression(file, options);
+        } catch (error) {
+          console.error("Compression error:", error);
+          // If compression fails, use original
+        }
+      }
+
+      setPendingFile(fileToUpload);
+      setMediaUrl(""); // Clear the manual URL box since we have a file waiting
+    } catch (error: any) {
+      console.error("Lỗi xử lý file:", error);
+      alert(error.message || "Xử lý file thất bại");
+      e.target.value = "";
+      setPendingFile(null);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
+    if (pendingFile) {
+      try {
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append("file", pendingFile);
+
+        const response = await fetch("/api/upload-media", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || "Upload failed");
+        }
+
+        const data = await response.json();
+        onSubmit({ mediaType, mediaUrl: data.url, caption });
+        setPendingFile(null);
+      } catch (error: any) {
+        console.error("Lỗi lưu file:", error);
+        alert(error.message || "Lưu file thất bại");
+      } finally {
+        setIsUploading(false);
+      }
+    } else {
+      onSubmit({ mediaType, mediaUrl, caption });
+    }
+  };
+
+  const handleMediaTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setMediaType(e.target.value as any);
+    setMediaUrl("");
+    setPendingFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   // Reset form when opened or editData changes
@@ -49,157 +131,211 @@ export default function AddMediaModal({
         setMediaType("image");
         setMediaUrl("");
         setCaption("");
+        setPendingFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
       }
     }
   }, [isOpen, editData]);
 
-  return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="gap-0 overflow-hidden border-[var(--border-subtle)] bg-[var(--bg-primary)]/95 p-0 text-[var(--text-primary)] shadow-[var(--shadow-card)] backdrop-blur-xl sm:max-w-lg">
-        <DialogHeader className="border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)]/50 px-6 py-5">
-          <DialogTitle className="font-serif text-xl font-semibold text-[var(--text-primary)]">
-            {editData ? "Cập Nhật Tư Liệu" : "Thêm Tư Liệu"}
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            {editData ? "Chỉnh sửa thông tin tư liệu đã chọn" : "Thêm tư liệu mới cho đoạn văn bản"}
-          </DialogDescription>
-        </DialogHeader>
+  // Handle Escape key
+  useEffect(() => {
+    if (!isOpen) return;
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6 px-6 py-5">
-          {/* Passage Preview */}
-          <div className="flex flex-col gap-2">
-            <label className="text-xs font-semibold tracking-wider text-[var(--text-tertiary)] uppercase">
-              Đoạn văn bản đã chọn
-            </label>
-            <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)]/80 px-4 py-3 leading-relaxed text-[var(--text-secondary)] italic shadow-inner">
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.header}>
+          <div className={styles.headerLeft}>
+            <div className={styles.editIcon}>
+              <Film size={18} color="white" />
+            </div>
+            <div>
+              <div className={styles.title}>{editData ? "Cập Nhật Tư Liệu" : "Thêm Tư Liệu"}</div>
+              <div className={styles.pageLabel}>Gắn media vào trang hoặc đoạn văn bản</div>
+            </div>
+          </div>
+          <button
+            type="button"
+            className={styles.closeBtn}
+            onClick={(e) => {
+              e.preventDefault();
+              onClose();
+            }}
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className={styles.formContainer}>
+          <div className={styles.formGroup}>
+            <label className={styles.subLabel}>Đoạn văn bản đã chọn</label>
+            <div className={styles.passageBox}>
               {passageText ? (
                 `"${passageText.length > 150 ? passageText.substring(0, 150) + "..." : passageText}"`
               ) : (
-                <span className="text-[var(--text-tertiary)] not-italic">
+                <span style={{ fontStyle: "normal", color: "var(--text-tertiary)" }}>
                   Tư liệu chung cho trang này (không gắn với đoạn văn cụ thể)
                 </span>
               )}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {/* Media Type */}
-            <div className="flex flex-col gap-2 md:col-span-1">
-              <label htmlFor="mediaType" className="text-sm font-medium text-[var(--text-primary)]">
+          <div className={styles.grid2}>
+            <div className={styles.formGroup}>
+              <label htmlFor="mediaType" className={styles.label}>
                 Loại tư liệu
               </label>
-              <div className="relative">
-                <select
-                  id="mediaType"
-                  value={mediaType}
-                  onChange={(e) =>
-                    setMediaType(e.target.value as "image" | "video" | "audio" | "annotation")
-                  }
-                  className="w-full cursor-pointer appearance-none rounded-lg border border-[var(--border-hover)] bg-[var(--bg-primary)] px-4 py-2.5 text-[var(--text-primary)] transition-all outline-none focus:border-[var(--accent-primary)] focus:ring-4 focus:ring-[var(--accent-glow)]"
-                >
-                  <option value="image">Hình ảnh</option>
-                  <option value="video">Video nhúng (iframe)</option>
-                  <option value="audio">Âm thanh</option>
-                  <option value="annotation">Chỉ văn bản giải nghĩa</option>
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[var(--text-tertiary)]">
-                  <svg
-                    className="h-4 w-4 fill-current"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                  </svg>
-                </div>
-              </div>
+              <select
+                id="mediaType"
+                value={mediaType}
+                onChange={handleMediaTypeChange}
+                className={styles.select}
+              >
+                <option value="image">Hình ảnh</option>
+                <option value="video">Video nhúng (iframe)</option>
+                <option value="audio">Âm thanh</option>
+                <option value="annotation">Chỉ văn bản giải nghĩa</option>
+              </select>
             </div>
 
-            {/* URL Input */}
             {mediaType !== "annotation" && (
-              <div className="flex flex-col gap-2 md:col-span-2">
-                <label
-                  htmlFor="mediaUrl"
-                  className="flex items-center justify-between text-sm font-medium text-[var(--text-primary)]"
-                >
-                  Đường dẫn{" "}
-                  {mediaType === "video"
-                    ? "nhúng (Embed URL)"
-                    : mediaType === "audio"
-                      ? "âm thanh"
-                      : "ảnh"}
-                  {mediaType === "video" && (
-                    <span className="ml-2 text-xs font-normal text-[var(--text-tertiary)]">
-                      VD: youtube.com/embed/...
+              <div className={styles.formGroup} style={{ gap: "16px" }}>
+                {/* Upload Section */}
+                <div>
+                  <label className={styles.label} style={{ marginBottom: "8px", display: "block" }}>
+                    Tải lên{" "}
+                    {mediaType === "audio" ? "âm thanh" : mediaType === "video" ? "video" : "ảnh"}
+                  </label>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className={styles.fileInput}
+                    accept={
+                      mediaType === "audio"
+                        ? "audio/*"
+                        : mediaType === "video"
+                          ? "video/*"
+                          : "image/*"
+                    }
+                    onChange={handleFileUpload}
+                    disabled={isUploading || isSubmitting}
+                  />
+                  {isUploading && (
+                    <span
+                      style={{
+                        fontSize: "13px",
+                        color: "var(--accent-primary)",
+                        marginTop: "8px",
+                        display: "block",
+                        fontWeight: 500,
+                      }}
+                    >
+                      Đang xử lý & tải lên (vui lòng đợi)...
                     </span>
                   )}
-                </label>
-                <input
-                  id="mediaUrl"
-                  type="url"
-                  required
-                  value={mediaUrl}
-                  onChange={(e) => setMediaUrl(e.target.value)}
-                  placeholder={
-                    mediaType === "video"
-                      ? "https://www.youtube.com/embed/XXXXX"
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div style={{ flex: 1, height: "1px", background: "var(--border-subtle)" }} />
+                  <span
+                    style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 600 }}
+                  >
+                    HOẶC NHẬP URL
+                  </span>
+                  <div style={{ flex: 1, height: "1px", background: "var(--border-subtle)" }} />
+                </div>
+
+                {/* URL Section */}
+                <div>
+                  <label
+                    htmlFor="mediaUrl"
+                    className={styles.label}
+                    style={{ marginBottom: "8px", display: "block" }}
+                  >
+                    Đường dẫn{" "}
+                    {mediaType === "video"
+                      ? "nhúng (Embed URL)"
                       : mediaType === "audio"
-                        ? "https://example.com/audio.mp3"
-                        : "https://example.com/image.jpg"
-                  }
-                  className="w-full rounded-lg border border-[var(--border-hover)] bg-[var(--bg-primary)] px-4 py-2.5 text-[var(--text-primary)] transition-all outline-none placeholder:text-[var(--text-tertiary)] focus:border-[var(--accent-primary)] focus:ring-4 focus:ring-[var(--accent-glow)]"
-                />
+                        ? "âm thanh"
+                        : "ảnh"}
+                  </label>
+                  <input
+                    id="mediaUrl"
+                    type="url"
+                    required={!pendingFile}
+                    value={mediaUrl}
+                    onChange={(e) => setMediaUrl(e.target.value)}
+                    placeholder={
+                      mediaType === "video"
+                        ? "https://www.youtube.com/embed/XXXXX"
+                        : mediaType === "audio"
+                          ? "https://example.com/audio.mp3"
+                          : "https://example.com/image.jpg"
+                    }
+                    className={styles.input}
+                    disabled={isUploading || isSubmitting}
+                  />
+                </div>
               </div>
             )}
           </div>
 
-          {/* Caption */}
-          <div className="flex flex-col gap-2">
-            <label htmlFor="caption" className="text-sm font-medium text-[var(--text-primary)]">
+          <div className={styles.formGroup}>
+            <label htmlFor="caption" className={styles.label}>
               Mô tả / Hiệu đính
             </label>
             <textarea
               id="caption"
-              rows={4}
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
               placeholder="Bạn muốn lưu ý điều gì về chi tiết lịch sử này? Nhập nội dung diễn giải..."
-              className="w-full resize-none rounded-lg border border-[var(--border-hover)] bg-[var(--bg-primary)] px-4 py-3 leading-relaxed text-[var(--text-primary)] transition-all outline-none placeholder:text-[var(--text-tertiary)] focus:border-[var(--accent-primary)] focus:ring-4 focus:ring-[var(--accent-glow)]"
+              className={styles.textarea}
+              spellCheck={false}
             />
           </div>
+        </form>
 
-          {/* Actions */}
-          <div className="mt-2 flex justify-end gap-3 border-t border-[var(--border-subtle)] pt-6">
+        <div className={styles.footer} style={{ marginTop: 24 }}>
+          <div /> {/* Left spacer */}
+          <div className={styles.actions}>
             <button
               type="button"
-              onClick={onClose}
+              className={styles.cancelBtn}
+              onClick={(e) => {
+                e.preventDefault();
+                onClose();
+              }}
               disabled={isSubmitting}
-              className="rounded-lg border border-[var(--border-hover)] bg-transparent px-5 py-2.5 font-medium text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] disabled:opacity-50"
             >
-              Hủy bỏ
+              Hủy
             </button>
             <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex min-w-[120px] items-center justify-center rounded-lg px-6 py-2.5 font-medium text-white shadow-md transition-all active:scale-95 disabled:opacity-50"
-              style={{
-                background: "var(--accent-gradient)",
-                boxShadow: "var(--shadow-glow)",
+              type="button"
+              className={styles.saveBtn}
+              onClick={(e) => {
+                e.preventDefault();
+                handleSubmit();
               }}
+              disabled={isSubmitting}
             >
-              {isSubmitting ? (
-                <div className="flex items-center gap-2">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  Đang xử lý...
-                </div>
-              ) : editData ? (
-                "Cập nhật"
-              ) : (
-                "Lưu tư liệu"
-              )}
+              <Save size={14} />
+              {isSubmitting ? "Đang lưu..." : editData ? "Cập nhật" : "Lưu tư liệu"}
             </button>
           </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </div>
+    </div>
   );
 }
