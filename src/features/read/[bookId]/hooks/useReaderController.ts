@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { Highlight } from "../components/HighlightsSidebar";
 import type { MediaAnnotation } from "../types";
@@ -91,6 +91,8 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
 
   // Dynamic book state (for DB books)
   const [dynamicContent, setDynamicContent] = useState<string>("");
+  const pageCache = useRef<Record<number, { content: string; totalPages: number }>>({});
+  const pageRequests = useRef<Record<number, boolean>>({});
   const [dynamicTotalPages, setDynamicTotalPages] = useState<number>(0);
   const [dynamicBookTitle, setDynamicBookTitle] = useState<string>("");
   const [pageLoading, setPageLoading] = useState(false);
@@ -117,6 +119,34 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
 
   // Fetch page content for dynamic books
   useEffect(() => {
+    const prefetchPage = (page: number) => {
+      if (pageCache.current[page] || pageRequests.current[page]) return;
+      pageRequests.current[page] = true;
+      fetch(`/api/books/${bookId}/pages?page=${page}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.content && !data.isProcessing) {
+            pageCache.current[page] = { content: data.content, totalPages: data.totalPages };
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          delete pageRequests.current[page];
+        });
+    };
+
+    const cached = pageCache.current[currentPage];
+    if (cached) {
+      setDynamicContent(cached.content);
+      setDynamicTotalPages(cached.totalPages);
+      setPageLoading(false);
+      
+      // Prefetch neighbors
+      prefetchPage(currentPage + 1);
+      if (currentPage > 1) prefetchPage(currentPage - 1);
+      return;
+    }
+
     setPageLoading(true);
     setDynamicContent(""); // Clear old content immediately to avoid flashing
 
@@ -124,6 +154,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
     let timeoutId: ReturnType<typeof setTimeout>;
 
     const fetchContent = async () => {
+      pageRequests.current[currentPage] = true;
       try {
         const res = await fetch(`/api/books/${bookId}/pages?page=${currentPage}`);
         const data = await res.json();
@@ -139,6 +170,10 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
         } else if (data.content) {
           setDynamicContent(data.content);
           setDynamicTotalPages(data.totalPages);
+          pageCache.current[currentPage] = { content: data.content, totalPages: data.totalPages };
+          
+          prefetchPage(currentPage + 1);
+          if (currentPage > 1) prefetchPage(currentPage - 1);
         } else if (data.error) {
           setDynamicContent(data.error);
         }
@@ -146,6 +181,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
         if (isActive) setDynamicContent("Không thể tải nội dung trang.");
       } finally {
         if (isActive) setPageLoading(false);
+        delete pageRequests.current[currentPage];
       }
     };
 
