@@ -16,29 +16,29 @@ async function run() {
   try {
     await sql`ALTER TABLE "books" ADD COLUMN IF NOT EXISTS "era" text;`;
     console.log("Added era column");
-  } catch (e) {
+  } catch (e: any) {
     console.error("Error adding era:", e.message);
   }
 
   try {
     await sql`ALTER TABLE "books" ADD COLUMN IF NOT EXISTS "cover_gradient" jsonb;`;
     console.log("Added cover_gradient column");
-  } catch (e) {
+  } catch (e: any) {
     console.error("Error adding cover_gradient:", e.message);
   }
 
   try {
     await sql`ALTER TABLE "books" ADD COLUMN IF NOT EXISTS "is_sample" boolean DEFAULT false NOT NULL;`;
     console.log("Added is_sample column");
-  } catch (e) {
+  } catch (e: any) {
     console.error("Error adding is_sample:", e.message);
   }
-  
-  if (process.argv.includes('--update-media-author')) {
+
+  if (process.argv.includes("--update-media-author")) {
     try {
       await sql`ALTER TABLE "media_annotations" ADD COLUMN IF NOT EXISTS "author_id" text;`;
       console.log("Added author_id column to media_annotations");
-    } catch(e) {
+    } catch (e: any) {
       console.error(e.message);
     }
   }

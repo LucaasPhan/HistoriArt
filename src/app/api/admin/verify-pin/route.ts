@@ -16,10 +16,7 @@ export async function POST(request: NextRequest) {
 
     const expectedPin = process.env.ADMIN_EDIT_PIN;
     if (!expectedPin) {
-      return NextResponse.json(
-        { error: "Admin PIN not configured on server" },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: "Admin PIN not configured on server" }, { status: 500 });
     }
 
     const valid = pin === expectedPin;

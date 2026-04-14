@@ -8,7 +8,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ book
 
   try {
     const chunks = await db
-      .select({ pageNumber: bookChunks.pageNumber, chunkIndex: bookChunks.chunkIndex, content: bookChunks.content })
+      .select({
+        pageNumber: bookChunks.pageNumber,
+        chunkIndex: bookChunks.chunkIndex,
+        content: bookChunks.content,
+      })
       .from(bookChunks)
       .where(eq(bookChunks.bookId, bookId))
       .orderBy(asc(bookChunks.chunkIndex));

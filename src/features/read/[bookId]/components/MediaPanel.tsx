@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FileText, Film, Image as ImageIcon, Pen, Play, Trash2, Volume2, X } from "lucide-react";
+import { Film, Pen, Trash2, Volume2, X } from "lucide-react";
 import { memo, useEffect } from "react";
 import type { MediaAnnotation } from "../types";
 import styles from "./MediaPanel.module.css";

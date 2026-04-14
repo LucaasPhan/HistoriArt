@@ -41,7 +41,12 @@ export default async function RootLayout({
 }>) {
   return (
     <ThemeProvider>
-      <html lang="vi" className={`dark ${inter.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning data-scroll-behavior="smooth">
+      <html
+        lang="vi"
+        className={`dark ${inter.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable}`}
+        suppressHydrationWarning
+        data-scroll-behavior="smooth"
+      >
         <QueryProvider>
           <AuthProvider>
             <OnboardingGuard>

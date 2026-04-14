@@ -185,7 +185,7 @@ export default function LibraryPage() {
   useEffect(() => {
     if (books.length === 0) return;
     const pages: Record<string, number> = {};
-    
+
     // First apply local storage backup
     books.forEach((b) => {
       const saved = localStorage.getItem(`last_page_${b.id}`);

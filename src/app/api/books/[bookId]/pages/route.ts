@@ -1,5 +1,5 @@
 import { db } from "@/drizzle/db";
-import { bookChunks, books } from "@/drizzle/schema";
+import { bookChunks } from "@/drizzle/schema";
 import { asc, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 

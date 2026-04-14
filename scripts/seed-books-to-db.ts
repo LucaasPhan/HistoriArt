@@ -13,7 +13,6 @@ dotenv.config({ path: ".env" });
 import { neon } from "@neondatabase/serverless";
 import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/neon-http";
-import booksData from "../src/data/books.json";
 import { bookChunks, books } from "../src/drizzle/schema";
 
 const databaseUrl = process.env.NEON_DATABASE_URL;
@@ -23,6 +22,7 @@ if (!databaseUrl) {
 
 const sql = neon(databaseUrl);
 const db = drizzle(sql);
+const booksData = "";
 
 interface BookEntry {
   id: string;

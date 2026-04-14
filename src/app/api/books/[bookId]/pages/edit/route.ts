@@ -46,10 +46,7 @@ export async function PUT(
       .returning();
 
     if (updatedChunks.length === 0) {
-      return NextResponse.json(
-        { error: "Page not found for this book" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Page not found for this book" }, { status: 404 });
     }
 
     return NextResponse.json({

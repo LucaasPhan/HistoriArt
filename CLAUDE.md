@@ -287,4 +287,3 @@ npm run db:studio     # visually inspect tables and data
 ```
 
 Verify new columns exist and constraints are correct via Drizzle Studio.
-

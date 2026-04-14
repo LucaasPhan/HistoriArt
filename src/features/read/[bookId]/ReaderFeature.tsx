@@ -6,7 +6,7 @@ import { TransitionLink } from "@/components/TransitionLink";
 import { useAuth } from "@/context/AuthContext";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, BookOpen, Film, Highlighter, List, Pencil } from "lucide-react";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import AddMediaModal from "./components/AddMediaModal";
 import ChaptersSidebar from "./components/ChaptersSidebar";
 import HighlightsSidebar from "./components/HighlightsSidebar";
@@ -46,7 +46,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
     try {
       const res = await fetch(
         `/api/media-annotations?bookId=${bookId}&pageNumber=${c.currentPage}`,
-        { cache: "no-store" }
+        { cache: "no-store" },
       );
       if (res.ok) {
         const data = await res.json();
@@ -136,8 +136,6 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
     setEditingAnnotation(annotation);
     setIsAddMediaModalOpen(true);
   };
-
-
 
   return (
     <>
@@ -436,7 +434,9 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
         {/* Admin Page Editor */}
         <PageEditModal
           isOpen={showPageEditor}
-          onClose={() => {setShowPageEditor(false)}}
+          onClose={() => {
+            setShowPageEditor(false);
+          }}
           bookId={bookId}
           pageNumber={c.currentPage}
           initialContent={c.content}

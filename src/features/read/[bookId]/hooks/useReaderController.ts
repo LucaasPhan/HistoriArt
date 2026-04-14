@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { Highlight } from "../components/HighlightsSidebar";
 import type { MediaAnnotation } from "../types";
@@ -22,12 +22,12 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
 
   useEffect(() => {
     localStorage.setItem(`last_page_${bookId}`, currentPage.toString());
-    
+
     // Sync to DB
     fetch("/api/reading-progress", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookId, pageNumber: currentPage })
+      body: JSON.stringify({ bookId, pageNumber: currentPage }),
     }).catch(console.error);
   }, [currentPage, bookId]);
 
@@ -288,11 +288,8 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
     setChaptersSidebarOpen,
 
     // Content editing (admin)
-    setContent: useCallback(
-      (newContent: string) => {
-        setDynamicContent(newContent);
-      },
-      [],
-    ),
+    setContent: useCallback((newContent: string) => {
+      setDynamicContent(newContent);
+    }, []),
   };
 }

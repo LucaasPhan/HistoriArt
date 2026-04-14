@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Pencil, Save, X } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styles from "./PageEditModal.module.css";
 
 interface PageEditModalProps {
@@ -146,9 +146,7 @@ export default function PageEditModal({
             )}
             {error && <span className={styles.error}>{error}</span>}
             {!success && !error && (
-              <span className={styles.charCount}>
-                {content.length.toLocaleString()} ký tự
-              </span>
+              <span className={styles.charCount}>{content.length.toLocaleString()} ký tự</span>
             )}
           </div>
 

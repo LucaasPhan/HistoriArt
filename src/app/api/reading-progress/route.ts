@@ -42,10 +42,7 @@ export async function POST(request: NextRequest) {
     const { bookId, pageNumber } = body;
 
     if (!bookId || typeof pageNumber !== "number") {
-      return NextResponse.json(
-        { error: "Missing or invalid bookId/pageNumber" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Missing or invalid bookId/pageNumber" }, { status: 400 });
     }
 
     const [updated] = await db
