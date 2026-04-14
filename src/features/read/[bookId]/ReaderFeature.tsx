@@ -165,8 +165,8 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             minHeight: "100vh",
             transition:
               "margin-right 0.4s cubic-bezier(0.4,0,0.2,1), margin-left 0.4s cubic-bezier(0.4,0,0.2,1)",
-            marginRight: c.mediaPanelOpen ? 480 : 0,
-            marginLeft: c.highlightsSidebarOpen || c.chaptersSidebarOpen ? 320 : 0,
+            marginRight: c.mediaPanelOpen ? "var(--sidebar-right-width)" : 0,
+            marginLeft: c.highlightsSidebarOpen || c.chaptersSidebarOpen ? "var(--sidebar-left-width)" : 0,
           }}
         >
           {/* Top bar */}
@@ -176,13 +176,16 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               position: "sticky",
               top: 0,
               zIndex: 999,
-              padding: "12px 24px",
+              padding: "12px 16px",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+              scrollbarWidth: "none", // hide scrollbar for firefox
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <TransitionLink href="/library">
                 <button
                   className="btn-ghost"
@@ -194,12 +197,12 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                   }}
                 >
                   <ArrowLeft size={16} />
-                  Thư viện
+                  <span className="mobile-hide-text">Thư viện</span>
                 </button>
               </TransitionLink>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <BookOpen size={16} color="var(--accent-primary)" />
-                <span style={{ fontSize: 14, fontWeight: 600 }}>
+                <span className="mobile-hide-text" style={{ fontSize: 14, fontWeight: 600 }}>
                   {c.bookTitle || "Đang tải..."}
                 </span>
 
@@ -220,7 +223,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                       background: c.chaptersSidebarOpen ? "var(--bg-secondary)" : "transparent",
                     }}
                   >
-                    <List size={14} /> Mục lục
+                    <List size={14} /> <span className="mobile-hide-text">Mục lục</span>
                   </button>
                 )}
               </div>
@@ -249,7 +252,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                   }}
                 >
                   <Pencil size={14} />
-                  Chỉnh sửa trang
+                  <span className="mobile-hide-text">Chỉnh sửa</span>
                 </button>
               )}
               <button
@@ -268,7 +271,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                 }}
               >
                 <Highlighter size={14} />
-                Ghi chú
+                <span className="mobile-hide-text">Ghi chú</span>
               </button>
               {!c.mediaPanelOpen && (
                 <button
@@ -284,7 +287,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                   }}
                 >
                   <Film size={14} />
-                  Tư liệu
+                  <span className="mobile-hide-text">Tư liệu</span>
                   {c.activeAnnotations.length > 0 && (
                     <span
                       style={{

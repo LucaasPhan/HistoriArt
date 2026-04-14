@@ -4,12 +4,17 @@ import { AuthProvider } from "@/context/AuthContext";
 import { OnboardingGuard } from "@/context/OnboardingGuard";
 import { QueryProvider } from "@/context/QueryProvider";
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Playfair_Display } from "next/font/google";
+import { Inter, JetBrains_Mono, Playfair_Display, Source_Sans_3 } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin", "vietnamese"],
+});
+
+const sourceSans = Source_Sans_3({
+  variable: "--font-source-sans",
   subsets: ["latin", "vietnamese"],
 });
 
@@ -43,7 +48,7 @@ export default async function RootLayout({
     <ThemeProvider>
       <html
         lang="vi"
-        className={`dark ${inter.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable}`}
+        className={`dark ${inter.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable} ${sourceSans.variable}`}
         suppressHydrationWarning
         data-scroll-behavior="smooth"
       >

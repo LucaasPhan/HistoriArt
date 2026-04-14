@@ -41,6 +41,9 @@
   --cursor-text: url("/cursor/text.svg") 12 16, text;
   --cursor-grab: url("/cursor/grab.svg") 12 12, grab;
   --cursor-grabbing: url("/cursor/grabbed.svg") 12 12, grabbing;
+  
+  --sidebar-left-width: 320px;
+  --sidebar-right-width: 480px;
 }
 
 body {
@@ -142,6 +145,27 @@ body {
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --sidebar-left-width: 0px;
+    --sidebar-right-width: 0px;
+  }
+  
+  .mobile-hide-text {
+    display: none !important;
+  }
+}
+
+.reader-content-padding {
+  padding: 48px 24px 80px;
+}
+
+@media (max-width: 768px) {
+  .reader-content-padding {
+    padding: 24px 16px 80px;
+  }
 }
 
 ::selection {
@@ -354,7 +378,7 @@ body {
 
 /* ─── Reading Mode ─────────────────────────────────────────── */
 .reading-text {
-  font-family: var(--font-serif);
+  font-family: var(--font-source-sans);
   font-size: 1.25rem;
   line-height: 1.8;
   color: var(--text-primary);

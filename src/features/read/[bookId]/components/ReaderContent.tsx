@@ -38,8 +38,8 @@ const ReaderContent = memo(function ReaderContent({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        padding: "48px 24px 80px",
       }}
+      className="reader-content-padding"
     >
       <div
         key={currentPage}
