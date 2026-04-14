@@ -4,15 +4,15 @@ import PageMountSignaler from "@/components/PageMountSignaler";
 import { ThemeButton } from "@/components/ThemeButton";
 import { TransitionLink } from "@/components/TransitionLink";
 import { useAuth } from "@/context/AuthContext";
-import type { BookData } from "@/lib/sample-books";
-import { SAMPLE_BOOKS } from "@/lib/sample-books";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, BookOpen, Film, Highlighter, List } from "lucide-react";
+import { ArrowLeft, BookOpen, Film, Highlighter, List, Pencil } from "lucide-react";
 import React, { useEffect, useMemo } from "react";
 import AddMediaModal from "./components/AddMediaModal";
 import ChaptersSidebar from "./components/ChaptersSidebar";
 import HighlightsSidebar from "./components/HighlightsSidebar";
 import MediaPanel from "./components/MediaPanel";
+import PageEditModal from "./components/PageEditModal";
+import PinVerifyModal from "./components/PinVerifyModal";
 import ReaderContent from "./components/ReaderContent";
 import ReaderNavigation from "./components/ReaderNavigation";
 import SelectionTooltip from "./components/SelectionTooltip";
@@ -20,18 +20,19 @@ import useReaderController from "./hooks/useReaderController";
 import type { MediaAnnotation } from "./types";
 
 export default function ReaderFeature({ bookId }: { bookId: string }) {
-  const sampleBook = useMemo(
-    () => SAMPLE_BOOKS.find((b) => b.id === bookId) as BookData | undefined,
-    [bookId],
-  );
-
-  const c = useReaderController({ bookId, sampleBook });
+  const c = useReaderController({ bookId });
   const { isAuthenticated, user } = useAuth();
   const isAdmin = user?.role === "admin";
   const [focusedAnnotationId, setFocusedAnnotationId] = React.useState<string | null>(null);
   const [isAddMediaModalOpen, setIsAddMediaModalOpen] = React.useState(false);
   const [isAddingMedia, setIsAddingMedia] = React.useState(false);
   const [editingAnnotation, setEditingAnnotation] = React.useState<MediaAnnotation | null>(null);
+
+  // Admin page editing state
+  const [pinVerified, setPinVerified] = React.useState(false);
+  const [verifiedPin, setVerifiedPin] = React.useState("");
+  const [showPinModal, setShowPinModal] = React.useState(false);
+  const [showPageEditor, setShowPageEditor] = React.useState(false);
 
   const handlePassageClick = React.useCallback(
     (annotationId: string) => {
@@ -45,6 +46,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
     try {
       const res = await fetch(
         `/api/media-annotations?bookId=${bookId}&pageNumber=${c.currentPage}`,
+        { cache: "no-store" }
       );
       if (res.ok) {
         const data = await res.json();
@@ -135,7 +137,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
     setIsAddMediaModalOpen(true);
   };
 
-  if (!sampleBook && !c.isDynamic) return null;
+
 
   return (
     <>
@@ -227,6 +229,31 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <ThemeButton />
+              {isAdmin && (
+                <button
+                  className="btn-ghost"
+                  onClick={() => {
+                    if (pinVerified) {
+                      setShowPageEditor(true);
+                    } else {
+                      setShowPinModal(true);
+                    }
+                  }}
+                  style={{
+                    padding: "6px 14px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    fontSize: 13,
+                    color: "var(--accent-primary)",
+                    border: "1px solid var(--accent-primary)",
+                    borderRadius: "var(--radius-md)",
+                  }}
+                >
+                  <Pencil size={14} />
+                  Chỉnh sửa trang
+                </button>
+              )}
               <button
                 className="btn-ghost"
                 onClick={() => {
@@ -392,6 +419,31 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
           onSubmit={handleAddMediaSubmit}
           isSubmitting={isAddingMedia}
           editData={editingAnnotation}
+        />
+
+        {/* Admin 2FA PIN Verification */}
+        <PinVerifyModal
+          isOpen={showPinModal}
+          onClose={() => setShowPinModal(false)}
+          onVerified={(pin: string) => {
+            setVerifiedPin(pin);
+            setPinVerified(true);
+            setShowPinModal(false);
+            setShowPageEditor(true);
+          }}
+        />
+
+        {/* Admin Page Editor */}
+        <PageEditModal
+          isOpen={showPageEditor}
+          onClose={() => {setShowPageEditor(false)}}
+          bookId={bookId}
+          pageNumber={c.currentPage}
+          initialContent={c.content}
+          pin={verifiedPin}
+          onSaved={(newContent) => {
+            c.setContent(newContent);
+          }}
         />
       </div>
       <PageMountSignaler />

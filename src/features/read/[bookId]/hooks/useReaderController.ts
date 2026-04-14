@@ -1,6 +1,5 @@
 "use client";
 
-import type { BookData } from "@/lib/sample-books";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -9,10 +8,9 @@ import type { MediaAnnotation } from "../types";
 
 type UseReaderControllerArgs = {
   bookId: string;
-  sampleBook?: BookData;
 };
 
-export default function useReaderController({ bookId, sampleBook }: UseReaderControllerArgs) {
+export default function useReaderController({ bookId }: UseReaderControllerArgs) {
   const searchParams = useSearchParams();
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
 
@@ -100,46 +98,25 @@ export default function useReaderController({ bookId, sampleBook }: UseReaderCon
 
   const [showCopied, setShowCopied] = useState(false);
 
-  const isDynamic = useMemo(() => !sampleBook, [sampleBook]);
+  const totalPages = dynamicTotalPages;
+  const content = dynamicContent;
+  const bookTitle = dynamicBookTitle;
 
-  const totalPages = useMemo(
-    () => (sampleBook ? sampleBook.totalPages : dynamicTotalPages),
-    [sampleBook, dynamicTotalPages],
-  );
+  const [chapters, setChapters] = useState<{ title: string; page: number }[]>([]);
 
-  const content = useMemo(() => {
-    if (sampleBook) return sampleBook.pages[currentPage] || "Không tìm thấy nội dung.";
-    return dynamicContent;
-  }, [sampleBook, currentPage, dynamicContent]);
-
-  const bookTitle = useMemo(
-    () => (sampleBook ? sampleBook.title : dynamicBookTitle),
-    [sampleBook, dynamicBookTitle],
-  );
-
-  // Parse chapters from sampleBook pages
-  const chapters = useMemo(() => {
-    if (!sampleBook) return [];
-    const chaps: { title: string; page: number }[] = [];
-
-    // Look for lines that start with "Chương" or "Phần"
-    const chapterRegex = /^(Chương|Phần)\s+[IVXLCDMC0-9]+\b/i;
-
-    for (let i = 1; i <= sampleBook.totalPages; i++) {
-      const text = sampleBook.pages[i];
-      if (text) {
-        const firstLine = text.trim().split("\n")[0];
-        if (firstLine && chapterRegex.test(firstLine)) {
-          chaps.push({ title: firstLine.trim(), page: i });
+  useEffect(() => {
+    fetch(`/api/books/${bookId}/chapters`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.chapters) {
+          setChapters(data.chapters);
         }
-      }
-    }
-    return chaps;
-  }, [sampleBook]);
+      })
+      .catch(console.error);
+  }, [bookId]);
 
   // Fetch page content for dynamic books
   useEffect(() => {
-    if (!isDynamic) return;
     setPageLoading(true);
 
     let isActive = true;
@@ -177,11 +154,10 @@ export default function useReaderController({ bookId, sampleBook }: UseReaderCon
       isActive = false;
       clearTimeout(timeoutId);
     };
-  }, [bookId, currentPage, isDynamic, retryTick]);
+  }, [bookId, currentPage, retryTick]);
 
   // Fetch book title for dynamic books
   useEffect(() => {
-    if (!isDynamic) return;
     fetch(`/api/books`)
       .then((r) => r.json())
       .then((data) => {
@@ -189,7 +165,7 @@ export default function useReaderController({ bookId, sampleBook }: UseReaderCon
         if (found) setDynamicBookTitle(found.title);
       })
       .catch(() => {});
-  }, [bookId, isDynamic]);
+  }, [bookId]);
 
   // Reader Utilities
   const handleTextSelection = useCallback(() => {
@@ -247,7 +223,7 @@ export default function useReaderController({ bookId, sampleBook }: UseReaderCon
 
   return {
     // Layout/meta
-    isDynamic,
+    isDynamic: true,
     totalPages,
     content,
     bookTitle,
@@ -310,5 +286,13 @@ export default function useReaderController({ bookId, sampleBook }: UseReaderCon
     chapters,
     chaptersSidebarOpen,
     setChaptersSidebarOpen,
+
+    // Content editing (admin)
+    setContent: useCallback(
+      (newContent: string) => {
+        setDynamicContent(newContent);
+      },
+      [],
+    ),
   };
 }

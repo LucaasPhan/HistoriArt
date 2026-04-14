@@ -220,3 +220,71 @@ The `youtube-nocookie.com` domain must be in `next.config.ts` frame allow list.
   current dependencies
 - Do not translate existing English variable/function names to Vietnamese — keep code
   identifiers in English
+
+## Book data migration
+
+Books are stored in the database (`books` + `book_chunks` tables). Sample books from
+`src/data/books.json` can be seeded into the DB via:
+
+```bash
+npx tsx scripts/seed-books-to-db.ts
+```
+
+The API loads from DB first, falling back to local JSON for pre-migration compatibility.
+Sample books have `is_sample = true` in the database.
+
+## Admin page editing (2FA)
+
+Admin users (role = "admin") can edit book page content through the reader interface:
+
+1. Click "Chỉnh sửa trang" button in the reader top bar
+2. Enter the 4-digit developer PIN (`ADMIN_EDIT_PIN` in `.env`)
+3. Edit the page content in the modal editor
+4. Save changes (Ctrl+S / Cmd+S shortcut supported)
+
+The PIN is verified server-side on every edit request. PIN verification is session-scoped
+(resets on page refresh).
+
+### Admin routes
+
+- `POST /api/admin/verify-pin` — verify the 4-digit developer PIN
+- `PUT /api/books/[bookId]/pages/edit` — edit a book page (requires admin role + valid PIN)
+
+## Media annotation authorship
+
+The `media_annotations` table tracks who created each annotation via the
+`created_by_user_id` column. This is automatically populated when an admin creates
+a new annotation through the API.
+
+## Post-build verification checklist
+
+After every code change, run these checks **in order**:
+
+1. **Build check** — `npm run build` must pass with zero TypeScript errors
+2. **Lint check** — `npm run lint` must pass with no warnings
+3. **Dev server** — verify `npm run dev` starts without errors
+
+### Functional verification
+
+After schema or API changes, additionally verify:
+
+- [ ] Library page (`/library`) loads and shows all books
+- [ ] Reader page (`/read/[bookId]`) loads book content from DB
+- [ ] Page navigation (prev/next) works correctly
+- [ ] Media panel shows annotations for the current page
+- [ ] Admin edit flow: PIN verification → content editor → save → verify content persists
+- [ ] Media annotations created by admin include `createdByUserId` in the database
+- [ ] Book page editing requires both admin role AND valid 4-digit PIN
+
+### Database migration verification
+
+After schema changes:
+
+```bash
+npm run db:generate   # generate migration from schema changes
+npm run db:migrate    # apply migrations
+npm run db:studio     # visually inspect tables and data
+```
+
+Verify new columns exist and constraints are correct via Drizzle Studio.
+

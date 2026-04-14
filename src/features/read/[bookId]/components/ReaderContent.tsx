@@ -143,7 +143,7 @@ const ReaderContent = memo(function ReaderContent({
                   // Render based on state (can be BOTH!)
                   let node: React.ReactNode = partText;
 
-                  // If it's a passage, wrap it
+                  // If it's a passage trigger, wrap it
                   if (el.isPassage) {
                     node = (
                       <span
@@ -153,7 +153,7 @@ const ReaderContent = memo(function ReaderContent({
                         onClick={(e) => {
                           // Prevent highlight from intercepting if nested
                           e.stopPropagation();
-                          onPassageClick(el.annotationId!);
+                          if (el.annotationId) onPassageClick(el.annotationId);
                         }}
                         title={
                           el.mediaType === "audio"
@@ -170,7 +170,7 @@ const ReaderContent = memo(function ReaderContent({
                     );
                   }
 
-                  // If it's a highlight, wrap it
+                  // If it's a highlight, wrap it (it can wrap the passage trigger)
                   if (el.isHighlight) {
                     node = (
                       <mark

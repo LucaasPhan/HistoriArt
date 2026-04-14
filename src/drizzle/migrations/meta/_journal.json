@@ -22,6 +22,20 @@
       "when": 1776051511388,
       "tag": "0002_reflective_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1776176779069,
+      "tag": "0003_low_the_hood",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1776177059899,
+      "tag": "0004_blushing_tusk",
+      "breakpoints": true
     }
   ]
 }

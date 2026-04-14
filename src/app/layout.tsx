@@ -4,18 +4,23 @@ import { AuthProvider } from "@/context/AuthContext";
 import { OnboardingGuard } from "@/context/OnboardingGuard";
 import { QueryProvider } from "@/context/QueryProvider";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Playfair_Display } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin", "vietnamese"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const playfairDisplay = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin", "vietnamese"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin", "vietnamese"],
 });
 
 export const metadata: Metadata = {
@@ -36,11 +41,11 @@ export default async function RootLayout({
 }>) {
   return (
     <ThemeProvider>
-      <html lang="vi" className="dark" suppressHydrationWarning data-scroll-behavior="smooth">
+      <html lang="vi" className={`dark ${inter.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning data-scroll-behavior="smooth">
         <QueryProvider>
           <AuthProvider>
             <OnboardingGuard>
-              <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+              <body className="antialiased">
                 <Navbar />
                 <NextTopLoader color="#f59e0b" zIndex={99_999_999} />
                 {children}

@@ -1,7 +1,6 @@
 import { verifySession } from "@/dal/verifySession";
 import { db } from "@/drizzle/db";
 import { bookChunks, books } from "@/drizzle/schema";
-import { SAMPLE_BOOKS } from "@/lib/sample-books";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -10,17 +9,31 @@ export async function GET() {
     const session = await verifySession();
     const userId = session?.user?.id;
 
-    // Sample books are always visible
-    const sampleBooksMapped = SAMPLE_BOOKS.map((b) => ({
+    // Fetch sample books from DB
+    let sampleBooksFromDb: any[] = [];
+    try {
+      sampleBooksFromDb = await db.query.books.findMany({
+        where: eq(books.isSample, true),
+        orderBy: (books, { asc }) => [asc(books.createdAt)],
+      });
+    } catch {
+      sampleBooksFromDb = [];
+    }
+
+    // Map DB sample books
+    const sampleBooksMapped = sampleBooksFromDb.map((b) => ({
       id: b.id,
       title: b.title,
       author: b.author,
-      description: b.description,
-      coverUrl: null as string | null,
-      coverGradient: b.coverGradient,
+      description: b.description || "",
+      coverUrl: b.coverUrl || null,
+      coverGradient: b.coverGradient || ["#667eea", "#764ba2"],
+      era: b.era || "",
       totalPages: b.totalPages,
+      totalChunks: b.totalChunks,
       estimatedReadTime: b.estimatedReadTime,
-      fileName: null,
+      fileName: b.fileName,
+      isSample: true,
     }));
 
     // Only fetch user's own DB books if authenticated
@@ -29,7 +42,7 @@ export async function GET() {
     }
 
     const dbBooks = await db.query.books.findMany({
-      where: eq(books.userId, userId),
+      where: and(eq(books.userId, userId), eq(books.isSample, false)),
       orderBy: (books, { desc }) => [desc(books.createdAt)],
     });
 
@@ -40,30 +53,21 @@ export async function GET() {
         author: b.author,
         description: b.description || "",
         coverUrl: b.coverUrl || null,
-        coverGradient: ["#667eea", "#764ba2"] as [string, string],
+        coverGradient: b.coverGradient || (["#667eea", "#764ba2"] as [string, string]),
+        era: b.era || "",
         totalPages: b.totalPages,
         totalChunks: b.totalChunks,
         estimatedReadTime: b.estimatedReadTime,
         fileName: b.fileName,
+        isSample: false,
       })),
       ...sampleBooksMapped,
     ];
 
     return NextResponse.json({ books: allBooks });
-  } catch {
-    // Fallback to sample books if DB fails
-    const sampleBooks = SAMPLE_BOOKS.map((b) => ({
-      id: b.id,
-      title: b.title,
-      author: b.author,
-      description: b.description,
-      coverUrl: null,
-      coverGradient: b.coverGradient,
-      totalPages: b.totalPages,
-      estimatedReadTime: b.estimatedReadTime,
-    }));
-
-    return NextResponse.json({ books: sampleBooks });
+  } catch (err) {
+    console.error("Error fetching books:", err);
+    return NextResponse.json({ books: [] });
   }
 }
 

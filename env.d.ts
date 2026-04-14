@@ -20,5 +20,6 @@ namespace NodeJS {
     AZURE_TTS_KEY?: string;
     AZURE_TTS_REGION?: string;
     GEMINI_API_KEY: string;
+    ADMIN_EDIT_PIN?: string;
   }
 }

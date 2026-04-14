@@ -1,6 +1,5 @@
 import { db } from "@/drizzle/db";
-import { bookChunks } from "@/drizzle/schema";
-import { SAMPLE_BOOKS } from "@/lib/sample-books";
+import { bookChunks, books } from "@/drizzle/schema";
 import { asc, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,42 +7,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ book
   const { bookId } = await params;
   const page = parseInt(req.nextUrl.searchParams.get("page") || "1");
 
-  // First, check sample books
-  const sampleBook = SAMPLE_BOOKS.find((b) => b.id === bookId);
-  if (sampleBook) {
-    const content = sampleBook.pages[page] || "";
-    return NextResponse.json({
-      content,
-      pageNumber: page,
-      totalPages: sampleBook.totalPages,
-    });
-  }
-
-  // Then, check DB books (Gutenberg imports)
+  // Check DB for book pages (both migrated sample books and uploaded books)
   try {
     const chunk = await db.query.bookChunks.findFirst({
       where: (chunks, { and, eq: eqFn }) =>
         and(eqFn(chunks.bookId, bookId), eqFn(chunks.pageNumber, page)),
     });
-
-    if (!chunk) {
-      // Check if the book exists but is still processing
-      const hasBook = await db.query.books.findFirst({
-        where: (books, { eq: eqFn }) => eqFn(books.id, bookId),
-      });
-      if (hasBook) {
-        if (hasBook.totalChunks === 0) {
-          // Processing state
-          return NextResponse.json({
-            content: null,
-            isProcessing: true,
-            pageNumber: page,
-            totalPages: 1,
-          });
-        }
-        return NextResponse.json({ error: "Page out of bounds" }, { status: 404 });
-      }
-    }
 
     if (chunk) {
       // Get total pages count
@@ -60,8 +29,26 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ book
       });
     }
 
-    return NextResponse.json({ error: "Book not found" }, { status: 404 });
-  } catch {
-    return NextResponse.json({ error: "Book not found" }, { status: 404 });
+    // Check if the book exists but is still processing
+    const hasBook = await db.query.books.findFirst({
+      where: (books, { eq: eqFn }) => eqFn(books.id, bookId),
+    });
+
+    if (hasBook) {
+      if (hasBook.totalChunks === 0) {
+        // Processing state
+        return NextResponse.json({
+          content: null,
+          isProcessing: true,
+          pageNumber: page,
+          totalPages: 1,
+        });
+      }
+      // Book exists but page not found — might be out of bounds
+    }
+  } catch (error) {
+    console.error("Error fetching book page:", error);
   }
+
+  return NextResponse.json({ error: "Book page not found" }, { status: 404 });
 }
