@@ -341,19 +341,51 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                 transition={{ duration: 0.3 }}
                 style={{ width: "100%", height: "100%" }}
               >
-                <ReaderContent
-                  content={c.content}
-                  currentPage={c.currentPage}
-                  highlights={c.highlights.filter((h) => h.pageNumber === c.currentPage)}
-                  onMouseUp={c.handleTextSelection}
-                  onDoubleClick={c.handleDoubleClick}
-                  annotations={c.activeAnnotations.map((a) => ({
-                    id: a.id,
-                    passageText: a.passageText,
-                    mediaType: a.mediaType,
-                  }))}
-                  onPassageClick={handlePassageClick}
-                />
+                {c.pageLoading ? (
+                  <div
+                    style={{
+                      flex: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                    className="reader-content-padding"
+                  >
+                    <div style={{ maxWidth: 680, width: "100%", opacity: 0.5 }}>
+                      {[...Array(3)].map((_, p) => (
+                        <div key={p} style={{ marginBottom: 20 }}>
+                          {[...Array(4)].map((_, i) => (
+                            <div
+                              key={i}
+                              style={{
+                                height: 20,
+                                background: "var(--bg-secondary)",
+                                borderRadius: 4,
+                                marginBottom: 16,
+                                width: i === 0 ? "95%" : i === 3 ? "70%" : "100%",
+                                marginLeft: i === 0 && p > 0 ? "2em" : 0,
+                              }}
+                            />
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <ReaderContent
+                    content={c.content}
+                    currentPage={c.currentPage}
+                    highlights={c.highlights.filter((h) => h.pageNumber === c.currentPage)}
+                    onMouseUp={c.handleTextSelection}
+                    onDoubleClick={c.handleDoubleClick}
+                    annotations={c.activeAnnotations.map((a) => ({
+                      id: a.id,
+                      passageText: a.passageText,
+                      mediaType: a.mediaType,
+                    }))}
+                    onPassageClick={handlePassageClick}
+                  />
+                )}
               </motion.div>
             </AnimatePresence>
           </div>

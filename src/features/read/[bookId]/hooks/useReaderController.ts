@@ -118,6 +118,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
   // Fetch page content for dynamic books
   useEffect(() => {
     setPageLoading(true);
+    setDynamicContent(""); // Clear old content immediately to avoid flashing
 
     let isActive = true;
     let timeoutId: ReturnType<typeof setTimeout>;
