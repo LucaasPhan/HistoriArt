@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/context/AuthContext";
 import { OnboardingGuard } from "@/context/OnboardingGuard";
 import { QueryProvider } from "@/context/QueryProvider";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Playfair_Display, Source_Sans_3 } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
@@ -59,6 +60,7 @@ export default async function RootLayout({
                 <Navbar />
                 <NextTopLoader color="#f59e0b" zIndex={99_999_999} />
                 {children}
+                <Analytics />
               </body>
             </OnboardingGuard>
           </AuthProvider>
