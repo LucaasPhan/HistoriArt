@@ -379,7 +379,7 @@ export default function LibraryPage() {
                 <div style={{ padding: "20px", flex: 1, display: "flex", flexDirection: "column" }}>
                   <h2
                     style={{
-                      fontFamily: "var(--font-serif)",
+                      fontFamily: "var(--font-sans)",
                       fontSize: 18,
                       fontWeight: 700,
                       color: "var(--text-primary)",
@@ -667,7 +667,7 @@ export default function LibraryPage() {
             </ContextMenuItem>
 
             {/* Delete (DB books only) */}
-            {!isSampleBook(book) && (
+            {/* {!isSampleBook(book) && (
               <>
                 <ContextMenuSeparator
                   className="my-1"
@@ -699,7 +699,7 @@ export default function LibraryPage() {
                   <span>Delete from Library</span>
                 </ContextMenuItem>
               </>
-            )}
+            )} */}
           </div>
         </ContextMenuContent>
       </ContextMenu>
@@ -732,7 +732,7 @@ export default function LibraryPage() {
           <div>
             <h1
               style={{
-                fontFamily: "var(--font-serif)",
+                fontFamily: "var(--font-sans)",
                 fontSize: "clamp(36px, 5vw, 52px)",
                 fontWeight: 700,
                 marginBottom: 8,
@@ -786,7 +786,7 @@ export default function LibraryPage() {
               <div style={{ marginTop: -16 }}>
                 <h2
                   style={{
-                    fontFamily: "var(--font-serif)",
+                    fontFamily: "var(--font-sans)",
                     fontSize: 24,
                     fontWeight: 700,
                     marginBottom: 24,
@@ -812,7 +812,7 @@ export default function LibraryPage() {
               <div>
                 <h2
                   style={{
-                    fontFamily: "var(--font-serif)",
+                    fontFamily: "var(--font-sans)",
                     fontSize: 24,
                     fontWeight: 700,
                     marginBottom: 24,
@@ -838,7 +838,7 @@ export default function LibraryPage() {
               {(continueBooks.length > 0 || uploadedBooks.length > 0) && (
                 <h2
                   style={{
-                    fontFamily: "var(--font-serif)",
+                    fontFamily: "var(--font-sans)",
                     fontSize: 24,
                     fontWeight: 700,
                     marginBottom: 24,
@@ -911,7 +911,7 @@ export default function LibraryPage() {
                 style={{
                   fontSize: 18,
                   fontWeight: 700,
-                  fontFamily: "var(--font-serif)",
+                  fontFamily: "var(--font-sans)",
                   color: "var(--text-primary)",
                 }}
               >

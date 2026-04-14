@@ -54,7 +54,7 @@ export default function DemoPreviewSection() {
               fontSize: 14,
               lineHeight: 1.9,
               color: "var(--text-secondary)",
-              fontFamily: "var(--font-serif)",
+              fontFamily: "var(--font-source-sans)",
             }}
           >
             ...Đợt tấn công thứ nhất nhằm vào cụm cứ điểm phía bắc.{" "}
