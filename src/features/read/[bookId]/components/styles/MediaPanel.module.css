@@ -215,6 +215,36 @@
   white-space: pre-line;
 }
 
+.markdownContent p {
+  margin: 0 0 10px 0;
+}
+
+.markdownContent p:last-child {
+  margin-bottom: 0;
+}
+
+.markdownContent strong {
+  font-weight: 700;
+}
+
+.markdownContent em {
+  font-style: italic;
+}
+
+.markdownContent u {
+  text-decoration: underline;
+}
+
+.markdownContent ul,
+.markdownContent ol {
+  margin: 0 0 10px 1.2em;
+  padding: 0;
+}
+
+.markdownContent li {
+  margin-bottom: 4px;
+}
+
 .typeBadge {
   position: absolute;
   top: 10px;

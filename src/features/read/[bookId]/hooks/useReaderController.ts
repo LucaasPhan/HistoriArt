@@ -327,6 +327,13 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
     // Content editing (admin)
     setContent: useCallback((newContent: string) => {
       setDynamicContent(newContent);
-    }, []),
+      // Update the page cache so navigating away and back shows the edited content
+      const cached = pageCache.current[currentPage];
+      if (cached) {
+        pageCache.current[currentPage] = { ...cached, content: newContent };
+      } else {
+        pageCache.current[currentPage] = { content: newContent, totalPages: dynamicTotalPages };
+      }
+    }, [currentPage, dynamicTotalPages]),
   };
 }

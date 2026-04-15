@@ -1,7 +1,8 @@
 "use client";
 
 import { Check, Pencil, Save, X } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { handleTextareaShortcuts } from "@/lib/textarea-shortcuts";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./styles/PageEditModal.module.css";
 
 interface PageEditModalProps {
@@ -27,6 +28,7 @@ export default function PageEditModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -93,6 +95,18 @@ export default function PageEditModal({
     return () => window.removeEventListener("keydown", handler);
   }, [isOpen, handleSave, onClose]);
 
+  const handleTextareaKeyDown = useCallback(
+    async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      await handleTextareaShortcuts(e, {
+        onChanged: () => {
+          setError("");
+          setSuccess(false);
+        },
+      });
+    },
+    [],
+  );
+
   if (!isOpen) return null;
 
   const hasChanges = content !== initialContent;
@@ -124,6 +138,7 @@ export default function PageEditModal({
 
         <div className={styles.editorContainer}>
           <textarea
+            ref={textareaRef}
             className={styles.textarea}
             value={content}
             onChange={(e) => {
@@ -131,6 +146,7 @@ export default function PageEditModal({
               setError("");
               setSuccess(false);
             }}
+            onKeyDown={handleTextareaKeyDown}
             disabled={saving}
             spellCheck={false}
             autoFocus

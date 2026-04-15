@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Film, Pen, Trash2, X } from "lucide-react";
 import { memo, useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import type { MediaAnnotation } from "../types";
 import CustomAudioPlayer from "./CustomAudioPlayer";
 import styles from "./styles/MediaPanel.module.css";
@@ -18,6 +19,18 @@ type MediaPanelProps = {
   onDelete?: (id: string) => void;
   onAddGeneralMedia?: () => void;
 };
+
+const toRenderMarkdown = (text: string) =>
+  text
+    .replace(/\r\n/g, "\n")
+    .split("\n")
+    .map((line) =>
+      line
+        // Preserve manual paragraph indentation without triggering markdown code-block parsing
+        .replace(/^\t+/g, (tabs) => "\u00A0\u00A0\u00A0\u00A0".repeat(tabs.length))
+        .replace(/^( {4})+/g, (spaces) => "\u00A0".repeat(spaces.length)),
+    )
+    .join("  \n");
 
 function MediaCard({
   annotation,
@@ -137,11 +150,17 @@ function MediaCard({
 
       {mediaType === "annotation" && (
         <div className={`${styles.annotationBlock} ${isAdmin ? styles.annotationBlockAdmin : ""}`}>
-          <p className={styles.annotationText}>{caption}</p>
+          <div className={`${styles.annotationText} ${styles.markdownContent}`}>
+            <ReactMarkdown>{toRenderMarkdown(caption || "")}</ReactMarkdown>
+          </div>
         </div>
       )}
 
-      {mediaType !== "annotation" && caption && <p className={styles.caption}>{caption}</p>}
+      {mediaType !== "annotation" && caption && (
+        <div className={`${styles.caption} ${styles.markdownContent}`}>
+          <ReactMarkdown>{toRenderMarkdown(caption)}</ReactMarkdown>
+        </div>
+      )}
 
       {/* Sources Button & Expandable Section */}
       {hasSources && (

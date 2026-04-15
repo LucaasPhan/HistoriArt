@@ -1,5 +1,6 @@
 import imageCompression from "browser-image-compression";
 import { BookOpen, Film, Plus, Save, Trash2, X } from "lucide-react";
+import { handleTextareaShortcuts } from "@/lib/textarea-shortcuts";
 import React, { useEffect, useRef, useState } from "react";
 import type { MediaAnnotation } from "../types";
 import styles from "./styles/AddMediaModal.module.css";
@@ -26,13 +27,23 @@ export default function AddMediaModal({
   isSubmitting = false,
   editData = null,
 }: AddMediaModalProps) {
+  type MediaInputMode = "upload" | "url";
   const [mediaType, setMediaType] = useState<"image" | "video" | "audio" | "annotation">("image");
+  const [mediaInputMode, setMediaInputMode] = useState<MediaInputMode>("upload");
   const [mediaUrl, setMediaUrl] = useState("");
   const [caption, setCaption] = useState("");
   const [sources, setSources] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | Blob | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const captionRef = useRef<HTMLTextAreaElement>(null);
+
+  const resizeCaption = () => {
+    const el = captionRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -86,7 +97,18 @@ export default function AddMediaModal({
     // Filter out empty sources
     const filteredSources = sources.filter((s) => s.trim() !== "");
 
-    if (pendingFile) {
+    if (mediaType !== "annotation") {
+      if (mediaInputMode === "upload" && !pendingFile) {
+        alert("Vui lòng chọn file để tải lên.");
+        return;
+      }
+      if (mediaInputMode === "url" && !mediaUrl.trim()) {
+        alert("Vui lòng nhập đường dẫn URL.");
+        return;
+      }
+    }
+
+    if (mediaInputMode === "upload" && pendingFile) {
       try {
         setIsUploading(true);
         const formData = new FormData();
@@ -118,10 +140,22 @@ export default function AddMediaModal({
 
   const handleMediaTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setMediaType(e.target.value as any);
+    setMediaInputMode("upload");
     setMediaUrl("");
     setPendingFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
+    }
+  };
+
+  const handleMediaInputModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const mode = e.target.value as MediaInputMode;
+    setMediaInputMode(mode);
+    if (mode === "upload") {
+      setMediaUrl("");
+    } else {
+      setPendingFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -147,11 +181,13 @@ export default function AddMediaModal({
     if (isOpen) {
       if (editData) {
         setMediaType(editData.mediaType);
+        setMediaInputMode(editData.mediaUrl ? "url" : "upload");
         setMediaUrl(editData.mediaUrl || "");
         setCaption(editData.caption || "");
         setSources(editData.sources && editData.sources.length > 0 ? editData.sources : []);
       } else {
         setMediaType("image");
+        setMediaInputMode("upload");
         setMediaUrl("");
         setCaption("");
         setSources([]);
@@ -160,6 +196,11 @@ export default function AddMediaModal({
       }
     }
   }, [isOpen, editData]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    resizeCaption();
+  }, [caption, isOpen]);
 
   // Handle Escape key
   useEffect(() => {
@@ -216,7 +257,7 @@ export default function AddMediaModal({
             </div>
           </div>
 
-          <div className={styles.grid2}>
+          <div className={styles.mediaControlsRow}>
             <div className={styles.formGroup}>
               <label htmlFor="mediaType" className={styles.label}>
                 Loại tư liệu
@@ -235,84 +276,69 @@ export default function AddMediaModal({
             </div>
 
             {mediaType !== "annotation" && (
-              <div className={styles.formGroup} style={{ gap: "16px" }}>
-                {/* Upload Section */}
-                <div>
-                  <label className={styles.label} style={{ marginBottom: "8px", display: "block" }}>
-                    Tải lên{" "}
-                    {mediaType === "audio" ? "âm thanh" : mediaType === "video" ? "video" : "ảnh"}
+              <>
+                <div className={styles.formGroup}>
+                  <label htmlFor="mediaInputMode" className={styles.label}>
+                    Nguồn tư liệu
                   </label>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    className={styles.fileInput}
-                    accept={
-                      mediaType === "audio"
-                        ? "audio/*"
-                        : mediaType === "video"
-                          ? "video/*"
-                          : "image/*"
-                    }
-                    onChange={handleFileUpload}
+                  <select
+                    id="mediaInputMode"
+                    value={mediaInputMode}
+                    onChange={handleMediaInputModeChange}
+                    className={styles.select}
                     disabled={isUploading || isSubmitting}
-                  />
-                  {isUploading && (
-                    <span
-                      style={{
-                        fontSize: "13px",
-                        color: "var(--accent-primary)",
-                        marginTop: "8px",
-                        display: "block",
-                        fontWeight: 500,
-                      }}
-                    >
-                      Đang xử lý & tải lên (vui lòng đợi)...
-                    </span>
+                  >
+                    <option value="upload">Tải file lên</option>
+                    <option value="url">Nhập URL</option>
+                  </select>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>
+                    {mediaInputMode === "upload"
+                      ? `Tải lên ${mediaType === "audio" ? "âm thanh" : mediaType === "video" ? "video" : "ảnh"}`
+                      : `Đường dẫn ${mediaType === "video" ? "nhúng (Embed URL)" : mediaType === "audio" ? "âm thanh" : "ảnh"}`}
+                  </label>
+
+                  {mediaInputMode === "upload" ? (
+                    <>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        className={styles.fileInput}
+                        accept={
+                          mediaType === "audio"
+                            ? "audio/*"
+                            : mediaType === "video"
+                              ? "video/*"
+                              : "image/*"
+                        }
+                        onChange={handleFileUpload}
+                        disabled={isUploading || isSubmitting}
+                      />
+                      {isUploading && (
+                        <span className={styles.uploadHint}>Đang xử lý & tải lên (vui lòng đợi)...</span>
+                      )}
+                    </>
+                  ) : (
+                    <input
+                      id="mediaUrl"
+                      type="url"
+                      value={mediaUrl}
+                      onChange={(e) => setMediaUrl(e.target.value)}
+                      placeholder={
+                        mediaType === "video"
+                          ? "https://www.youtube.com/embed/XXXXX"
+                          : mediaType === "audio"
+                            ? "https://example.com/audio.mp3"
+                            : "https://example.com/image.jpg"
+                      }
+                      className={styles.input}
+                      disabled={isUploading || isSubmitting}
+                    />
                   )}
                 </div>
-
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <div style={{ flex: 1, height: "1px", background: "var(--border-subtle)" }} />
-                  <span
-                    style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 600 }}
-                  >
-                    HOẶC NHẬP URL
-                  </span>
-                  <div style={{ flex: 1, height: "1px", background: "var(--border-subtle)" }} />
-                </div>
-
-                {/* URL Section */}
-                <div>
-                  <label
-                    htmlFor="mediaUrl"
-                    className={styles.label}
-                    style={{ marginBottom: "8px", display: "block" }}
-                  >
-                    Đường dẫn{" "}
-                    {mediaType === "video"
-                      ? "nhúng (Embed URL)"
-                      : mediaType === "audio"
-                        ? "âm thanh"
-                        : "ảnh"}
-                  </label>
-                  <input
-                    id="mediaUrl"
-                    type="url"
-                    required={!pendingFile}
-                    value={mediaUrl}
-                    onChange={(e) => setMediaUrl(e.target.value)}
-                    placeholder={
-                      mediaType === "video"
-                        ? "https://www.youtube.com/embed/XXXXX"
-                        : mediaType === "audio"
-                          ? "https://example.com/audio.mp3"
-                          : "https://example.com/image.jpg"
-                    }
-                    className={styles.input}
-                    disabled={isUploading || isSubmitting}
-                  />
-                </div>
-              </div>
+              </>
             )}
           </div>
 
@@ -321,9 +347,17 @@ export default function AddMediaModal({
               Mô tả / Hiệu đính
             </label>
             <textarea
+              ref={captionRef}
               id="caption"
               value={caption}
-              onChange={(e) => setCaption(e.target.value)}
+              onChange={(e) => {
+                setCaption(e.target.value);
+                resizeCaption();
+              }}
+              onKeyDown={async (e) => {
+                await handleTextareaShortcuts(e, {});
+                requestAnimationFrame(resizeCaption);
+              }}
               placeholder="Bạn muốn lưu ý điều gì về chi tiết lịch sử này? Nhập nội dung diễn giải..."
               className={styles.textarea}
               spellCheck={false}

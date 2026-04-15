@@ -53,9 +53,10 @@ const ReaderContent = memo(function ReaderContent({
         <div className="reading-text">
           {(() => {
             if (!content) return null;
+            const normalizedContent = content.replace(/\r\n/g, "\n");
 
             // 1. Create a map of character states
-            const marks = Array.from({ length: content.length }, () => ({
+            const marks = Array.from({ length: normalizedContent.length }, () => ({
               isHighlight: false,
               color: "",
               isPassage: false,
@@ -65,25 +66,40 @@ const ReaderContent = memo(function ReaderContent({
 
             // Helper to normalise newlines for searching
             const findMatches = (searchStr: string) => {
-              if (!searchStr) return { matches: [], length: 0 };
-              let normalized = searchStr;
-              if (normalized.includes("\n") && !normalized.includes("\n\n")) {
-                normalized = normalized.replace(/\n+/g, "\n\n");
+              if (!searchStr) return [] as Array<{ start: number; length: number }>;
+
+              const normalized = searchStr.replace(/\r\n/g, "\n");
+              const candidates = Array.from(
+                new Set([
+                  normalized,
+                  normalized.replace(/\n+/g, "\n"), // paragraph boundaries as single newlines
+                  normalized.replace(/\n+/g, "\n\n"), // paragraph boundaries as double newlines
+                ]),
+              ).filter((c) => c.length > 0);
+
+              const ranges: Array<{ start: number; length: number }> = [];
+              const seen = new Set<string>();
+
+              for (const candidate of candidates) {
+                let idx = normalizedContent.indexOf(candidate);
+                while (idx !== -1) {
+                  const key = `${idx}:${candidate.length}`;
+                  if (!seen.has(key)) {
+                    seen.add(key);
+                    ranges.push({ start: idx, length: candidate.length });
+                  }
+                  idx = normalizedContent.indexOf(candidate, idx + 1);
+                }
               }
-              const matches: number[] = [];
-              let idx = content.indexOf(normalized);
-              while (idx !== -1) {
-                matches.push(idx);
-                idx = content.indexOf(normalized, idx + 1);
-              }
-              return { matches, length: normalized.length };
+
+              return ranges;
             };
 
             // 2. Apply user highlights
             highlights.forEach((h) => {
-              const { matches, length } = findMatches(h.text);
-              matches.forEach((idx) => {
-                for (let i = idx; i < idx + length; i++) {
+              const ranges = findMatches(h.text);
+              ranges.forEach(({ start, length }) => {
+                for (let i = start; i < start + length; i++) {
                   if (marks[i]) {
                     marks[i].isHighlight = true;
                     marks[i].color = h.color || "";
@@ -94,9 +110,9 @@ const ReaderContent = memo(function ReaderContent({
 
             // 3. Apply annotations
             annotations.forEach((a) => {
-              const { matches, length } = findMatches(a.passageText || "");
-              matches.forEach((idx) => {
-                for (let i = idx; i < idx + length; i++) {
+              const ranges = findMatches(a.passageText || "");
+              ranges.forEach(({ start, length }) => {
+                for (let i = start; i < start + length; i++) {
                   if (marks[i]) {
                     marks[i].isPassage = true;
                     marks[i].annotationId = a.id;
@@ -110,9 +126,9 @@ const ReaderContent = memo(function ReaderContent({
             const chunks: ContentElement[] = [];
             let currentChunk: ContentElement | null = null;
 
-            for (let i = 0; i < content.length; i++) {
+            for (let i = 0; i < normalizedContent.length; i++) {
               const m = marks[i];
-              const char = content[i];
+              const char = normalizedContent[i];
 
               if (!currentChunk) {
                 currentChunk = { text: char, ...m };
@@ -134,7 +150,7 @@ const ReaderContent = memo(function ReaderContent({
             const paragraphs: React.ReactNode[][] = [[]];
 
             chunks.forEach((el, elIdx) => {
-              const parts = el.text.split("\n\n");
+              const parts = el.text.split(/\n+/);
               parts.forEach((partText, partIdx) => {
                 if (partIdx > 0) {
                   paragraphs.push([]); // start new paragraph
@@ -201,8 +217,8 @@ const ReaderContent = memo(function ReaderContent({
                   key={idx}
                   style={{
                     marginBottom: 20,
-                    textIndent: idx > 0 ? "2em" : 0,
                     textAlign: "justify",
+                    whiteSpace: "pre-wrap",
                   }}
                 >
                   {pContent}

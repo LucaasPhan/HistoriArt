@@ -367,7 +367,6 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                                 borderRadius: 4,
                                 marginBottom: 16,
                                 width: i === 0 ? "95%" : i === 3 ? "70%" : "100%",
-                                marginLeft: i === 0 && p > 0 ? "2em" : 0,
                               }}
                             />
                           ))}
