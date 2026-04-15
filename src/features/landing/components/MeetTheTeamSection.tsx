@@ -4,41 +4,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Github, Linkedin, Twitter } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AnimatedSection, fadeUp } from "./AnimatedSection";
-
-const TEAM = [
-  {
-    name: "Huỳnh Trúc Phương",
-    role: "Project Manager",
-    desc: "Định hướng phát triển nội dung và quản lý dự án.",
-    gradient: ["#8B0000", "#D4A574"],
-    image:
-      "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
-  },
-  {
-    name: "Nguyễn văn A",
-    role: "Lead Marketing",
-    desc: "",
-    gradient: ["#1B4332", "#52B788"],
-    image:
-      "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
-  },
-  {
-    name: "Nguyễn Văn B",
-    role: "Content Creator",
-    desc: "",
-    gradient: ["#2C1810", "#C4956A"],
-    image:
-      "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
-  },
-  {
-    name: "Phan Nhất Huy",
-    role: "Lead Engineer",
-    desc: "Xây dựng kiến trúc nền tảng và tối ưu hóa trải nghiệm đọc đa phương tiện.",
-    gradient: ["#1E3A8A", "#60A5FA"],
-    image:
-      "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
-  },
-];
+import { TEAM } from "./const/team";
 
 export default function MeetTheTeamSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -115,8 +81,8 @@ export default function MeetTheTeamSection() {
           </p>
         </div>
 
-        {/* Carousel controls */}
-        <div style={{ display: "flex", gap: 12 }}>
+        {/* Carousel controls (hidden on desktop) */}
+        <div className="team-controls" style={{ display: "flex", gap: 12 }}>
           <button
             onClick={scrollLeft}
             style={{
@@ -190,16 +156,12 @@ export default function MeetTheTeamSection() {
       >
         <div
           ref={scrollRef}
-          className="team-carousel-container"
+          className="team-carousel-container team-layout-container"
           style={{
             display: "flex",
             gap: 24,
-            overflowX: "auto",
-            scrollSnapType: "x mandatory",
             paddingBottom: 40,
             paddingTop: 8,
-            scrollbarWidth: "none", // Firefox
-            msOverflowStyle: "none", // IE
           }}
         >
           {TEAM.map((member, i) => (
@@ -211,8 +173,8 @@ export default function MeetTheTeamSection() {
               viewport={{ once: true }}
               custom={i}
               whileHover={{ y: -8, boxShadow: "var(--shadow-glow)" }}
+              className="team-card"
               style={{
-                flex: "0 0 300px",
                 scrollSnapAlign: "center",
                 background: "var(--bg-card)",
                 border: "1px solid var(--border-subtle)",
@@ -353,8 +315,34 @@ export default function MeetTheTeamSection() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-        .team-carousel-container::-webkit-scrollbar {
-          display: none;
+        @media (min-width: 1200px) {
+          .team-layout-container {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+          }
+          .team-controls {
+            display: none !important;
+          }
+          .team-card {
+            flex: 0 0 320px !important;
+            width: 320px !important;
+          }
+        }
+        @media (max-width: 1199px) {
+          .team-layout-container {
+            display: flex !important;
+            overflow-x: auto !important;
+            scroll-snap-type: x mandatory !important;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
+          .team-card {
+            flex: 0 0 300px !important;
+          }
+          .team-layout-container::-webkit-scrollbar {
+            display: none;
+          }
         }
       `,
         }}

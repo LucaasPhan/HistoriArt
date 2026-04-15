@@ -43,6 +43,13 @@
       "when": 1776248243362,
       "tag": "0005_damp_thunderball",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1776253817555,
+      "tag": "0006_lumpy_franklin_storm",
+      "breakpoints": true
     }
   ]
 }

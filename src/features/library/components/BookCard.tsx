@@ -109,20 +109,95 @@ export default function BookCard({
             onClick={isProcessing ? (e: React.MouseEvent) => e.preventDefault() : undefined}
             style={isProcessing ? { cursor: "default" } : undefined}
           >
-            <div
+            <motion.div
               className="book-card"
+              initial="rest"
+              whileHover="hover"
+              animate="rest"
               style={{
-                height: "100%",
+                height: 380, // Set a fixed or min height for the card
                 display: "flex",
                 flexDirection: "column",
+                justifyContent: "flex-end",
                 overflow: "hidden",
                 borderRadius: "var(--radius-lg)",
-                background: "var(--bg-card)",
+                background: book.coverUrl
+                    ? "var(--bg-tertiary)"
+                    : `linear-gradient(135deg, ${book.coverGradient[0]}, ${book.coverGradient[1]})`,
                 boxShadow: "var(--shadow-card)",
-                transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
                 position: "relative",
               }}
             >
+              {/* Background Cover Image */}
+              {book.coverUrl ? (
+                <Image
+                  src={book.coverUrl}
+                  alt={book.title}
+                  fill
+                  style={{ objectFit: "cover", objectPosition: "center", transition: "transform 0.5s ease" }}
+                  sizes="320px"
+                  unoptimized
+                />
+              ) : (
+                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background:
+                        "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent 70%)",
+                    }}
+                  />
+                  <Sparkles size={60} color="rgba(255,255,255,0.85)" />
+                </div>
+              )}
+
+              {/* Dark Gradient Overlay for text readability */}
+              <motion.div
+                variants={{
+                  rest: { background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 40%, transparent 100%)" },
+                  hover: { background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 100%, transparent 100%)" }
+                }}
+                transition={{ duration: 0.3 }}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  zIndex: 1,
+                }}
+              />
+
+              {/* Processing Overlay */}
+              {isProcessing && (
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "rgba(0,0,0,0.55)",
+                    backdropFilter: "blur(4px)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    zIndex: 5,
+                  }}
+                >
+                  <Loader2 size={28} color="white" style={{ animation: "spin 1.2s linear infinite" }} />
+                  <span
+                    style={{
+                      color: "white",
+                      fontSize: 12,
+                      fontWeight: 600,
+                      letterSpacing: "0.03em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Downloading…
+                  </span>
+                </div>
+              )}
+
+              {/* Favorite Icon */}
               <AnimatePresence>
                 {isFavorite && (
                   <motion.div
@@ -151,97 +226,30 @@ export default function BookCard({
                 )}
               </AnimatePresence>
 
-              <motion.div
-                style={{
-                  height: 180,
-                  background: book.coverUrl
-                    ? "var(--bg-tertiary)"
-                    : `linear-gradient(135deg, ${book.coverGradient[0]}, ${book.coverGradient[1]})`,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: book.coverUrl ? 12 : 24,
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-                animate={{ scale: hoveredCardId === cardId ? 1.05 : 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                {book.coverUrl ? (
-                  <Image
-                    src={book.coverUrl}
-                    alt={book.title}
-                    fill
-                    style={{ objectFit: "contain", objectPosition: "center" }}
-                    sizes="260px"
-                    unoptimized
-                  />
-                ) : (
-                  <>
-                    <div
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        background:
-                          "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent 70%)",
-                      }}
-                    />
-                    <Sparkles size={40} color="rgba(255,255,255,0.85)" />
-                  </>
-                )}
-
-                {isProcessing && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      background: "rgba(0,0,0,0.55)",
-                      backdropFilter: "blur(4px)",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 8,
-                      zIndex: 5,
-                    }}
-                  >
-                    <Loader2 size={28} color="white" style={{ animation: "spin 1.2s linear infinite" }} />
-                    <span
-                      style={{
-                        color: "white",
-                        fontSize: 12,
-                        fontWeight: 600,
-                        letterSpacing: "0.03em",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      Downloading…
-                    </span>
-                  </div>
-                )}
-              </motion.div>
-
-              <div style={{ padding: "20px", flex: 1, display: "flex", flexDirection: "column" }}>
+              {/* Content overlay */}
+              <div style={{ padding: "20px", position: "relative", zIndex: 2, display: "flex", flexDirection: "column" }}>
                 <h2
                   style={{
                     fontFamily: "var(--font-sans)",
-                    fontSize: 18,
-                    fontWeight: 700,
-                    color: "var(--text-primary)",
+                    fontSize: 20,
+                    fontWeight: 800,
+                    color: "white",
                     marginBottom: 4,
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
                     overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
+                    textShadow: "0 2px 8px rgba(0,0,0,0.5)",
                   }}
                 >
                   {book.title}
                 </h2>
                 <p
                   style={{
-                    color: "var(--text-secondary)",
-                    fontSize: 12,
-                    marginBottom: 12,
+                    color: "rgba(255, 255, 255, 0.8)",
+                    fontSize: 13,
+                    fontWeight: 500,
+                    marginBottom: 8,
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
@@ -250,78 +258,110 @@ export default function BookCard({
                   {book.author}
                 </p>
 
-                <DescriptionPreview description={book.description} />
-
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    paddingTop: 12,
-                    borderTop: "1px solid var(--border-subtle)",
+                {/* Hidden until hover details */}
+                <motion.div
+                  variants={{
+                    rest: { height: 0, opacity: 0, marginTop: 0 },
+                    hover: { height: "auto", opacity: 1, marginTop: 8 }
                   }}
+                  transition={{ duration: 0.3 }}
+                  style={{ overflow: "hidden" }}
                 >
+                  <div
+                    style={{
+                      color: "rgba(255,255,255,0.7)",
+                      fontSize: 12,
+                      lineHeight: 1.5,
+                      marginBottom: 16,
+                      display: "-webkit-box",
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <ReactMarkdown
+                      components={{
+                        p: (props) => {
+                          const { node, ...rest } = props as any;
+                          return <span {...rest} />;
+                        },
+                      }}
+                    >
+                      {book.description ? book.description.replace(/--/g, "—") : ""}
+                    </ReactMarkdown>
+                  </div>
+
                   <div
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: 12,
-                      fontSize: 12,
-                      color: "var(--text-tertiary)",
+                      justifyContent: "space-between",
+                      paddingTop: 12,
+                      borderTop: "1px solid rgba(255,255,255,0.15)",
                     }}
                   >
-                    {isProcessing ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                        fontSize: 12,
+                        color: "rgba(255,255,255,0.8)",
+                      }}
+                    >
+                      {isProcessing ? (
+                        <span
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 4,
+                            color: "var(--accent-primary)",
+                            fontWeight: 600,
+                          }}
+                        >
+                          <Loader2 size={12} style={{ animation: "spin 1.2s linear infinite" }} />
+                          Processing…
+                        </span>
+                      ) : (
+                        <>
+                          <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                            <Clock size={12} />
+                            {book.estimatedReadTime || book.totalPages}p
+                          </span>
+                          <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                            <Star size={12} fill="var(--accent-primary)" stroke="var(--accent-primary)" />
+                            4.8
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    {isContinue ? (
                       <span
                         style={{
+                          fontSize: 13,
+                          fontWeight: 600,
+                          color: "var(--accent-primary)",
                           display: "flex",
                           alignItems: "center",
                           gap: 4,
-                          color: "var(--accent-primary)",
-                          fontWeight: 600,
                         }}
                       >
-                        <Loader2 size={12} style={{ animation: "spin 1.2s linear infinite" }} />
-                        Processing…
+                        Page {continuePage}
                       </span>
                     ) : (
-                      <>
-                        <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                          <Clock size={12} />
-                          {book.estimatedReadTime || book.totalPages}p
-                        </span>
-                        <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                          <Star size={12} fill="var(--accent-primary)" stroke="var(--accent-primary)" />
-                          4.8
-                        </span>
-                      </>
+                      <motion.span
+                        style={{ fontSize: 13, fontWeight: 600, color: "var(--accent-primary)" }}
+                        animate={{ x: hoveredCardId === cardId ? 4 : 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        →
+                      </motion.span>
                     )}
                   </div>
-
-                  {isContinue ? (
-                    <span
-                      style={{
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: "var(--accent-primary)",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 4,
-                      }}
-                    >
-                      Page {continuePage}
-                    </span>
-                  ) : (
-                    <motion.span
-                      style={{ fontSize: 12, fontWeight: 600, color: "var(--accent-primary)" }}
-                      animate={{ x: hoveredCardId === cardId ? 4 : 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      →
-                    </motion.span>
-                  )}
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
           </TransitionLink>
         </motion.div>
       </ContextMenuTrigger>

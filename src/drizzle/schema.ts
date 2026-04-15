@@ -157,18 +157,6 @@ export const bookChunks = pgTable(
   ],
 );
 
-export const conversations = pgTable("conversations", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id),
-  bookId: text("book_id").notNull(),
-  messages: jsonb("messages")
-    .$type<Array<{ role: "user" | "assistant"; content: string; timestamp: string }>>()
-    .default([]),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
 
 // ─── Media Annotations (multimedia tied to text passages) ──────
 export const mediaAnnotations = pgTable(
@@ -230,23 +218,6 @@ export const quizResults = pgTable(
   (table) => [index("idx_quiz_result_user").on(table.userId, table.bookId)],
 );
 
-// ─── Scene Images (kept for migration compat) ─────────────────
-
-export const sceneImages = pgTable(
-  "scene_images",
-  {
-    id: uuid("id").defaultRandom().primaryKey(),
-    userId: text("user_id")
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
-    bookId: text("book_id").notNull(),
-    pageNumber: integer("page_number").notNull(),
-    imageUrl: text("image_url").notNull(),
-    prompt: text("prompt").notNull(),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-  },
-  (table) => [index("idx_scene_user_book_page").on(table.userId, table.bookId, table.pageNumber)],
-);
 
 // ─── Favorite Books ───────────────────────────────────────────
 

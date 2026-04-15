@@ -81,134 +81,175 @@ export default function BooksPreviewSection() {
               viewport={{ once: true }}
               custom={i}
             >
-              <TransitionLink href={`/read/${book.id}`}>
+              <TransitionLink href={`/read/${book.id}`} className="no-underline">
                 <motion.div
-                  whileHover={{ y: -6, scale: 1.01 }}
+                  className="book-card"
+                  initial="rest"
+                  whileHover="hover"
+                  animate="rest"
                   style={{
-                    background: "var(--bg-card)",
-                    border: "1px solid var(--border-subtle)",
-                    borderRadius: "var(--radius-lg)",
-                    overflow: "hidden",
-                    cursor: "pointer",
-                    transition: "box-shadow 0.3s",
-                    height: 390,
+                    height: 380, // Set fixed height to match BookCard
                     display: "flex",
                     flexDirection: "column",
-                  }}
-                >
-                  <div
-                    style={{
-                      height: 140,
-                      background: book.coverUrl
+                    justifyContent: "flex-end",
+                    overflow: "hidden",
+                    borderRadius: "var(--radius-lg)",
+                    background: book.coverUrl
                         ? "var(--bg-tertiary)"
                         : `linear-gradient(135deg, ${book.coverGradient[0]}, ${book.coverGradient[1]})`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      position: "relative",
-                      padding: book.coverUrl ? 12 : 0,
-                    }}
-                  >
-                    {book.coverUrl ? (
-                      <Image
-                        src={book.coverUrl}
-                        alt={book.title}
-                        fill
-                        unoptimized
-                        sizes="(max-width: 768px) 100vw, 340px"
-                        style={{ objectFit: "contain", objectPosition: "center" }}
-                      />
-                    ) : (
-                      <BookOpen size={36} color="rgba(255,255,255,0.5)" />
-                    )}
-                    {book.era && (
+                    boxShadow: "var(--shadow-card)",
+                    position: "relative",
+                  }}
+                >
+                  {/* Background Cover Image */}
+                  {book.coverUrl ? (
+                    <Image
+                      src={book.coverUrl}
+                      alt={book.title}
+                      fill
+                      style={{ objectFit: "cover", objectPosition: "center", transition: "transform 0.5s ease" }}
+                      sizes="320px"
+                      unoptimized
+                    />
+                  ) : (
+                    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <div
                         style={{
                           position: "absolute",
-                          bottom: 8,
-                          right: 12,
-                          padding: "3px 10px",
-                          borderRadius: "var(--radius-full)",
-                          background: "rgba(0,0,0,0.4)",
-                          backdropFilter: "blur(8px)",
-                          color: "white",
-                          fontSize: 11,
-                          fontWeight: 500,
+                          inset: 0,
+                          background:
+                            "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent 70%)",
                         }}
-                      >
-                        {book.era}
-                      </div>
-                    )}
-                  </div>
+                      />
+                      <BookOpen size={60} color="rgba(255,255,255,0.5)" />
+                    </div>
+                  )}
 
-                  <div
-                    style={{
-                      padding: "20px 24px",
-                      flex: 1,
-                      display: "flex",
-                      flexDirection: "column",
+                  {/* Dark Gradient Overlay for text readability */}
+                  <motion.div
+                    variants={{
+                      rest: { background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 40%, transparent 100%)" },
+                      hover: { background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 100%, transparent 100%)" }
                     }}
-                  >
+                    transition={{ duration: 0.3 }}
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      zIndex: 1,
+                    }}
+                  />
+
+                  {/* Era Badge */}
+                  {book.era && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 12,
+                        right: 12,
+                        padding: "3px 10px",
+                        borderRadius: "var(--radius-full)",
+                        background: "rgba(0,0,0,0.4)",
+                        backdropFilter: "blur(8px)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        color: "white",
+                        fontSize: 11,
+                        fontWeight: 600,
+                        zIndex: 10,
+                      }}
+                    >
+                      {book.era}
+                    </div>
+                  )}
+
+                  {/* Content overlay */}
+                  <div style={{ padding: "20px", position: "relative", zIndex: 2, display: "flex", flexDirection: "column" }}>
                     <h3
                       style={{
-                        fontSize: 16,
-                        fontWeight: 600,
+                        fontFamily: "var(--font-sans)",
+                        fontSize: 20,
+                        fontWeight: 800,
+                        color: "white",
                         marginBottom: 4,
-                        lineHeight: 1.3,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        textShadow: "0 2px 8px rgba(0,0,0,0.5)",
                       }}
                     >
                       {book.title}
                     </h3>
                     <p
                       style={{
+                        color: "rgba(255, 255, 255, 0.8)",
                         fontSize: 13,
-                        color: "var(--text-tertiary)",
-                        marginBottom: 12,
+                        fontWeight: 500,
+                        marginBottom: 8,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
                       }}
                     >
                       {book.author}
                     </p>
-                    <p
-                      style={{
-                        fontSize: 13,
-                        lineHeight: 1.6,
-                        color: "var(--text-secondary)",
-                        display: "-webkit-box",
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                        minHeight: 62,
+
+                    {/* Hidden until hover details */}
+                    <motion.div
+                      variants={{
+                        rest: { height: 0, opacity: 0, marginTop: 0 },
+                        hover: { height: "auto", opacity: 1, marginTop: 8 }
                       }}
+                      transition={{ duration: 0.3 }}
+                      style={{ overflow: "hidden" }}
                     >
-                      {book.description}
-                    </p>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        marginTop: "auto",
-                        paddingTop: 16,
-                      }}
-                    >
-                      <span style={{ fontSize: 12, color: "var(--text-tertiary)" }}>
-                        {book.estimatedReadTime
-                          ? `${book.estimatedReadTime} phút đọc`
-                          : `${book.totalPages} trang`}
-                      </span>
-                      <span
+                      <p
                         style={{
+                          color: "rgba(255,255,255,0.7)",
                           fontSize: 12,
-                          color: "var(--accent-primary)",
-                          fontWeight: 600,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 4,
+                          lineHeight: 1.5,
+                          marginBottom: 16,
+                          display: "-webkit-box",
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
                         }}
                       >
-                        Đọc ngay <ArrowRight size={12} />
-                      </span>
-                    </div>
+                        {book.description}
+                      </p>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          paddingTop: 12,
+                          borderTop: "1px solid rgba(255,255,255,0.15)",
+                        }}
+                      >
+                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.8)" }}>
+                          {book.estimatedReadTime
+                            ? `${book.estimatedReadTime} phút đọc`
+                            : `${book.totalPages} trang`}
+                        </span>
+                        <motion.span
+                          style={{
+                            fontSize: 13,
+                            color: "var(--accent-primary)",
+                            fontWeight: 600,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 4,
+                          }}
+                          variants={{
+                            rest: { x: 0 },
+                            hover: { x: 4 }
+                          }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          Đọc ngay <ArrowRight size={12} />
+                        </motion.span>
+                      </div>
+                    </motion.div>
                   </div>
                 </motion.div>
               </TransitionLink>
