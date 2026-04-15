@@ -1,5 +1,5 @@
 import imageCompression from "browser-image-compression";
-import { Film, Save, X } from "lucide-react";
+import { BookOpen, Film, Plus, Save, Trash2, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import type { MediaAnnotation } from "../types";
 import styles from "./styles/AddMediaModal.module.css";
@@ -12,6 +12,7 @@ type AddMediaModalProps = {
     mediaType: "image" | "video" | "audio" | "annotation";
     mediaUrl: string;
     caption: string;
+    sources: string[];
   }) => void;
   isSubmitting?: boolean;
   editData?: MediaAnnotation | null;
@@ -28,6 +29,7 @@ export default function AddMediaModal({
   const [mediaType, setMediaType] = useState<"image" | "video" | "audio" | "annotation">("image");
   const [mediaUrl, setMediaUrl] = useState("");
   const [caption, setCaption] = useState("");
+  const [sources, setSources] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | Blob | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -81,6 +83,9 @@ export default function AddMediaModal({
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
+    // Filter out empty sources
+    const filteredSources = sources.filter((s) => s.trim() !== "");
+
     if (pendingFile) {
       try {
         setIsUploading(true);
@@ -98,7 +103,7 @@ export default function AddMediaModal({
         }
 
         const data = await response.json();
-        onSubmit({ mediaType, mediaUrl: data.url, caption });
+        onSubmit({ mediaType, mediaUrl: data.url, caption, sources: filteredSources });
         setPendingFile(null);
       } catch (error: any) {
         console.error("Lỗi lưu file:", error);
@@ -107,7 +112,7 @@ export default function AddMediaModal({
         setIsUploading(false);
       }
     } else {
-      onSubmit({ mediaType, mediaUrl, caption });
+      onSubmit({ mediaType, mediaUrl, caption, sources: filteredSources });
     }
   };
 
@@ -120,6 +125,23 @@ export default function AddMediaModal({
     }
   };
 
+  // Sources management
+  const addSource = () => {
+    setSources((prev) => [...prev, ""]);
+  };
+
+  const updateSource = (index: number, value: string) => {
+    setSources((prev) => {
+      const updated = [...prev];
+      updated[index] = value;
+      return updated;
+    });
+  };
+
+  const removeSource = (index: number) => {
+    setSources((prev) => prev.filter((_, i) => i !== index));
+  };
+
   // Reset form when opened or editData changes
   useEffect(() => {
     if (isOpen) {
@@ -127,10 +149,12 @@ export default function AddMediaModal({
         setMediaType(editData.mediaType);
         setMediaUrl(editData.mediaUrl || "");
         setCaption(editData.caption || "");
+        setSources(editData.sources && editData.sources.length > 0 ? editData.sources : []);
       } else {
         setMediaType("image");
         setMediaUrl("");
         setCaption("");
+        setSources([]);
         setPendingFile(null);
         if (fileInputRef.current) fileInputRef.current.value = "";
       }
@@ -304,6 +328,59 @@ export default function AddMediaModal({
               className={styles.textarea}
               spellCheck={false}
             />
+          </div>
+
+          {/* Sources Section (APA Format) */}
+          <div className={styles.formGroup}>
+            <div className={styles.sourcesHeader}>
+              <div className={styles.sourcesLabelGroup}>
+                <BookOpen size={14} color="var(--accent-primary)" />
+                <label className={styles.label}>Nguồn tham khảo (APA)</label>
+              </div>
+              <button
+                type="button"
+                className={styles.addSourceBtn}
+                onClick={addSource}
+                disabled={isSubmitting}
+              >
+                <Plus size={13} />
+                Thêm nguồn
+              </button>
+            </div>
+
+            {sources.length === 0 ? (
+              <div className={styles.sourcesEmpty}>
+                <BookOpen size={16} style={{ opacity: 0.4 }} />
+                <span>
+                  Chưa có nguồn tham khảo nào. Bấm &quot;Thêm nguồn&quot; để thêm trích dẫn APA.
+                </span>
+              </div>
+            ) : (
+              <div className={styles.sourcesList}>
+                {sources.map((source, index) => (
+                  <div key={index} className={styles.sourceItem}>
+                    <span className={styles.sourceIndex}>{index + 1}</span>
+                    <input
+                      type="text"
+                      value={source}
+                      onChange={(e) => updateSource(index, e.target.value)}
+                      placeholder="Nguyễn, V. A. (2020). Tên sách. Nhà xuất bản."
+                      className={styles.sourceInput}
+                      disabled={isSubmitting}
+                    />
+                    <button
+                      type="button"
+                      className={styles.removeSourceBtn}
+                      onClick={() => removeSource(index)}
+                      disabled={isSubmitting}
+                      title="Xóa nguồn"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </form>
 

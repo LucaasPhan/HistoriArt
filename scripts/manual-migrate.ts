@@ -43,6 +43,20 @@ async function run() {
     }
   }
 
+  try {
+    await sql`ALTER TABLE "media_annotations" ADD COLUMN IF NOT EXISTS "source" text;`;
+    console.log("Added source column to media_annotations");
+  } catch (e: any) {
+    console.error("Error adding media_annotations.source:", e.message);
+  }
+
+  try {
+    await sql`ALTER TABLE "media_annotations" ADD COLUMN IF NOT EXISTS "sources" jsonb DEFAULT '[]'::jsonb;`;
+    console.log("Added sources column to media_annotations");
+  } catch (e: any) {
+    console.error("Error adding media_annotations.sources:", e.message);
+  }
+
   console.log("Done.");
 }
 

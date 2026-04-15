@@ -20,6 +20,17 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import PinVerifyModal from "@/features/read/[bookId]/components/PinVerifyModal";
 import { authClient } from "@/lib/auth-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
@@ -32,11 +43,13 @@ import {
   Heart,
   Link2,
   Loader2,
+  Pencil,
   Sparkles,
   Star,
+  Upload,
 } from "lucide-react";
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 
@@ -57,12 +70,33 @@ interface BooksResponse {
   books: Book[];
 }
 
+interface EditBookForm {
+  title: string;
+  author: string;
+  description: string;
+  coverUrl: string;
+}
+
 export default function LibraryPage() {
   const { data: session } = authClient.useSession();
   const queryClient = useQueryClient();
   const [hoveredBook, setHoveredBook] = useState<string | null>(null);
   const [lastPages, setLastPages] = useState<Record<string, number>>({});
   const [deleteTarget, setDeleteTarget] = useState<Book | null>(null);
+  const [editTarget, setEditTarget] = useState<Book | null>(null);
+  const [pendingEditTarget, setPendingEditTarget] = useState<Book | null>(null);
+  const [editForm, setEditForm] = useState<EditBookForm>({
+    title: "",
+    author: "",
+    description: "",
+    coverUrl: "",
+  });
+  const [pinVerified, setPinVerified] = useState(false);
+  const [verifiedPin, setVerifiedPin] = useState("");
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const coverFileInputRef = useRef<HTMLInputElement | null>(null);
+  const isAdmin = session?.user?.role === "admin";
 
   const {
     data: booksData,
@@ -170,6 +204,39 @@ export default function LibraryPage() {
     },
   });
 
+  const editMutation = useMutation({
+    mutationFn: async (payload: {
+      bookId: string;
+      title: string;
+      author: string;
+      description: string;
+      coverUrl: string | null;
+      pin: string;
+    }) => {
+      const res = await fetch("/api/books", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update book");
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Book updated.");
+      queryClient.invalidateQueries({ queryKey: ["books"] });
+      setEditTarget(null);
+    },
+    onError: (err: Error) => {
+      if (err.message.toLowerCase().includes("pin")) {
+        setPinVerified(false);
+        setVerifiedPin("");
+        setShowPinModal(true);
+      }
+      toast.error(err.message);
+    },
+  });
+
   // ── Reading Progress ───────────────────────────────────────────────────
   const { data: progressData } = useQuery({
     queryKey: ["reading-progress"],
@@ -213,10 +280,6 @@ export default function LibraryPage() {
     (b) => !b.fileName || !String(b.fileName).toLowerCase().endsWith(".pdf"),
   );
   // ── Helpers ────────────────────────────────────────────────────────────
-  const isSampleBook = useCallback((book: Book) => {
-    return !book.fileName;
-  }, []);
-
   const copyLink = useCallback((book: Book) => {
     const url = `${window.location.origin}/read/${book.id}?page=1`;
     navigator.clipboard.writeText(url);
@@ -227,6 +290,100 @@ export default function LibraryPage() {
     navigator.clipboard.writeText(`${book.title} — ${book.author}`);
     toast.success("Title copied to clipboard!");
   }, []);
+
+  const openEditDialog = useCallback(
+    (book: Book) => {
+      if (!pinVerified || !verifiedPin) {
+        setPendingEditTarget(book);
+        setShowPinModal(true);
+        return;
+      }
+
+      setEditTarget(book);
+      setEditForm({
+        title: book.title,
+        author: book.author,
+        description: book.description || "",
+        coverUrl: book.coverUrl || "",
+      });
+    },
+    [pinVerified, verifiedPin],
+  );
+
+  const handleCoverFileChange = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploadingCover(true);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload-media", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Upload failed");
+      }
+
+      setEditForm((prev) => ({ ...prev, coverUrl: data.url }));
+      toast.success("Cover uploaded.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Upload failed";
+      toast.error(message);
+    } finally {
+      setIsUploadingCover(false);
+      if (e.target) e.target.value = "";
+    }
+  }, []);
+
+  const handleSaveEdit = useCallback(() => {
+    if (!editTarget) return;
+    if (!pinVerified || !verifiedPin) {
+      setShowPinModal(true);
+      return;
+    }
+    if (!editForm.title.trim()) {
+      toast.error("Title is required.");
+      return;
+    }
+    if (!editForm.author.trim()) {
+      toast.error("Author is required.");
+      return;
+    }
+
+    editMutation.mutate({
+      bookId: editTarget.id,
+      title: editForm.title.trim(),
+      author: editForm.author.trim(),
+      description: editForm.description.trim(),
+      coverUrl: editForm.coverUrl.trim() || null,
+      pin: verifiedPin,
+    });
+  }, [editForm, editMutation, editTarget, pinVerified, verifiedPin]);
+
+  const handlePinVerified = useCallback(
+    (pin: string) => {
+      setPinVerified(true);
+      setVerifiedPin(pin);
+      setShowPinModal(false);
+
+      if (pendingEditTarget) {
+        setEditTarget(pendingEditTarget);
+        setEditForm({
+          title: pendingEditTarget.title,
+          author: pendingEditTarget.author,
+          description: pendingEditTarget.description || "",
+          coverUrl: pendingEditTarget.coverUrl || "",
+        });
+        setPendingEditTarget(null);
+      }
+    },
+    [pendingEditTarget],
+  );
 
   const renderBookCard = (book: Book, i: number, isContinue: boolean) => {
     const cardId = isContinue ? `continue-${book.id}` : book.id;
@@ -308,7 +465,7 @@ export default function LibraryPage() {
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
-                    padding: 24,
+                    padding: book.coverUrl ? 12 : 24,
                     position: "relative",
                     overflow: "hidden",
                   }}
@@ -320,7 +477,7 @@ export default function LibraryPage() {
                       src={book.coverUrl}
                       alt={book.title}
                       fill
-                      style={{ objectFit: "cover" }}
+                      style={{ objectFit: "contain", objectPosition: "center" }}
                       sizes="260px"
                       unoptimized
                     />
@@ -582,6 +739,35 @@ export default function LibraryPage() {
             </ContextMenuItem>
 
             <ContextMenuSeparator className="my-1" style={{ background: "var(--border-subtle)" }} />
+
+            {isAdmin && (
+              <>
+                <ContextMenuItem
+                  className="cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 transition-colors duration-150"
+                  style={{ fontSize: 13, fontWeight: 500, fontFamily: "var(--font-sans)" }}
+                  onSelect={() => openEditDialog(book)}
+                >
+                  <div
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: 8,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Pencil size={14} style={{ color: "var(--text-secondary)" }} />
+                  </div>
+                  <span>Edit Book</span>
+                </ContextMenuItem>
+                <ContextMenuSeparator
+                  className="my-1"
+                  style={{ background: "var(--border-subtle)" }}
+                />
+              </>
+            )}
 
             {/* Favorite */}
             <ContextMenuItem
@@ -974,6 +1160,171 @@ export default function LibraryPage() {
           </div>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog
+        open={!!editTarget}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditTarget(null);
+          }
+        }}
+      >
+        <DialogContent
+          className="sm:max-w-lg"
+          style={{
+            background: "var(--bg-card)",
+            border: "1px solid var(--border-subtle)",
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>Edit Book</DialogTitle>
+            <DialogDescription>
+              Update title, author, description, and cover image.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div style={{ display: "grid", gap: 12 }}>
+            <div style={{ display: "grid", gap: 6 }}>
+              <label style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
+                Title
+              </label>
+              <Input
+                value={editForm.title}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, title: e.target.value }))}
+                placeholder="Book title"
+                maxLength={255}
+              />
+            </div>
+
+            <div style={{ display: "grid", gap: 6 }}>
+              <label style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
+                Author
+              </label>
+              <Input
+                value={editForm.author}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, author: e.target.value }))}
+                placeholder="Book author"
+                maxLength={255}
+              />
+            </div>
+
+            <div style={{ display: "grid", gap: 6 }}>
+              <label style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
+                Description
+              </label>
+              <Textarea
+                value={editForm.description}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, description: e.target.value }))}
+                placeholder="Book description"
+                rows={4}
+              />
+            </div>
+
+            <div style={{ display: "grid", gap: 6 }}>
+              <label style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
+                Cover image URL
+              </label>
+              <Input
+                value={editForm.coverUrl}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, coverUrl: e.target.value }))}
+                placeholder="https://..."
+              />
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <button
+                  type="button"
+                  onClick={() => coverFileInputRef.current?.click()}
+                  disabled={isUploadingCover}
+                  style={{
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: 8,
+                    padding: "7px 12px",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: "var(--text-primary)",
+                    background: "var(--bg-secondary)",
+                    cursor: isUploadingCover ? "wait" : "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  {isUploadingCover ? (
+                    <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} />
+                  ) : (
+                    <Upload size={14} />
+                  )}
+                  {isUploadingCover ? "Uploading..." : "Upload Cover"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditForm((prev) => ({ ...prev, coverUrl: "" }))}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    color: "var(--text-tertiary)",
+                    fontSize: 12,
+                    cursor: "pointer",
+                  }}
+                >
+                  Remove cover
+                </button>
+                <input
+                  ref={coverFileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverFileChange}
+                  style={{ display: "none" }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => setEditTarget(null)}
+              style={{
+                borderRadius: 8,
+                border: "1px solid var(--border-subtle)",
+                padding: "8px 14px",
+                background: "var(--bg-secondary)",
+                fontWeight: 600,
+                fontSize: 13,
+                cursor: "pointer",
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveEdit}
+              disabled={editMutation.isPending || isUploadingCover}
+              style={{
+                borderRadius: 8,
+                border: "none",
+                padding: "8px 14px",
+                background: "var(--accent-primary)",
+                color: "white",
+                fontWeight: 600,
+                fontSize: 13,
+                cursor: editMutation.isPending || isUploadingCover ? "wait" : "pointer",
+                opacity: editMutation.isPending || isUploadingCover ? 0.8 : 1,
+              }}
+            >
+              {editMutation.isPending ? "Saving..." : "Save Changes"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <PinVerifyModal
+        isOpen={showPinModal}
+        onClose={() => {
+          setShowPinModal(false);
+          setPendingEditTarget(null);
+        }}
+        onVerified={handlePinVerified}
+      />
 
       <PageMountSignaler />
     </>

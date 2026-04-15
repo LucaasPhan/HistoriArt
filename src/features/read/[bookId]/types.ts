@@ -11,4 +11,5 @@ export interface MediaAnnotation {
   caption?: string;
   thumbnailUrl?: string;
   autoplay?: boolean;
+  sources?: string[];
 }

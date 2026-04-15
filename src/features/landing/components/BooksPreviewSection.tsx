@@ -3,6 +3,7 @@
 import { TransitionLink } from "@/components/TransitionLink";
 import { motion } from "framer-motion";
 import { ArrowRight, BookOpen } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { AnimatedSection, fadeUp } from "./AnimatedSection";
 
@@ -11,6 +12,7 @@ type BookPreview = {
   title: string;
   author: string;
   description: string;
+  coverUrl?: string | null;
   coverGradient: [string, string];
   era: string;
   totalPages: number;
@@ -89,19 +91,36 @@ export default function BooksPreviewSection() {
                     overflow: "hidden",
                     cursor: "pointer",
                     transition: "box-shadow 0.3s",
+                    height: 390,
+                    display: "flex",
+                    flexDirection: "column",
                   }}
                 >
                   <div
                     style={{
-                      height: 120,
-                      background: `linear-gradient(135deg, ${book.coverGradient[0]}, ${book.coverGradient[1]})`,
+                      height: 140,
+                      background: book.coverUrl
+                        ? "var(--bg-tertiary)"
+                        : `linear-gradient(135deg, ${book.coverGradient[0]}, ${book.coverGradient[1]})`,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       position: "relative",
+                      padding: book.coverUrl ? 12 : 0,
                     }}
                   >
-                    <BookOpen size={36} color="rgba(255,255,255,0.5)" />
+                    {book.coverUrl ? (
+                      <Image
+                        src={book.coverUrl}
+                        alt={book.title}
+                        fill
+                        unoptimized
+                        sizes="(max-width: 768px) 100vw, 340px"
+                        style={{ objectFit: "contain", objectPosition: "center" }}
+                      />
+                    ) : (
+                      <BookOpen size={36} color="rgba(255,255,255,0.5)" />
+                    )}
                     {book.era && (
                       <div
                         style={{
@@ -122,7 +141,14 @@ export default function BooksPreviewSection() {
                     )}
                   </div>
 
-                  <div style={{ padding: "20px 24px" }}>
+                  <div
+                    style={{
+                      padding: "20px 24px",
+                      flex: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
                     <h3
                       style={{
                         fontSize: 16,
@@ -151,6 +177,7 @@ export default function BooksPreviewSection() {
                         WebkitLineClamp: 3,
                         WebkitBoxOrient: "vertical",
                         overflow: "hidden",
+                        minHeight: 62,
                       }}
                     >
                       {book.description}
@@ -160,7 +187,8 @@ export default function BooksPreviewSection() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "space-between",
-                        marginTop: 16,
+                        marginTop: "auto",
+                        paddingTop: 16,
                       }}
                     >
                       <span style={{ fontSize: 12, color: "var(--text-tertiary)" }}>

@@ -182,7 +182,9 @@ export const mediaAnnotations = pgTable(
     mediaType: text("media_type").$type<"image" | "video" | "audio" | "annotation">().notNull(),
     mediaUrl: text("media_url"),
     caption: text("caption"),
+    source: text("source"),
     thumbnailUrl: text("thumbnail_url"),
+    sources: jsonb("sources").$type<string[]>().default([]),
     autoplay: boolean("autoplay").notNull().default(true),
     authorId: text("author_id").references(() => user.id, {
       onDelete: "set null",

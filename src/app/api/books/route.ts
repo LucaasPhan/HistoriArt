@@ -8,9 +8,10 @@ export async function GET() {
   try {
     const session = await verifySession();
     const userId = session?.user?.id;
+    type BookRow = typeof books.$inferSelect;
 
     // Fetch sample books from DB
-    let sampleBooksFromDb: any[] = [];
+    let sampleBooksFromDb: BookRow[] = [];
     try {
       sampleBooksFromDb = await db.query.books.findMany({
         where: eq(books.isSample, true),
@@ -167,5 +168,79 @@ export async function DELETE(request: NextRequest) {
   } catch (err) {
     console.error("Error deleting book:", err);
     return NextResponse.json({ error: "Failed to delete book" }, { status: 500 });
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const session = await verifySession();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (session.user.role !== "admin") {
+      return NextResponse.json({ error: "Admin access required" }, { status: 403 });
+    }
+
+    const body = (await request.json()) as {
+      bookId?: string;
+      title?: string;
+      author?: string;
+      description?: string;
+      coverUrl?: string | null;
+      pin?: string;
+    };
+
+    const bookId = body.bookId?.trim();
+    const title = body.title?.trim();
+    const author = body.author?.trim();
+    const description = typeof body.description === "string" ? body.description.trim() : undefined;
+    const coverUrl =
+      typeof body.coverUrl === "string"
+        ? body.coverUrl.trim()
+        : body.coverUrl === null
+          ? null
+          : undefined;
+    const pin = body.pin;
+
+    if (!bookId || !pin) {
+      return NextResponse.json({ error: "Missing required fields (bookId, pin)" }, { status: 400 });
+    }
+
+    const expectedPin = process.env.ADMIN_EDIT_PIN;
+    if (!expectedPin) {
+      return NextResponse.json({ error: "Admin PIN not configured on server" }, { status: 500 });
+    }
+
+    if (pin !== expectedPin) {
+      return NextResponse.json({ error: "Invalid PIN" }, { status: 403 });
+    }
+
+    if (!title) {
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
+    }
+    if (!author) {
+      return NextResponse.json({ error: "Author is required" }, { status: 400 });
+    }
+
+    const [updated] = await db
+      .update(books)
+      .set({
+        title,
+        author,
+        description: description ?? null,
+        coverUrl: coverUrl ?? null,
+      })
+      .where(eq(books.id, bookId))
+      .returning({ id: books.id });
+
+    if (!updated) {
+      return NextResponse.json({ error: "Book not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("Error updating book:", err);
+    return NextResponse.json({ error: "Failed to update book" }, { status: 500 });
   }
 }

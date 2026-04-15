@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, Github, Linkedin, Twitter } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatedSection, fadeUp } from "./AnimatedSection";
-import { Github, Linkedin, Twitter, ChevronLeft, ChevronRight } from "lucide-react";
 
 const TEAM = [
   {
@@ -11,28 +11,32 @@ const TEAM = [
     role: "Project Manager",
     desc: "Định hướng phát triển nội dung và quản lý dự án.",
     gradient: ["#8B0000", "#D4A574"],
-    image: "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
+    image:
+      "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
   },
   {
     name: "Nguyễn văn A",
     role: "Lead Marketing",
     desc: "",
     gradient: ["#1B4332", "#52B788"],
-    image: "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
+    image:
+      "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
   },
   {
     name: "Nguyễn Văn B",
     role: "Content Creator",
     desc: "",
     gradient: ["#2C1810", "#C4956A"],
-    image: "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
+    image:
+      "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
   },
   {
     name: "Phan Nhất Huy",
     role: "Lead Engineer",
     desc: "Xây dựng kiến trúc nền tảng và tối ưu hóa trải nghiệm đọc đa phương tiện.",
     gradient: ["#1E3A8A", "#60A5FA"],
-    image: "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
+    image:
+      "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
   },
 ];
 
@@ -51,7 +55,7 @@ export default function MeetTheTeamSection() {
     if (scrollRef.current) {
       const { scrollLeft: currentLeft, scrollWidth, clientWidth } = scrollRef.current;
       const cardWidth = scrollRef.current.children[0].clientWidth + 24;
-      
+
       // If we've reached the end (with a 10px margin for precision), loop back to the start
       if (currentLeft + clientWidth >= scrollWidth - 10) {
         scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
@@ -82,9 +86,18 @@ export default function MeetTheTeamSection() {
       }}
     >
       <div id="team" style={{ scrollMarginTop: 80 }} />
-      
+
       {/* Title area with navigation buttons */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 56, flexWrap: "wrap", gap: 24 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-end",
+          marginBottom: 56,
+          flexWrap: "wrap",
+          gap: 24,
+        }}
+      >
         <div style={{ textAlign: "left", flex: "1 1 300px" }}>
           <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>
             Đội ngũ <span className="gradient-text">HistoriArt</span>
@@ -168,7 +181,7 @@ export default function MeetTheTeamSection() {
       </div>
 
       {/* Carousel Container */}
-      <div 
+      <div
         style={{ margin: "0 -24px", padding: "0 24px" }}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
@@ -246,26 +259,38 @@ export default function MeetTheTeamSection() {
                   overflow: "hidden",
                 }}
               >
-                <img 
-                  src={member.image} 
+                <img
+                  src={member.image}
                   alt={member.name}
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
               </div>
-              
-              <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-                <h3 style={{ fontSize: 20, fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>{member.name}</h3>
-                <span 
-                  style={{ 
-                    fontSize: 14, 
-                    fontWeight: 600, 
+
+              <div
+                style={{
+                  position: "relative",
+                  zIndex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                }}
+              >
+                <h3
+                  style={{ fontSize: 20, fontWeight: 700, margin: 0, color: "var(--text-primary)" }}
+                >
+                  {member.name}
+                </h3>
+                <span
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 600,
                     color: "#ffffff",
                     background: `linear-gradient(135deg, ${member.gradient[0]}, ${member.gradient[1]})`,
                     padding: "4px 16px",
                     borderRadius: 16,
                     display: "inline-block",
                     alignSelf: "center",
-                    boxShadow: "var(--shadow-sm)"
+                    boxShadow: "var(--shadow-sm)",
                   }}
                 >
                   {member.role}
@@ -285,23 +310,38 @@ export default function MeetTheTeamSection() {
                 {member.desc}
               </p>
 
-              <div 
-                style={{ 
-                  display: "flex", 
-                  gap: 16, 
-                  marginTop: "auto", 
+              <div
+                style={{
+                  display: "flex",
+                  gap: 16,
+                  marginTop: "auto",
                   paddingTop: 16,
                   position: "relative",
                   zIndex: 1,
                 }}
               >
-                <a href="#" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = member.gradient[0]} onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}>
+                <a
+                  href="#"
+                  style={{ color: "var(--text-secondary)", transition: "color 0.2s" }}
+                  onMouseOver={(e) => (e.currentTarget.style.color = member.gradient[0])}
+                  onMouseOut={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+                >
                   <Twitter size={18} />
                 </a>
-                <a href="#" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = member.gradient[0]} onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}>
+                <a
+                  href="#"
+                  style={{ color: "var(--text-secondary)", transition: "color 0.2s" }}
+                  onMouseOver={(e) => (e.currentTarget.style.color = member.gradient[0])}
+                  onMouseOut={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+                >
                   <Linkedin size={18} />
                 </a>
-                <a href="#" style={{ color: "var(--text-secondary)", transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = member.gradient[0]} onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}>
+                <a
+                  href="#"
+                  style={{ color: "var(--text-secondary)", transition: "color 0.2s" }}
+                  onMouseOver={(e) => (e.currentTarget.style.color = member.gradient[0])}
+                  onMouseOut={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+                >
                   <Github size={18} />
                 </a>
               </div>
@@ -310,11 +350,15 @@ export default function MeetTheTeamSection() {
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{__html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .team-carousel-container::-webkit-scrollbar {
           display: none;
         }
-      `}} />
+      `,
+        }}
+      />
     </AnimatedSection>
   );
 }

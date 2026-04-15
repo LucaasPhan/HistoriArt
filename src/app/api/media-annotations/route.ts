@@ -55,7 +55,8 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { bookId, chapterId, pageNumber, passageText, mediaType, mediaUrl, caption } = body;
+    const { bookId, chapterId, pageNumber, passageText, mediaType, mediaUrl, caption, sources } =
+      body;
 
     // Validate required fields
     if (!bookId || !mediaType) {
@@ -80,6 +81,7 @@ export async function POST(request: NextRequest) {
         mediaType,
         mediaUrl: mediaUrl || null,
         caption: caption || null,
+        sources: sources || [],
         authorId: session.user.id,
       })
       .returning();
@@ -155,7 +157,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id, mediaType, mediaUrl, caption } = body;
+    const { id, mediaType, mediaUrl, caption, sources } = body;
 
     if (!id || !mediaType) {
       return NextResponse.json(
@@ -205,6 +207,7 @@ export async function PUT(request: NextRequest) {
         mediaType,
         mediaUrl: mediaUrl || null,
         caption: caption || null,
+        sources: sources || [],
         updatedAt: new Date(),
       })
       .where(eq(mediaAnnotations.id, id))

@@ -71,6 +71,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
     mediaType: "image" | "video" | "audio" | "annotation";
     mediaUrl: string;
     caption: string;
+    sources: string[];
   }) => {
     setIsAddingMedia(true);
     try {
@@ -98,7 +99,10 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
           bookId,
           pageNumber: c.currentPage,
           passageText: c.selectedText,
-          ...data,
+          mediaType: data.mediaType,
+          mediaUrl: data.mediaUrl,
+          caption: data.caption,
+          sources: data.sources,
         };
         const res = await fetch("/api/media-annotations", {
           method: "POST",

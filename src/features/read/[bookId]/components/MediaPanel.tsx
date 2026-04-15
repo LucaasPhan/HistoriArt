@@ -1,8 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Film, Pen, Trash2, X } from "lucide-react";
-import { memo, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { BookOpen, Film, Pen, Trash2, X } from "lucide-react";
+import { memo, useEffect, useState } from "react";
 import type { MediaAnnotation } from "../types";
 import CustomAudioPlayer from "./CustomAudioPlayer";
 import styles from "./styles/MediaPanel.module.css";
@@ -36,7 +36,10 @@ function MediaCard({
   onEdit?: (annotation: MediaAnnotation) => void;
   onDelete?: (id: string) => void;
 }) {
-  const { mediaType, mediaUrl, caption, passageText } = annotation;
+  const { mediaType, mediaUrl, caption, passageText, sources } = annotation;
+  const [showSources, setShowSources] = useState(false);
+
+  const hasSources = sources && sources.length > 0;
 
   const handleCardClick = (e: React.MouseEvent) => {
     if (!passageText) return;
@@ -139,6 +142,48 @@ function MediaCard({
       )}
 
       {mediaType !== "annotation" && caption && <p className={styles.caption}>{caption}</p>}
+
+      {/* Sources Button & Expandable Section */}
+      {hasSources && (
+        <div className={styles.sourcesSection}>
+          <button
+            className={styles.sourcesToggle}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowSources((prev) => !prev);
+            }}
+          >
+            <BookOpen size={12} />
+            <span>Nguồn tham khảo ({sources!.length})</span>
+            <span
+              className={`${styles.sourcesChevron} ${showSources ? styles.sourcesChevronOpen : ""}`}
+            >
+              ›
+            </span>
+          </button>
+
+          <AnimatePresence>
+            {showSources && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                style={{ overflow: "hidden" }}
+              >
+                <ul className={styles.sourcesList}>
+                  {sources!.map((source, index) => (
+                    <li key={index} className={styles.sourceItem}>
+                      <span className={styles.sourceBullet}>{index + 1}</span>
+                      <span className={styles.sourceText}>{source}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
     </motion.div>
   );
 }

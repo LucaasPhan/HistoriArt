@@ -140,7 +140,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
       setDynamicContent(cached.content);
       setDynamicTotalPages(cached.totalPages);
       setPageLoading(false);
-      
+
       // Prefetch neighbors
       prefetchPage(currentPage + 1);
       if (currentPage > 1) prefetchPage(currentPage - 1);
@@ -171,7 +171,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
           setDynamicContent(data.content);
           setDynamicTotalPages(data.totalPages);
           pageCache.current[currentPage] = { content: data.content, totalPages: data.totalPages };
-          
+
           prefetchPage(currentPage + 1);
           if (currentPage > 1) prefetchPage(currentPage - 1);
         } else if (data.error) {
