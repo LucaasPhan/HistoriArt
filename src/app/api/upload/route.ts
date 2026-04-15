@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file") as File | null;
     const title = (formData.get("title") as string) || "Untitled Book";
     const author = (formData.get("author") as string) || "Unknown";
+    const customBookId = (formData.get("book_id") as string)?.trim() || null;
 
     if (!file || (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf"))) {
       return NextResponse.json({ error: "Please upload a valid PDF file" }, { status: 400 });
@@ -46,7 +47,7 @@ export async function POST(req: NextRequest) {
 
     const totalPages = pageNumbers.length;
     const estimatedReadTime = calculateReadingTime(trimmedPages);
-    const bookId = crypto.randomUUID();
+    const bookId = customBookId || crypto.randomUUID();
 
     await db.insert(books).values({
       id: bookId,

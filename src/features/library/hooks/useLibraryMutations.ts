@@ -68,6 +68,7 @@ export function useLibraryMutations(options?: {
   const editMutation = useMutation({
     mutationFn: async (payload: {
       bookId: string;
+      newBookId?: string;
       title: string;
       author: string;
       description: string;

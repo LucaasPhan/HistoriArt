@@ -6,6 +6,7 @@ export function useLibraryUpload(isAdmin: boolean) {
   const queryClient = useQueryClient();
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadTitle, setUploadTitle] = useState("");
+  const [uploadBookId, setUploadBookId] = useState("");
   const [isUploadingBook, setIsUploadingBook] = useState(false);
   const uploadFileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -46,6 +47,9 @@ export function useLibraryUpload(isAdmin: boolean) {
       const formData = new FormData();
       formData.append("file", uploadFile);
       formData.append("title", title);
+      if (uploadBookId.trim()) {
+        formData.append("book_id", uploadBookId.trim());
+      }
 
       const response = await fetch("/api/upload", {
         method: "POST",
@@ -60,6 +64,7 @@ export function useLibraryUpload(isAdmin: boolean) {
       toast.success("Book uploaded.");
       setUploadFile(null);
       setUploadTitle("");
+      setUploadBookId("");
       queryClient.invalidateQueries({ queryKey: ["books"] });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Upload failed";
@@ -67,7 +72,7 @@ export function useLibraryUpload(isAdmin: boolean) {
     } finally {
       setIsUploadingBook(false);
     }
-  }, [isAdmin, queryClient, uploadFile, uploadTitle]);
+  }, [isAdmin, queryClient, uploadFile, uploadTitle, uploadBookId]);
 
   const openUploadDialog = useCallback(() => {
     uploadFileInputRef.current?.click();
@@ -77,6 +82,8 @@ export function useLibraryUpload(isAdmin: boolean) {
     uploadFile,
     uploadTitle,
     setUploadTitle,
+    uploadBookId,
+    setUploadBookId,
     isUploadingBook,
     handleUploadFileChange,
     handleConfirmUpload,

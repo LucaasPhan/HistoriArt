@@ -16,6 +16,7 @@ export interface BooksResponse {
 }
 
 export interface EditBookForm {
+  bookId: string;
   title: string;
   author: string;
   description: string;

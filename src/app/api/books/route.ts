@@ -204,6 +204,7 @@ export async function PATCH(request: NextRequest) {
 
     const body = (await request.json()) as {
       bookId?: string;
+      newBookId?: string;
       title?: string;
       author?: string;
       description?: string;
@@ -212,6 +213,7 @@ export async function PATCH(request: NextRequest) {
     };
 
     const bookId = body.bookId?.trim();
+    const newBookId = body.newBookId?.trim() || null;
     const title = body.title?.trim();
     const author = body.author?.trim();
     const description = typeof body.description === "string" ? body.description.trim() : undefined;
@@ -243,6 +245,55 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "Author is required" }, { status: 400 });
     }
 
+    // If newBookId is provided and different, re-create the book with the new ID
+    if (newBookId && newBookId !== bookId) {
+      // Check the new ID doesn't already exist
+      const conflict = await db.query.books.findFirst({
+        where: eq(books.id, newBookId),
+      });
+      if (conflict) {
+        return NextResponse.json({ error: "A book with that ID already exists" }, { status: 409 });
+      }
+
+      const existing = await db.query.books.findFirst({
+        where: eq(books.id, bookId),
+      });
+      if (!existing) {
+        return NextResponse.json({ error: "Book not found" }, { status: 404 });
+      }
+
+      // 1. Insert new book with the new ID
+      await db.insert(books).values({
+        ...existing,
+        id: newBookId,
+        title,
+        author,
+        description: description ?? existing.description,
+        coverUrl: coverUrl ?? existing.coverUrl,
+      });
+
+      // 2. Migrate book_chunks (has FK constraint)
+      await db
+        .update(bookChunks)
+        .set({ bookId: newBookId })
+        .where(eq(bookChunks.bookId, bookId));
+
+      // 3. Migrate other tables (no FK constraints, just text columns)
+      const { mediaAnnotations, quizQuestions, quizResults, favoriteBooks, readingProgress } = await import("@/drizzle/schema");
+
+      await db.update(mediaAnnotations).set({ bookId: newBookId }).where(eq(mediaAnnotations.bookId, bookId));
+      await db.update(quizQuestions).set({ bookId: newBookId }).where(eq(quizQuestions.bookId, bookId));
+      await db.update(quizResults).set({ bookId: newBookId }).where(eq(quizResults.bookId, bookId));
+      await db.update(favoriteBooks).set({ bookId: newBookId }).where(eq(favoriteBooks.bookId, bookId));
+      await db.update(readingProgress).set({ bookId: newBookId }).where(eq(readingProgress.bookId, bookId));
+
+      // 4. Delete old book (no chunks left pointing to it)
+      await db.delete(books).where(eq(books.id, bookId));
+
+      return NextResponse.json({ success: true, newBookId });
+    }
+
+    // Standard update (no ID change)
     const [updated] = await db
       .update(books)
       .set({

@@ -73,6 +73,17 @@ export default function EditBookDialog({
 
         <div className={styles.formContainer}>
           <div className={styles.formGroup}>
+            <label className={styles.label}>Book ID</label>
+            <input
+              className={styles.input}
+              value={form.bookId}
+              onChange={(e) => onFieldChange("bookId", e.target.value)}
+              placeholder="Custom book ID"
+              maxLength={255}
+            />
+          </div>
+
+          <div className={styles.formGroup}>
             <label className={styles.label}>Title</label>
             <input
               className={styles.input}

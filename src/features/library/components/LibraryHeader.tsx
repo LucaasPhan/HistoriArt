@@ -11,6 +11,8 @@ export default function LibraryHeader({ bookCount, isAdmin }: LibraryHeaderProps
     uploadFile,
     uploadTitle,
     setUploadTitle,
+    uploadBookId,
+    setUploadBookId,
     isUploadingBook,
     handleUploadFileChange,
     handleConfirmUpload,
@@ -84,38 +86,57 @@ export default function LibraryHeader({ bookCount, isAdmin }: LibraryHeaderProps
           </button>
 
           {uploadFile && (
-            <div style={{ display: "flex", gap: 8, width: "100%" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%" }}>
               <input
                 type="text"
-                value={uploadTitle}
-                onChange={(e) => setUploadTitle(e.target.value)}
-                placeholder="Book title"
+                value={uploadBookId}
+                onChange={(e) => setUploadBookId(e.target.value)}
+                placeholder="Custom Book ID (optional)"
                 disabled={isUploadingBook}
                 style={{
-                  flex: 1,
+                  width: "100%",
                   borderRadius: 10,
                   border: "1px solid var(--border-subtle)",
                   background: "var(--bg-card)",
                   color: "var(--text-primary)",
                   padding: "10px 12px",
+                  fontSize: 13,
+                  boxSizing: "border-box",
                 }}
               />
-              <button
-                type="button"
-                onClick={handleConfirmUpload}
-                disabled={isUploadingBook || !uploadTitle.trim()}
-                style={{
-                  borderRadius: 10,
-                  border: "none",
-                  background: "var(--accent-primary)",
-                  color: "white",
-                  padding: "10px 14px",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                }}
-              >
-                {isUploadingBook ? "Uploading..." : "Confirm"}
-              </button>
+              <div style={{ display: "flex", gap: 8, width: "100%" }}>
+                <input
+                  type="text"
+                  value={uploadTitle}
+                  onChange={(e) => setUploadTitle(e.target.value)}
+                  placeholder="Book title"
+                  disabled={isUploadingBook}
+                  style={{
+                    flex: 1,
+                    borderRadius: 10,
+                    border: "1px solid var(--border-subtle)",
+                    background: "var(--bg-card)",
+                    color: "var(--text-primary)",
+                    padding: "10px 12px",
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={handleConfirmUpload}
+                  disabled={isUploadingBook || !uploadTitle.trim()}
+                  style={{
+                    borderRadius: 10,
+                    border: "none",
+                    background: "var(--accent-primary)",
+                    color: "white",
+                    padding: "10px 14px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  {isUploadingBook ? "Uploading..." : "Confirm"}
+                </button>
+              </div>
             </div>
           )}
         </div>

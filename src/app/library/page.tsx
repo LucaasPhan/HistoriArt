@@ -37,6 +37,7 @@ export default function LibraryPage() {
   const [editTarget, setEditTarget] = useState<Book | null>(null);
   const [pendingEditTarget, setPendingEditTarget] = useState<Book | null>(null);
   const [editForm, setEditForm] = useState<EditBookForm>({
+    bookId: "",
     title: "",
     author: "",
     description: "",
@@ -104,6 +105,7 @@ export default function LibraryPage() {
 
       setEditTarget(book);
       setEditForm({
+        bookId: book.id,
         title: book.title,
         author: book.author,
         description: book.description || "",
@@ -195,6 +197,7 @@ export default function LibraryPage() {
 
     editMutation.mutate({
       bookId: editTarget.id,
+      newBookId: editForm.bookId.trim() !== editTarget.id ? editForm.bookId.trim() : undefined,
       title: editForm.title.trim(),
       author: editForm.author.trim(),
       description: editForm.description.trim(),
@@ -219,6 +222,7 @@ export default function LibraryPage() {
         if (pendingEditTarget) {
           setEditTarget(pendingEditTarget);
           setEditForm({
+            bookId: pendingEditTarget.id,
             title: pendingEditTarget.title,
             author: pendingEditTarget.author,
             description: pendingEditTarget.description || "",
