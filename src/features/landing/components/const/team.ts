@@ -8,7 +8,7 @@ export const TEAM = [
       "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
   },
   {
-    name: "Nguyễn văn A",
+    name: "Nguyễn Phan Tùng Chi",
     role: "Lead Marketing",
     desc: "",
     gradient: ["#1B4332", "#52B788"],
