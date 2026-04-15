@@ -202,6 +202,7 @@
   color: var(--text-secondary);
   font-family: var(--font-serif);
   margin: 0;
+  white-space: pre-line;
 }
 
 .caption {
@@ -211,6 +212,7 @@
   color: var(--text-secondary);
   margin: 0;
   border-top: 1px solid var(--border-subtle);
+  white-space: pre-line;
 }
 
 .typeBadge {
