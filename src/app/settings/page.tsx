@@ -4,12 +4,12 @@ import PageMountSignaler from "@/components/PageMountSignaler";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/AuthContext";
 import { BookOpen, Lock, Settings, User } from "lucide-react";
-import "./settings.css";
+import "@/features/settings/settings.css";
 
-import AccountTab from "./tabs/AccountTab";
-import GeneralTab from "./tabs/GeneralTab";
-import PreferencesTab from "./tabs/PreferencesTab";
-import SecurityTab from "./tabs/SecurityTab";
+import AccountTab from "@/features/settings/tabs/AccountTab";
+import GeneralTab from "@/features/settings/tabs/GeneralTab";
+import PreferencesTab from "@/features/settings/tabs/PreferencesTab";
+import SecurityTab from "@/features/settings/tabs/SecurityTab";
 
 /* ── Main Settings Page ────────────────────────────────────── */
 export default function SettingsPage() {

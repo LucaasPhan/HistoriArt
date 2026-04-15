@@ -8,13 +8,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Forbidden: Admin access required" }, { status: 403 });
     }
 
-    const { pin } = await request.json();
+    const body = (await request.json()) as {
+      pin?: string;
+      purpose?: "edit" | "delete";
+    };
+    const pin = body.pin;
+    const purpose = body.purpose === "delete" ? "delete" : "edit";
 
     if (!pin || typeof pin !== "string") {
       return NextResponse.json({ error: "Missing PIN" }, { status: 400 });
     }
 
-    const expectedPin = process.env.ADMIN_EDIT_PIN;
+    const expectedPin =
+      purpose === "delete" ? process.env.ADMIN_DELETE_PIN : process.env.ADMIN_EDIT_PIN;
     if (!expectedPin) {
       return NextResponse.json({ error: "Admin PIN not configured on server" }, { status: 500 });
     }

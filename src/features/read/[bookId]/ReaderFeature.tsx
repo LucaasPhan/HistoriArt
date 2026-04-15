@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, BookOpen, Film, Highlighter, List, Pencil } from "lucide-react";
 import React, { useEffect } from "react";
+import { getGlobalVideo } from "./components/GlobalVideoManager";
 import AddMediaModal from "./components/AddMediaModal";
 import AudioIsland from "./components/AudioIsland";
 import ChaptersSidebar from "./components/ChaptersSidebar";
@@ -66,6 +67,18 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
   useEffect(() => {
     loadAnnotations();
   }, [loadAnnotations]);
+
+  // Pause global video when playingMedia is cleared or is not a video
+  useEffect(() => {
+    if (!playingMedia || playingMedia.mediaType !== "video") {
+      const globalVideo = typeof document !== "undefined" ? document.getElementById("historiart-global-video") as HTMLVideoElement : null;
+      if (globalVideo) {
+        if (!globalVideo.paused) {
+          globalVideo.pause();
+        }
+      }
+    }
+  }, [playingMedia]);
 
   const handleAddMediaSubmit = async (data: {
     mediaType: "image" | "video" | "audio" | "annotation";

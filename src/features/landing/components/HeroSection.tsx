@@ -19,8 +19,35 @@ export default function HeroSection() {
         textAlign: "center",
         padding: "120px 24px 80px",
         gap: 32,
+        overflow: "hidden",
       }}
     >
+      {/* ─── Background Layer with Blur ────────────────────────── */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: -2,
+          backgroundImage: "url('/bg.jpeg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+          filter: "blur(5px) brightness(0.6)",
+          transform: "scale(2)", // Scale up to hide blurred edges
+        }}
+      />
+      
+      {/* ─── Dark Gradient Overlay ────────────────────────────── */}
+      <div 
+        style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: -1,
+          background: "linear-gradient(to bottom, rgba(34,32,30,0.4) 0%, var(--bg-primary) 100%)",
+          maskImage: "linear-gradient(to bottom, black 70%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, black 70%, transparent 100%)",
+        }}
+      />
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}

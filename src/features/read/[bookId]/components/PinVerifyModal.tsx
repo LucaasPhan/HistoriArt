@@ -8,9 +8,15 @@ interface PinVerifyModalProps {
   isOpen: boolean;
   onClose: () => void;
   onVerified: (pin: string) => void;
+  purpose?: "edit" | "delete";
 }
 
-export default function PinVerifyModal({ isOpen, onClose, onVerified }: PinVerifyModalProps) {
+export default function PinVerifyModal({
+  isOpen,
+  onClose,
+  onVerified,
+  purpose = "edit",
+}: PinVerifyModalProps) {
   const [digits, setDigits] = useState(["", "", "", ""]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -82,7 +88,7 @@ export default function PinVerifyModal({ isOpen, onClose, onVerified }: PinVerif
       const res = await fetch("/api/admin/verify-pin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pin }),
+        body: JSON.stringify({ pin, purpose }),
       });
 
       const data = await res.json();
@@ -99,7 +105,7 @@ export default function PinVerifyModal({ isOpen, onClose, onVerified }: PinVerif
     } finally {
       setLoading(false);
     }
-  }, [digits, onVerified]);
+  }, [digits, onVerified, purpose]);
 
   // Auto-submit when all 4 digits are entered
   useEffect(() => {
@@ -119,7 +125,9 @@ export default function PinVerifyModal({ isOpen, onClose, onVerified }: PinVerif
 
         <h2 className={styles.title}>Xác minh danh tính</h2>
         <p className={styles.subtitle}>
-          Nhập mã PIN 4 chữ số của nhà phát triển để chỉnh sửa nội dung sách
+          {purpose === "delete"
+            ? "Nhập mã PIN 4 chữ số của nhà phát triển để xóa sách"
+            : "Nhập mã PIN 4 chữ số của nhà phát triển để chỉnh sửa nội dung sách"}
         </p>
 
         <div className={styles.pinContainer} onPaste={handlePaste}>

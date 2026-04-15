@@ -6,6 +6,7 @@ import { memo, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import type { MediaAnnotation } from "../types";
 import CustomAudioPlayer from "./CustomAudioPlayer";
+import VideoContainer from "./VideoContainer";
 import styles from "./styles/MediaPanel.module.css";
 
 type MediaPanelProps = {
@@ -110,13 +111,22 @@ function MediaCard({
       {mediaType === "video" && mediaUrl && (
         <div className={styles.videoWrapper}>
           {playingMedia?.id === annotation.id ? (
-            <iframe
-              src={mediaUrl}
-              title={caption || "Video tư liệu"}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className={styles.iframe}
-            />
+            mediaUrl.includes("youtube.com") || mediaUrl.includes("youtu.be") ? (
+              <iframe
+                src={mediaUrl}
+                title={caption || "Video tư liệu"}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className={styles.iframe}
+              />
+            ) : (
+              <VideoContainer
+                src={mediaUrl}
+                autoPlay
+                className={styles.iframe}
+                style={{ background: "#000" }}
+              />
+            )
           ) : (
             <div
               className={styles.videoPlaceholder}

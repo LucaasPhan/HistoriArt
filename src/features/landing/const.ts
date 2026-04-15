@@ -5,7 +5,7 @@ export const TEAM = [
     desc: "Định hướng phát triển nội dung và quản lý dự án.",
     gradient: ["#8B0000", "#D4A574"],
     image:
-      "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
+      "/team/pu.JPG",
   },
   {
     name: "Nguyễn Phan Tùng Chi",
@@ -13,7 +13,7 @@ export const TEAM = [
     desc: "",
     gradient: ["#1B4332", "#52B788"],
     image:
-      "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
+      "/team/chi.JPG",
   },
   {
     name: "Nguyễn Hiếu Kiên",
@@ -29,11 +29,11 @@ export const TEAM = [
     desc: "Xây dựng kiến trúc nền tảng và tối ưu hóa hệ thống.",
     gradient: ["#1E3A8A", "#60A5FA"],
     image:
-      "https://cafefcdn.com/thumb_w/640/203337114487263232/2024/12/26/avatar1735176031764-17351760331641924544187.jpg",
+      "/team/lucas.jpg",
   },
   {
     name: "Huỳnh Nguyễn Khôi Nguyên",
-    role: "UI/UX Designer",
+    role: "Media",
     desc: "Thiết kế giao diện và tối ưu hóa trải nghiệm người dùng.",
     gradient: ["#4C1D95", "#8B5CF6"],
     image:

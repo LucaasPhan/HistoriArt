@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Film, X } from "lucide-react";
 import type { MediaAnnotation } from "../types";
+import VideoContainer from "./VideoContainer";
 
 type Props = {
   annotation: MediaAnnotation;
@@ -98,16 +99,24 @@ export default function VideoPopup({ annotation, onClose }: Props) {
       </div>
 
       <div style={{ width: "100%", aspectRatio: "16/9", background: "#000" }}>
-        <iframe
-          src={
-            annotation.mediaUrl +
-            (annotation.mediaUrl.includes("?") ? "&autoplay=1" : "?autoplay=1")
-          }
-          title={annotation.caption || "Video tư liệu"}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          style={{ width: "100%", height: "100%", border: "none" }}
-        />
+        {annotation.mediaUrl.includes("youtube.com") || annotation.mediaUrl.includes("youtu.be") ? (
+          <iframe
+            src={
+              annotation.mediaUrl +
+              (annotation.mediaUrl.includes("?") ? "&autoplay=1" : "?autoplay=1")
+            }
+            title={annotation.caption || "Video tư liệu"}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ width: "100%", height: "100%", border: "none" }}
+          />
+        ) : (
+          <VideoContainer
+            src={annotation.mediaUrl}
+            autoPlay
+            style={{ width: "100%", height: "100%" }}
+          />
+        )}
       </div>
     </motion.div>
   );

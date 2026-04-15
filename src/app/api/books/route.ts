@@ -8,6 +8,7 @@ export async function GET() {
   try {
     const session = await verifySession();
     const userId = session?.user?.id;
+    const isAdmin = session?.user?.role === "admin";
     type BookRow = typeof books.$inferSelect;
 
     // Fetch sample books from DB
@@ -43,7 +44,7 @@ export async function GET() {
     }
 
     const dbBooks = await db.query.books.findMany({
-      where: and(eq(books.userId, userId), eq(books.isSample, false)),
+      where: isAdmin ? eq(books.isSample, false) : and(eq(books.userId, userId), eq(books.isSample, false)),
       orderBy: (books, { desc }) => [desc(books.createdAt)],
     });
 
@@ -111,10 +112,10 @@ export async function POST(request: NextRequest) {
 
     // Save pages as book_chunks for retrieval
     if (pages && typeof pages === "object") {
-      const chunkInserts = Object.entries(pages).map(([pageNum, content]) => ({
+      const chunkInserts = Object.entries(pages).map(([pageNum, content], index) => ({
         bookId: newBook.id,
-        chunkIndex: parseInt(pageNum),
-        pageNumber: parseInt(pageNum),
+        chunkIndex: index,
+        pageNumber: index + 1,
         content: content as string,
       }));
 
@@ -143,21 +144,40 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { bookId } = await request.json();
-    if (!bookId) {
-      return NextResponse.json({ error: "Missing bookId" }, { status: 400 });
+    if (session.user.role !== "admin") {
+      return NextResponse.json({ error: "Admin access required" }, { status: 403 });
     }
 
-    // Check the book exists in DB and belongs to the current user
+    const body = (await request.json()) as {
+      bookId?: string;
+      pin?: string;
+    };
+    const bookId = body.bookId?.trim();
+    const pin = body.pin;
+
+    if (!bookId || !pin) {
+      return NextResponse.json({ error: "Missing required fields (bookId, pin)" }, { status: 400 });
+    }
+
+    const expectedPin = process.env.ADMIN_DELETE_PIN;
+    if (!expectedPin) {
+      return NextResponse.json({ error: "Admin delete PIN not configured on server" }, { status: 500 });
+    }
+
+    if (pin !== expectedPin) {
+      return NextResponse.json({ error: "Invalid PIN" }, { status: 403 });
+    }
+
     const existing = await db.query.books.findFirst({
-      where: and(eq(books.id, bookId), eq(books.userId, session.user.id)),
+      where: eq(books.id, bookId),
     });
 
     if (!existing) {
-      return NextResponse.json(
-        { error: "Book not found or you don't have permission to delete it." },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Book not found." }, { status: 404 });
+    }
+
+    if (existing.isSample) {
+      return NextResponse.json({ error: "Sample books cannot be deleted." }, { status: 403 });
     }
 
     // Delete chunks first, then the book

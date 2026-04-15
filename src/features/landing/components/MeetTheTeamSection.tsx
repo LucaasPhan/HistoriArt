@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Github, Linkedin, Twitter } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AnimatedSection, fadeUp } from "./AnimatedSection";
-import { TEAM } from "./const/team";
+import { TEAM } from "../const";
 
 export default function MeetTheTeamSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -224,7 +224,11 @@ export default function MeetTheTeamSection() {
                 <img
                   src={member.image}
                   alt={member.name}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  style={{ 
+                    width: "100%", 
+                    height: "100%", 
+                    objectFit: "cover", 
+                  }}
                 />
               </div>
 

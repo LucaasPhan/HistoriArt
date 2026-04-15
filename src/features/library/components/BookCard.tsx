@@ -21,6 +21,7 @@ import {
   Pencil,
   Sparkles,
   Star,
+  Trash2,
 } from "lucide-react";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
@@ -41,37 +42,8 @@ type Props = {
   onCopyLink: (book: Book) => void;
   onCopyTitle: (book: Book) => void;
   onOpenEdit: (book: Book) => void;
+  onDelete: (book: Book) => void;
 };
-
-function DescriptionPreview({ description }: { description: string }) {
-  return (
-    <div
-      style={{
-        color: "var(--text-tertiary)",
-        fontSize: 13,
-        lineHeight: 1.5,
-        marginBottom: 16,
-        flex: 1,
-        display: "-webkit-box",
-        WebkitLineClamp: 2,
-        WebkitBoxOrient: "vertical",
-        overflow: "hidden",
-      }}
-    >
-      <ReactMarkdown
-        components={{
-          p: (props) => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-            const { node, ...rest } = props as any;
-            return <span {...rest} />;
-          },
-        }}
-      >
-        {description.replace(/--/g, "—")}
-      </ReactMarkdown>
-    </div>
-  );
-}
 
 export default function BookCard({
   book,
@@ -88,6 +60,7 @@ export default function BookCard({
   onCopyLink,
   onCopyTitle,
   onOpenEdit,
+  onDelete,
 }: Props) {
   const cardId = isContinue ? `continue-${book.id}` : book.id;
 
@@ -282,6 +255,7 @@ export default function BookCard({
                     <ReactMarkdown
                       components={{
                         p: (props) => {
+                          // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
                           const { node, ...rest } = props as any;
                           return <span {...rest} />;
                         },
@@ -459,6 +433,26 @@ export default function BookCard({
                   <Pencil size={14} style={{ color: "var(--text-secondary)" }} />
                 </div>
                 <span>Edit Book</span>
+              </ContextMenuItem>
+              <ContextMenuItem
+                className="cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 transition-colors duration-150"
+                style={{ fontSize: 13, fontWeight: 500, fontFamily: "var(--font-sans)", color: "#ef4444" }}
+                onSelect={() => onDelete(book)}
+              >
+                <div
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Trash2 size={14} style={{ color: "#ef4444" }} />
+                </div>
+                <span>Delete Book</span>
               </ContextMenuItem>
               <ContextMenuSeparator className="my-1" style={{ background: "var(--border-subtle)" }} />
             </>
