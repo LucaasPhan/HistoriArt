@@ -8,7 +8,7 @@ import DemoPreviewSection from "@/features/landing/components/DemoPreviewSection
 import FeaturesSection from "@/features/landing/components/FeaturesSection";
 import Footer from "@/features/landing/components/Footer";
 import HeroSection from "@/features/landing/components/HeroSection";
-
+import MeetTheTeamSection from "@/features/landing/components/MeetTheTeamSection";
 export default function LandingPage() {
   return (
     <>
@@ -56,6 +56,7 @@ export default function LandingPage() {
         <FeaturesSection />
         <BooksPreviewSection />
         <DemoPreviewSection />
+        <MeetTheTeamSection />
         <Footer />
       </div>
       <PageMountSignaler />
