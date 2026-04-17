@@ -1,6 +1,7 @@
 "use client";
 
 import { TransitionLink } from "@/components/TransitionLink";
+import { useTranslation } from "@/lib/i18n";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUp, LogIn, MessageCircle, Sparkles, Square, Trash2, X } from "lucide-react";
 import React, { memo } from "react";
@@ -46,18 +47,19 @@ const ChatSidebar = memo(function ChatSidebar({
   onClearAttachedMedia,
 }: ChatSidebarProps) {
   const [showConfirm, setShowConfirm] = React.useState(false);
+  const { t } = useTranslation();
   const attachedLabel = attachedMedia
     ? attachedMedia.chatSource === "selection"
-      ? "Book Text"
+      ? t("chat.bookText")
       : attachedMedia.chatSource === "highlight"
-        ? "Highlight"
+        ? t("chat.highlight")
         : attachedMedia.mediaType === "image"
-      ? "Image"
+      ? t("chat.image")
       : attachedMedia.mediaType === "video"
-        ? "Video"
+        ? t("chat.video")
         : attachedMedia.mediaType === "audio"
-          ? "Audio"
-          : "Annotation"
+          ? t("chat.audio")
+          : t("chat.annotation")
     : "";
   const attachedPreview = attachedMedia?.caption?.trim() || attachedMedia?.passageText?.trim() || "";
 
@@ -74,7 +76,7 @@ const ChatSidebar = memo(function ChatSidebar({
             <button
               onClick={() => setShowConfirm(true)}
               className={styles.closeButton}
-              title="Clear Chat History"
+              title={t("chat.clearHistory")}
             >
               <Trash2 size={16} color="var(--text-secondary)" />
             </button>
@@ -90,13 +92,12 @@ const ChatSidebar = memo(function ChatSidebar({
           <div className={styles.decorativeMessages}>
             <div className={`${styles.messageWrapper} ${styles.messageWrapperUser}`}>
               <div className={`chat-bubble-user ${styles.chatBubble}`}>
-                Bạn có thể giải thích chủ đề chính của chương này không?
+                {t("chat.decorativeUser")}
               </div>
             </div>
             <div className={`${styles.messageWrapper} ${styles.messageWrapperAI}`}>
               <div className={`chat-bubble-ai ${styles.chatBubble}`}>
-                Chương này tập trung vào xung đột giữa quyền lực và lương tâm, thể hiện qua các quyết
-                định mà nhân vật chính buộc phải đưa ra.
+                {t("chat.decorativeAI")}
               </div>
             </div>
           </div>
@@ -205,11 +206,11 @@ const ChatSidebar = memo(function ChatSidebar({
           >
             <Sparkles size={28} color="var(--accent-primary)" />
           </motion.div>
-          <p className={styles.signInHeading}>Mở khóa Fable</p>
-          <p className={styles.signInText}>Đăng nhập để hỏi đáp và trò chuyện với AI theo nội dung bạn đang đọc.</p>
+          <p className={styles.signInHeading}>{t("chat.unlockFable")}</p>
+          <p className={styles.signInText}>{t("chat.signInPrompt")}</p>
           <TransitionLink href="/login" className={styles.signInCta}>
             <LogIn size={16} />
-            Đăng Nhập
+            {t("chat.signInCta")}
           </TransitionLink>
         </motion.div>
       ) : (
@@ -225,7 +226,7 @@ const ChatSidebar = memo(function ChatSidebar({
               <div className={styles.attachedMediaChip}>
                 <div className={styles.attachedMediaText}>
                   <span className={styles.attachedMediaBadge}>{attachedLabel}</span>
-                  <span className={styles.attachedMediaTitle}>Đã đính kèm tư liệu</span>
+                  <span className={styles.attachedMediaTitle}>{t("chat.attachedMedia")}</span>
                   {attachedPreview && (
                     <span className={styles.attachedMediaPreview}>{attachedPreview}</span>
                   )}
@@ -234,7 +235,7 @@ const ChatSidebar = memo(function ChatSidebar({
                   type="button"
                   onClick={onClearAttachedMedia}
                   className={styles.attachedMediaClose}
-                  title="Gỡ tư liệu"
+                  title={t("chat.removeMedia")}
                 >
                   <X size={14} />
                 </button>
@@ -254,7 +255,7 @@ const ChatSidebar = memo(function ChatSidebar({
                       onSubmitChat();
                     }
                   }}
-                  placeholder="Hỏi Fable Chat về đoạn trích lịch sử này..."
+                  placeholder={t("chat.placeholder")}
                   className={styles.textarea}
                   rows={1}
                 />
@@ -297,15 +298,15 @@ const ChatSidebar = memo(function ChatSidebar({
               transition={{ duration: 0.15 }}
               className={styles.confirmDialog}
             >
-              <h3 className={styles.confirmTitle}>Xóa lịch sử chat</h3>
-              <p className={styles.confirmText}>Bạn chắc chắn muốn xóa toàn bộ tin nhắn?</p>
+              <h3 className={styles.confirmTitle}>{t("chat.confirmClearTitle")}</h3>
+              <p className={styles.confirmText}>{t("chat.confirmClearText")}</p>
               <div className={styles.confirmActions}>
                 <button
                   onClick={() => setShowConfirm(false)}
                   className="btn-ghost"
                   style={{ padding: "8px 16px", fontSize: 13 }}
                 >
-                  Hủy
+                  {t("common.cancel")}
                 </button>
                 <button
                   onClick={() => {
@@ -314,7 +315,7 @@ const ChatSidebar = memo(function ChatSidebar({
                   }}
                   className={styles.confirmDelete}
                 >
-                  Xóa
+                  {t("common.delete")}
                 </button>
               </div>
             </motion.div>

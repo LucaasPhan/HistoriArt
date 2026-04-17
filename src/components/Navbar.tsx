@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/lib/i18n";
 import { BookOpen } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { TransitionLink } from "./TransitionLink";
@@ -8,8 +9,10 @@ import UserMenu from "./UserMenu";
 export function Navbar() {
   const pathname = usePathname();
   const isReader = pathname?.startsWith("/read");
+  const isOnboarding = pathname?.startsWith("/onboarding");
+  const { t } = useTranslation();
 
-  if (isReader) return null; // hide nav in reader mode
+  if (isReader || isOnboarding) return null; // hide nav in reader/onboarding mode
 
   return (
     <nav className="nav-glass fixed top-0 right-0 left-0 z-50">
@@ -65,7 +68,7 @@ export function Navbar() {
               <button className="btn-ghost" style={{ fontSize: 14 }}>
                 <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <BookOpen size={14} />
-                  Thư viện
+                  {t("nav.library")}
                 </span>
               </button>
             </TransitionLink>
@@ -77,3 +80,4 @@ export function Navbar() {
     </nav>
   );
 }
+

@@ -2,19 +2,17 @@ export const GENDERS = ["male", "female", "non-binary", "prefer-not-to-say"] as 
 
 export const PURPOSES_OF_USE = [
   "learn-and-grow",
-  "find-calm",
-  "stay-consistent",
-  "go-deeper",
-  "process-ideas",
+  "academic",
   "explore-stories",
+  "media-experience",
   "other",
 ] as const;
 
 export const COMMUNICATION_PREFERENCES = [
-  "warm-and-casual",
-  "professional",
-  "motivational",
-  "gentle-and-slow",
+  "professor",
+  "narrator",
+  "guide",
+  "quick",
 ] as const;
 
 export type Gender = (typeof GENDERS)[number];
@@ -31,6 +29,5 @@ export type ChatUserContext = {
   customPurpose?: string | null;
   readingGoal?: string | null;
   personality?: string | null;
-  genZMode?: boolean | null;
   communicationPreference: CommunicationPreference;
 };

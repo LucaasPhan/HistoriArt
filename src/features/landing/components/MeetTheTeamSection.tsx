@@ -1,14 +1,16 @@
 "use client";
 
+import { useTranslation } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Github, Linkedin, Twitter } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AnimatedSection, fadeUp } from "./AnimatedSection";
-import { TEAM } from "../const";
+import { TEAM } from "../constants";
 
 export default function MeetTheTeamSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const { t } = useTranslation();
 
   const scrollLeft = () => {
     if (scrollRef.current) {
@@ -66,7 +68,7 @@ export default function MeetTheTeamSection() {
       >
         <div style={{ textAlign: "left", flex: "1 1 300px" }}>
           <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>
-            Đội ngũ <span className="gradient-text">HistoriArt</span>
+            {t("team.heading")} <span className="gradient-text">{t("team.headingAccent")}</span>
           </h2>
           <p
             style={{
@@ -77,7 +79,7 @@ export default function MeetTheTeamSection() {
               margin: "12px 0 0 0",
             }}
           >
-            Những người đằng sau sứ mệnh mang lịch sử Việt Nam đến gần hơn với thế hệ trẻ.
+            {t("team.subtitle")}
           </p>
         </div>
 
@@ -224,10 +226,10 @@ export default function MeetTheTeamSection() {
                 <img
                   src={member.image}
                   alt={member.name}
-                  style={{ 
-                    width: "100%", 
-                    height: "100%", 
-                    objectFit: "cover", 
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
                   }}
                 />
               </div>
@@ -259,7 +261,7 @@ export default function MeetTheTeamSection() {
                     boxShadow: "var(--shadow-sm)",
                   }}
                 >
-                  {member.role}
+                  {t(`team.member.${i + 1}.role` as any)}
                 </span>
               </div>
 
@@ -273,7 +275,7 @@ export default function MeetTheTeamSection() {
                   margin: 0,
                 }}
               >
-                {member.desc}
+                {t(`team.member.${i + 1}.desc` as any)}
               </p>
 
               <div

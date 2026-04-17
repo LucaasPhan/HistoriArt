@@ -3,6 +3,7 @@
 import PageMountSignaler from "@/components/PageMountSignaler";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslation } from "@/lib/i18n";
 import { BookOpen, Lock, Settings, User } from "lucide-react";
 import "@/features/settings/settings.css";
 
@@ -14,6 +15,7 @@ import SecurityTab from "@/features/settings/tabs/SecurityTab";
 /* ── Main Settings Page ────────────────────────────────────── */
 export default function SettingsPage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -21,7 +23,7 @@ export default function SettingsPage() {
         <Tabs defaultValue="general" orientation="vertical" style={{ display: "contents" }}>
           {/* ── Sidebar ── */}
           <aside className="settings-sidebar">
-            <h1 className="settings-sidebar-title">Settings</h1>
+            <h1 className="settings-sidebar-title">{t("settings.title")}</h1>
             <TabsList
               style={{
                 display: "flex",
@@ -41,7 +43,7 @@ export default function SettingsPage() {
                 style={{ justifyContent: "flex-start", border: "none" }}
               >
                 <Settings size={18} style={{ marginRight: 12 }} />
-                General
+                {t("settings.general")}
               </TabsTrigger>
               {user && (
                 <>
@@ -51,7 +53,7 @@ export default function SettingsPage() {
                     style={{ justifyContent: "flex-start", border: "none" }}
                   >
                     <User size={18} style={{ marginRight: 12 }} />
-                    Account
+                    {t("settings.account")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="preferences"
@@ -59,7 +61,7 @@ export default function SettingsPage() {
                     style={{ justifyContent: "flex-start", border: "none" }}
                   >
                     <BookOpen size={18} style={{ marginRight: 12 }} />
-                    Reader Preferences
+                    {t("settings.preferences")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="security"
@@ -67,7 +69,7 @@ export default function SettingsPage() {
                     style={{ justifyContent: "flex-start", border: "none" }}
                   >
                     <Lock size={18} style={{ marginRight: 12 }} />
-                    Security
+                    {t("settings.security")}
                   </TabsTrigger>
                 </>
               )}

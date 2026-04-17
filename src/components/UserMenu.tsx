@@ -9,7 +9,8 @@ import {
   userRecentQueryKeys,
 } from "@/context/queryKeys";
 import { authClient } from "@/lib/auth-client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "@/lib/i18n";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import {
   AlertTriangle,
   Cog,
@@ -37,6 +38,7 @@ import {
 import { Skeleton } from "./ui/skeleton";
 
 const UnauthenticatedUser = () => {
+  const { t } = useTranslation();
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -53,7 +55,7 @@ const UnauthenticatedUser = () => {
             style={{ height: "36px", padding: "0 20px", fontSize: "14px" }}
           >
             <SquareUserRound className="h-4 w-4" />
-            <span className="font-semibold tracking-wide">Sign In</span>
+            <span className="font-semibold tracking-wide">{t("user.signIn")}</span>
           </Button>
         </Link>
       </motion.div>
@@ -67,8 +69,29 @@ const User = memo(() => {
   const queryClient = useQueryClient();
   const { user, isSessionPending, isSessionError, isAuthenticated } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
   const menuItemClass =
     "data-[highlighted]:bg-muted flex w-full cursor-pointer items-center justify-start gap-2 pl-1! px-2 py-2 rounded-sm text-sm font-normal";
+
+  const { data: profile } = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: async () => {
+      const res = await fetch("/api/profile");
+      if (!res.ok) throw new Error("Failed to fetch profile");
+      return res.json();
+    },
+    enabled: isAuthenticated && !!user,
+  });
+
+  const displayName = profile?.firstName && profile?.lastName
+    ? `${profile.firstName} ${profile.lastName}`
+    : user?.name || "User";
+
+  const nameParts = displayName.split(" ").filter(Boolean);
+  const initials =
+    nameParts.length > 1
+      ? nameParts[0][0] + nameParts[nameParts.length - 1][0]
+      : nameParts[0]?.[0] || "U";
 
   const signOutMutation = useMutation({
     mutationFn: () => authClient.signOut(),
@@ -98,7 +121,7 @@ const User = memo(() => {
             title="Error fetching data, please refresh"
           >
             <AlertTriangle />
-            Error
+            {t("user.errorTitle")}
           </Button>
         </DropdownMenuTrigger>
 
@@ -114,7 +137,7 @@ const User = memo(() => {
               }}
               variant="ghost"
             >
-              Refresh
+              {t("user.errorRefresh")}
               <RefreshCcw />
             </Button>
           </DropdownMenuItem>
@@ -148,7 +171,7 @@ const User = memo(() => {
                     src={user.image || "/assets/avatar/blue.webp"}
                   />
                   <AvatarFallback className="h-[32px] w-[32px]">
-                    {user.name.split(" ")[0]?.charAt(0) + user.name.split(" ")[1]?.charAt(0)}
+                    {initials.toUpperCase()}
                   </AvatarFallback>
                 </div>
               </Avatar>
@@ -167,11 +190,11 @@ const User = memo(() => {
                 src={user.image || "/assets/avatar/blue.webp"}
               />
               <AvatarFallback className="h-[32px] w-[32px] border-0!">
-                {user.name.split(" ")[0]?.charAt(0) + user.name.split(" ")[1]?.charAt(0)}
+                {initials.toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <p className="w-max max-w-[120px] text-sm font-medium whitespace-pre-line">
-              {user.name}
+            <p className="w-max max-w-[120px] text-sm font-medium whitespace-pre-line truncate">
+              {displayName}
             </p>
           </div>
 
@@ -183,12 +206,12 @@ const User = memo(() => {
             }}
           >
             {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-            {theme === "dark" ? "Light Mode" : "Dark Mode"}
+            {theme === "dark" ? t("user.lightMode") : t("user.darkMode")}
           </DropdownMenuItem>
 
           <DropdownMenuItem className={menuItemClass} onClick={() => router.push("/settings")}>
             <Cog size={16} />
-            Settings
+            {t("user.settings")}
           </DropdownMenuItem>
 
           <DropdownMenuItem
@@ -203,12 +226,12 @@ const User = memo(() => {
             {signOutMutation.isPending ? (
               <>
                 <Loader2 size={16} className="animate-spin" />
-                Signing out...
+                {t("user.signingOut")}
               </>
             ) : (
               <>
                 <LogOut size={16} />
-                Sign out
+                {t("user.signOut")}
               </>
             )}
           </DropdownMenuItem>

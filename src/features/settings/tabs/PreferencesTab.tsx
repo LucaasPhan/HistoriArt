@@ -1,8 +1,13 @@
 "use client";
 
+import { useTranslation } from "@/lib/i18n";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function PreferencesTab() {
+  const { t } = useTranslation();
+  const router = useRouter();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -30,12 +35,28 @@ export default function PreferencesTab() {
                 margin: "0 0 4px",
               }}
             >
-              Tùy chỉnh đọc sách
+              Cấu hình lại Hồ sơ / Retake Questionnaire
             </h3>
             <p style={{ margin: 0, fontSize: 13, color: "var(--text-secondary)" }}>
-              Cài đặt trải nghiệm đọc sách theo ý bạn.
+              Thực hiện lại bài khảo sát để cập nhật mục tiêu đọc và phong cách trò chuyện.
             </p>
           </div>
+          <button
+            onClick={() => router.push("/onboarding?step=1")}
+            style={{
+              padding: "8px 16px",
+              background: "var(--accent-primary)",
+              color: "white",
+              borderRadius: 6,
+              fontSize: 13,
+              fontWeight: 600,
+              border: "none",
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Bắt đầu / Start
+          </button>
         </div>
       </section>
     </motion.div>

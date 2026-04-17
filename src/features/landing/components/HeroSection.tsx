@@ -1,11 +1,14 @@
 "use client";
 
 import { TransitionLink } from "@/components/TransitionLink";
+import { useTranslation } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, ChevronDown, Sparkles } from "lucide-react";
 import { fadeUp } from "./AnimatedSection";
 
 export default function HeroSection() {
+  const { t } = useTranslation();
+
   return (
     <section
       style={{
@@ -66,7 +69,7 @@ export default function HeroSection() {
         }}
       >
         <Sparkles size={14} />
-        Nền tảng eBook lịch sử với đa phương tiện
+        {t("hero.badge")}
       </motion.div>
 
       <motion.h1
@@ -83,10 +86,10 @@ export default function HeroSection() {
           color: "var(--text-primary)",
         }}
       >
-        Lịch sử Việt Nam
+        {t("hero.titleLine1")}
         <br />
         <span className="gradient-text" style={{ fontSize: "inherit", fontWeight: "inherit" }}>
-          qua trang sách sống động
+          {t("hero.titleLine2")}
         </span>
       </motion.h1>
 
@@ -102,8 +105,7 @@ export default function HeroSection() {
           maxWidth: 560,
         }}
       >
-        Từ Bạch Đằng đến Điện Biên Phủ — đọc lịch sử với hình ảnh, phim tư liệu và âm nhạc chèn
-        thẳng vào từng trang sách.
+        {t("hero.subtitle")}
       </motion.p>
 
       <motion.div
@@ -134,7 +136,7 @@ export default function HeroSection() {
             }}
           >
             <BookOpen size={18} />
-            Bắt đầu đọc
+            {t("hero.cta")}
             <ArrowRight size={16} />
           </motion.button>
         </TransitionLink>
@@ -155,7 +157,7 @@ export default function HeroSection() {
             borderRadius: "var(--radius-full)",
           }}
         >
-          Tìm hiểu thêm
+          {t("hero.learnMore")}
           <ChevronDown size={16} />
         </motion.button>
       </motion.div>

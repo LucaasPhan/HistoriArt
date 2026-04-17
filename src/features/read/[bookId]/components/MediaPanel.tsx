@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Film, MessageCirclePlus, Pen, Trash2, X } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { useTranslation } from "@/lib/i18n";
+import { PANEL_ANIMATION_DELAY, PULSE_HIGHLIGHT_DURATION } from "../constants";
 import type { MediaAnnotation } from "../types";
 import CustomAudioPlayer from "./CustomAudioPlayer";
 import VideoContainer from "./VideoContainer";
@@ -55,6 +57,7 @@ function MediaCard({
 }) {
   const { mediaType, mediaUrl, caption, passageText, sources } = annotation;
   const [showSources, setShowSources] = useState(false);
+  const { t } = useTranslation();
 
   const hasSources = sources && sources.length > 0;
 
@@ -72,7 +75,7 @@ function MediaCard({
       activeEl.classList.add("pulse-highlight");
       setTimeout(() => {
         activeEl.classList.remove("pulse-highlight");
-      }, 2000);
+      }, PULSE_HIGHLIGHT_DURATION);
     }
   };
 
@@ -89,7 +92,7 @@ function MediaCard({
         <button
           onClick={() => onAddToChat?.(annotation)}
           className={styles.actionButton}
-          title="Thêm vào khung chat"
+          title={t("media.addToChat")}
         >
           <MessageCirclePlus size={12} />
         </button>
@@ -98,14 +101,14 @@ function MediaCard({
             <button
               onClick={() => onEdit?.(annotation)}
               className={styles.actionButton}
-              title="Sửa tư liệu"
+              title={t("media.editMedia")}
             >
               <Pen size={12} />
             </button>
             <button
               onClick={() => onDelete?.(annotation.id)}
               className={`${styles.actionButton} ${styles.deleteButton}`}
-              title="Xóa tư liệu"
+              title={t("media.deleteMedia")}
             >
               <Trash2 size={12} />
             </button>
@@ -152,7 +155,7 @@ function MediaCard({
                 <div className={styles.playButton}>▶</div>
               </div>
               <span style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 12 }}>
-                Bấm để phát video
+                {t("media.playVideo")}
               </span>
             </div>
           )}
@@ -195,7 +198,7 @@ function MediaCard({
             }}
           >
             <BookOpen size={12} />
-            <span>Nguồn tham khảo ({sources!.length})</span>
+            <span>{t("media.sources")} ({sources!.length})</span>
             <span
               className={`${styles.sourcesChevron} ${showSources ? styles.sourcesChevronOpen : ""}`}
             >
@@ -241,6 +244,7 @@ const MediaPanel = memo(function MediaPanel({
   onAddToChat,
   onAddGeneralMedia,
 }: MediaPanelProps) {
+  const { t } = useTranslation();
   // Scroll focused card into view after panel animation
   useEffect(() => {
     if (!focusedAnnotationId) return;
@@ -248,7 +252,7 @@ const MediaPanel = memo(function MediaPanel({
     if (el) {
       setTimeout(() => {
         el.scrollIntoView({ behavior: "smooth", block: "center" });
-      }, 350); // wait for panel slide-in animation to finish
+      }, PANEL_ANIMATION_DELAY); // wait for panel slide-in animation to finish
     }
   }, [focusedAnnotationId]);
 
@@ -263,7 +267,7 @@ const MediaPanel = memo(function MediaPanel({
       <div className={styles.header}>
         <div className={styles.headerTitle}>
           <Film size={16} color="var(--accent-primary)" />
-          <span>Tư liệu liên quan</span>
+          <span>{t("media.relatedMedia")}</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           {isAdmin && (
@@ -283,7 +287,7 @@ const MediaPanel = memo(function MediaPanel({
                 gap: 4,
               }}
             >
-              + Thêm tư liệu
+              {t("media.addMedia")}
             </button>
           )}
           <button onClick={onClose} className={styles.closeButton}>
@@ -296,9 +300,9 @@ const MediaPanel = memo(function MediaPanel({
         {annotations.length === 0 ? (
           <div className={styles.emptyState}>
             <Film size={32} style={{ opacity: 0.3 }} />
-            <p>Tiếp tục đọc để xem tư liệu lịch sử liên quan</p>
+            <p>{t("media.emptyTitle")}</p>
             <span className={styles.emptyHint}>
-              Hình ảnh, video và chú thích sẽ tự động hiển thị khi bạn đọc đến đoạn văn liên quan.
+              {t("media.emptyHint")}
             </span>
           </div>
         ) : (

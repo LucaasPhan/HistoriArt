@@ -1,3 +1,4 @@
+import { useTranslation } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { useLibraryUpload } from "../hooks/useLibraryUpload";
 
@@ -7,6 +8,7 @@ type LibraryHeaderProps = {
 };
 
 export default function LibraryHeader({ bookCount, isAdmin }: LibraryHeaderProps) {
+  const { t } = useTranslation();
   const {
     uploadFile,
     uploadTitle,
@@ -44,10 +46,10 @@ export default function LibraryHeader({ bookCount, isAdmin }: LibraryHeaderProps
             color: "var(--text-primary)",
           }}
         >
-          Thư viện
+          {t("library.title")}
         </h1>
         <p style={{ color: "var(--text-secondary)", fontSize: 17, marginBottom: 0 }}>
-          {bookCount} đầu sách đang chờ bạn
+          {bookCount} {t("library.bookCount")}
         </p>
       </div>
 
@@ -82,7 +84,7 @@ export default function LibraryHeader({ bookCount, isAdmin }: LibraryHeaderProps
               cursor: "pointer",
             }}
           >
-            {uploadFile ? `Selected: ${uploadFile.name}` : "Upload PDF Book"}
+            {uploadFile ? `${t("library.selected")} ${uploadFile.name}` : t("library.uploadPdf")}
           </button>
 
           {uploadFile && (
@@ -91,7 +93,7 @@ export default function LibraryHeader({ bookCount, isAdmin }: LibraryHeaderProps
                 type="text"
                 value={uploadBookId}
                 onChange={(e) => setUploadBookId(e.target.value)}
-                placeholder="Custom Book ID (optional)"
+                placeholder={t("library.bookIdPlaceholder")}
                 disabled={isUploadingBook}
                 style={{
                   width: "100%",
@@ -109,7 +111,7 @@ export default function LibraryHeader({ bookCount, isAdmin }: LibraryHeaderProps
                   type="text"
                   value={uploadTitle}
                   onChange={(e) => setUploadTitle(e.target.value)}
-                  placeholder="Book title"
+                  placeholder={t("library.bookTitlePlaceholder")}
                   disabled={isUploadingBook}
                   style={{
                     flex: 1,
@@ -134,7 +136,7 @@ export default function LibraryHeader({ bookCount, isAdmin }: LibraryHeaderProps
                     cursor: "pointer",
                   }}
                 >
-                  {isUploadingBook ? "Uploading..." : "Confirm"}
+                  {isUploadingBook ? t("library.uploading") : t("common.confirm")}
                 </button>
               </div>
             </div>

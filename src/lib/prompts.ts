@@ -38,19 +38,11 @@ function purposeLens(purpose: string, customPurpose?: string | null): string {
   }
 
   const map: Record<string, string> = {
-    "learn-and-grow":
-      "learning and personal growth - focus on drawing out lessons, challenging perspectives gently, and expanding knowledge",
-    "find-calm":
-      "finding calm and relaxation - keep the tone soothing, focus on immersive or comforting elements, and avoid high-stress framing",
-    "stay-consistent":
-      "building a consistent reading habit - be highly encouraging, celebrate reading milestones, and keep momentum going",
-    "go-deeper":
-      "deep-diving into ideas - offer analytical insights, explore subtext, character motivations, and thematic depth",
-    "process-ideas":
-      "processing complex concepts - act as a sounding board, help break down tough sections, and synthesize information",
-    "explore-stories":
-      "exploring stories and escaping - prioritize atmosphere, narrative immersion, and shared emotional reactions to plot twists",
-    other: "general engagement - follow their lead, remain flexible, and adapt to their reading style",
+    "learn-and-grow": "learning and personal growth - focus on drawing out lessons, challenging perspectives gently, and expanding historical knowledge",
+    "academic": "academic research - maintain a scholastic tone, provide accurate facts, focus on dates, and support study efforts",
+    "explore-stories": "exploring stories - prioritize narrative immersion, vivid descriptions of historical events, and entertaining folklore",
+    "media-experience": "multimedia experience - reference imagery, videos, and visual context frequently to bring history to life",
+    "other": "general engagement - follow their lead, remain flexible, and adapt to their reading style",
   };
 
   const purposes = purpose.split(",").map((p) => p.trim());
@@ -62,29 +54,21 @@ function purposeLens(purpose: string, customPurpose?: string | null): string {
 
 function commStyleDirective(pref: CommunicationPreference): string {
   const map: Record<CommunicationPreference, string> = {
-    "warm-and-casual":
-      "Speak like a warm, witty friend - informal contractions, light humour, occasional slang. Make it feel like a chat over coffee.",
-    professional:
-      "Maintain a measured, precise tone - minimal jokes, structured reasoning, cite frameworks when helpful. Respectful but not cold.",
-    motivational:
-      "Be energetic and encouraging - use action-oriented language, celebrate small wins, keep momentum high. Think enthusiastic coach.",
-    "gentle-and-slow":
-      "Move slowly and softly - short sentences, no pressure, lots of validation before any reframe. Think a quiet walk, not a sprint.",
+    "professor": "Maintain a highly academic, objective, and detailed tone. Use precise terminology, structure your arguments logically, and avoid slang.",
+    "narrator": "Speak like an engaging documentary narrator. Use dramatic pauses in text, vivid language, and a storytelling cadence.",
+    "guide": "Act as a friendly, accessible tour guide. Keep explanations simple, welcoming, and easy to understand for beginners.",
+    "quick": "Be extremely brief and direct. Use bullet points heavily, answer questions immediately, and avoid lengthy prose.",
   };
-  return map[pref] ?? map["warm-and-casual"];
+  return map[pref] ?? map["guide"];
 }
 
 function readingGoalDirective(goal: string | null | undefined): string {
   if (!goal) return "";
   const map: Record<string, string> = {
-    knowledge:
-      "Focus on extracting factual information, explaining historical context, and highlighting educational themes.",
-    serenity:
-      "Keep the discussion peaceful and low-stakes, focusing on the calm and comforting aspects of the text.",
-    ideas:
-      "Encourage brainstorming, relate the book's concepts to real-world applications, and ask thought-provoking open questions.",
-    escape:
-      "Prioritize world-building, character immersion, and narrative flow. Lean into the escapism of the story.",
+    "facts": "Focus strictly on extracting factual information, precise dates, key figures, and geographical context.",
+    "insights": "Provide deep analytical insights, explaining the underlying causes, cultural context, and long-term consequences of events.",
+    "epic": "Highlight the drama, epic battles, and heroic moments. Lean into the tension and excitement of the historical narrative.",
+    "roots": "Focus on national heritage, cultural pride, and drawing connections between historical struggles and modern identity.",
   };
 
   const selected = goal
@@ -99,13 +83,10 @@ function readingGoalDirective(goal: string | null | undefined): string {
 function personalityDirective(personality: string | null | undefined): string {
   if (!personality) return "";
   const map: Record<string, string> = {
-    chill: "Adopt a laid-back, highly relaxed, and easygoing tone. Avoid rushing or over-explaining.",
-    analytical:
-      "Be precise, logical, and detail-oriented. Use structured arguments and focus on character motivations and plot mechanics.",
-    creative:
-      "Be expressive, imaginative, and metaphorical. Encourage creative interpretations and 'what if' scenarios.",
-    intense:
-      "Match their passion. Be enthusiastic, dramatic, and emotionally engaged with every twist and turn.",
+    "researcher": "Be precise, logical, and detail-oriented. Answer with a fact-checking mindset and offer nuanced perspectives.",
+    "storyteller": "Be expressive, imaginative, and metaphorical. Focus on character motivations and the emotional arc of history.",
+    "student": "Provide quick summaries, key takeaways, and mnemonic devices to help them remember vital information.",
+    "explorer": "Adopt a flexible, curious tone. Feel free to bring up tangentially related historical facts to feed their curiosity.",
   };
 
   const val = map[personality.trim()];
@@ -113,21 +94,14 @@ function personalityDirective(personality: string | null | undefined): string {
   return "";
 }
 
-function genZDirective(enabled: boolean | null | undefined): string {
-  if (enabled) {
-    return "- **Gen Z Mode ENABLED:** Use modern, Gen Z slang organically and confidently in your responses (no cap). Don't overdo it, but make it feel natural.";
-  }
-  return "- **Gen Z Mode DISABLED:** Do not use heavy modern slang or Gen Z terminology.";
-}
+
 
 export function buildUserCalibration(user?: ChatUserContext): string {
   if (!user) return "";
 
   const readingGoalTxt = readingGoalDirective(user.readingGoal);
   const personalityTxt = personalityDirective(user.personality);
-  const genZTxt = genZDirective(user.genZMode);
-
-  const dynamicLines = [readingGoalTxt, personalityTxt, genZTxt].filter(Boolean).join("\n");
+  const dynamicLines = [readingGoalTxt, personalityTxt].filter(Boolean).join("\n");
 
   return `
 ---

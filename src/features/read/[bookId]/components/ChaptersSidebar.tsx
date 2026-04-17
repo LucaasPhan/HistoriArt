@@ -1,3 +1,4 @@
+import { useTranslation } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { Book, X } from "lucide-react";
 import styles from "./styles/HighlightsSidebar.module.css";
@@ -20,6 +21,8 @@ export default function ChaptersSidebar({
   onClose,
   onNavigate,
 }: ChaptersSidebarProps) {
+  const { t } = useTranslation();
+
   return (
     <motion.div
       initial={{ x: -320, opacity: 0 }}
@@ -31,7 +34,7 @@ export default function ChaptersSidebar({
     >
       <div className={styles.header}>
         <h2 className={styles.title} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <Book size={18} className="text-(--accent-primary)" /> Mục lục
+          <Book size={18} className="text-(--accent-primary)" /> {t("chapters.title")}
         </h2>
         <div className={styles.headerControls}>
           <button onClick={onClose} className={styles.closeButton}>
@@ -42,7 +45,7 @@ export default function ChaptersSidebar({
 
       <div className={styles.content}>
         {chapters.length === 0 ? (
-          <p className={styles.emptyState}>Không tìm thấy thông tin mục lục.</p>
+          <p className={styles.emptyState}>{t("chapters.empty")}</p>
         ) : (
           <ul
             style={{
@@ -98,7 +101,7 @@ export default function ChaptersSidebar({
                         fontFamily: "var(--font-mono)",
                       }}
                     >
-                      Trang {chap.page}
+                      {t("chapters.page")} {chap.page}
                     </div>
                   </button>
                 </li>

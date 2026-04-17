@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo } from "react";
-import type { Highlight } from "./HighlightsSidebar";
+import type { Highlight } from "../types";
 
 type ContentElement = {
   text: string;

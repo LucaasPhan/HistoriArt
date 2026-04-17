@@ -1,10 +1,13 @@
 "use client";
 
+import { useTranslation } from "@/lib/i18n";
 import { Film, Play, Volume2 } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";
 import styles from "./DemoPreviewSection.module.css";
 
 export default function DemoPreviewSection() {
+  const { t } = useTranslation();
+
   return (
     <AnimatedSection
       style={{
@@ -17,7 +20,7 @@ export default function DemoPreviewSection() {
     >
       <div style={{ textAlign: "center", marginBottom: 48 }}>
         <h2 style={{ fontSize: 28, fontWeight: 700 }}>
-          Tư liệu <span className="gradient-text">ngay trong trang sách</span>
+          {t("demo.heading")} <span className="gradient-text">{t("demo.headingAccent")}</span>
         </h2>
         <p
           style={{
@@ -26,7 +29,7 @@ export default function DemoPreviewSection() {
             marginTop: 12,
           }}
         >
-          Khi đọc đến đoạn có sự kiện lịch sử, tư liệu sẽ tự động hiện ra bên phải.
+          {t("demo.subtitle")}
         </p>
       </div>
 
@@ -94,7 +97,7 @@ export default function DemoPreviewSection() {
             }}
           >
             <Film size={14} color="var(--accent-primary)" />
-            Tư liệu liên quan
+            {t("demo.relatedMedia")}
           </div>
 
           {/* Mock audio card */}

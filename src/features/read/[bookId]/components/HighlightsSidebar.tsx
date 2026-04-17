@@ -1,18 +1,11 @@
+import { useTranslation } from "@/lib/i18n";
 import { AnimatePresence, motion, Reorder } from "framer-motion";
 import { Check, ChevronDown, Trash2, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { HighlightItem } from "./HighlightItem";
 import styles from "./styles/HighlightsSidebar.module.css";
 
-export type Highlight = {
-  id: string;
-  bookId: string;
-  userId: string;
-  text: string;
-  color: string;
-  pageNumber: number;
-  createdAt: string;
-};
+import type { Highlight } from "../types";
 
 type HighlightsSidebarProps = {
   highlights: Highlight[];
@@ -32,6 +25,7 @@ function CustomFilterDropdown({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -43,12 +37,16 @@ function CustomFilterDropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const getLabel = (v: string) => {
+    if (v === "desc") return t("highlights.newestFirst");
+    if (v === "asc") return t("highlights.oldestFirst");
+    return t("highlights.customOrder");
+  };
+
   return (
     <div className={styles.dropdownContainer} ref={dropdownRef}>
       <button type="button" onClick={() => setIsOpen(!isOpen)} className={styles.dropdownTrigger}>
-        <span>
-          {value === "desc" ? "Newest First" : value === "asc" ? "Oldest First" : "Custom Order"}
-        </span>
+        <span>{getLabel(value)}</span>
         <ChevronDown
           size={14}
           className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
@@ -66,8 +64,8 @@ function CustomFilterDropdown({
           >
             <div className="flex flex-col">
               {[
-                { label: "Newest First", val: "desc" },
-                { label: "Oldest First", val: "asc" },
+                { label: t("highlights.newestFirst"), val: "desc" },
+                { label: t("highlights.oldestFirst"), val: "asc" },
               ].map((item) => (
                 <button
                   key={item.val}
@@ -106,6 +104,7 @@ export default function HighlightsSidebar({
     });
   });
   const [prevHighlights, setPrevHighlights] = useState<Highlight[]>(highlights);
+  const { t } = useTranslation();
 
   if (highlights !== prevHighlights) {
     setPrevHighlights(highlights);
@@ -154,7 +153,7 @@ export default function HighlightsSidebar({
       className={styles.container}
     >
       <div className={styles.header}>
-        <h2 className={styles.title}>Highlights</h2>
+        <h2 className={styles.title}>{t("highlights.title")}</h2>
         <div className={styles.headerControls}>
           <CustomFilterDropdown value={detectedOrder} onChange={handleSortChange} />
           <button onClick={onClose} className={styles.closeButton}>
@@ -166,7 +165,7 @@ export default function HighlightsSidebar({
       <div className={styles.content}>
         {orderedHighlights.length === 0 ? (
           <p className={styles.emptyState}>
-            No highlights yet. Select text in the book to add some!
+            {t("highlights.empty")}
           </p>
         ) : (
           <Reorder.Group
@@ -215,10 +214,10 @@ export default function HighlightsSidebar({
               gap: 6,
               fontSize: 13,
             }}
-            title="Clear All Highlights"
+            title={t("highlights.clearAllTitle")}
           >
             <Trash2 size={14} />
-            Clear All
+            {t("highlights.clearAll")}
           </button>
         </div>
       )}
@@ -262,11 +261,10 @@ export default function HighlightsSidebar({
                   marginBottom: 8,
                 }}
               >
-                Clear All Highlights
+                {t("highlights.clearAllTitle")}
               </h3>
               <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 24 }}>
-                Are you sure you want to delete all highlights in this book? This action cannot be
-                undone.
+                {t("highlights.clearAllText")}
               </p>
               <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
                 <button
@@ -274,7 +272,7 @@ export default function HighlightsSidebar({
                   className="btn-ghost"
                   style={{ padding: "8px 16px", fontSize: 13 }}
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </button>
                 <button
                   onClick={() => {
@@ -292,7 +290,7 @@ export default function HighlightsSidebar({
                     cursor: "pointer",
                   }}
                 >
-                  Delete All
+                  {t("highlights.deleteAll")}
                 </button>
               </div>
             </motion.div>

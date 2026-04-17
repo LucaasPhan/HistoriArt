@@ -62,7 +62,6 @@ export async function POST(req: NextRequest) {
         customPurpose: profile.customPurpose,
         readingGoal: profile.readingGoal,
         personality: profile.personality,
-        genZMode: profile.genZMode,
         communicationPreference: profile.communicationPreference as CommunicationPreference,
       };
     }

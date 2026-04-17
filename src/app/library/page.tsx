@@ -13,6 +13,8 @@ import PinVerifyModal from "@/features/read/[bookId]/components/PinVerifyModal";
 import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BOOK_GRID_STYLE, SECTION_TITLE_STYLE } from "@/features/library/const";
+import { useTranslation } from "@/lib/i18n";
+
 
 export default function LibraryPage() {
   const {
@@ -27,6 +29,7 @@ export default function LibraryPage() {
     isAdmin,
   } = useLibraryData();
 
+  const { t } = useTranslation();
   const [hoveredBook, setHoveredBook] = useState<string | null>(null);
 
   const [deleteTarget, setDeleteTarget] = useState<Book | null>(null);
@@ -311,12 +314,12 @@ export default function LibraryPage() {
               color: "var(--text-tertiary)",
             }}
           >
-            Không thể tải thư viện. Vui lòng tải lại trang.
+            {`${t("library.errorLoadingBooks")} ${t("library.errorLoadingBooksDescription")}`}
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 64 }}>
             <LibraryBookSection
-              title="Đang đọc"
+              title={t("library.continueReading")}
               books={continueBooks}
               wrapperStyle={{ marginTop: -16 }}
               renderCard={(book, index) => renderCard(book, index, true)}
@@ -324,7 +327,7 @@ export default function LibraryPage() {
 
             <div>
               {continueBooks.length > 0 && (
-                <h2 style={SECTION_TITLE_STYLE}>Tủ sách lịch sử</h2>
+                <h2 style={SECTION_TITLE_STYLE}>{t("library.library")}</h2>
               )}
               <div style={BOOK_GRID_STYLE}>
                 {books.map((book, index) => renderCard(book, index, false))}

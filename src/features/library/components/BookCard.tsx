@@ -25,25 +25,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
-import type { Book } from "../types";
+import type { Book, BookCardProps } from "../types";
 
-type Props = {
-  book: Book;
-  index: number;
-  isContinue: boolean;
-  continuePage?: number;
-  href: string;
-  isFavorite: boolean;
-  isProcessing: boolean;
-  isAdmin: boolean;
-  hoveredCardId: string | null;
-  onHoverChange: (cardId: string | null) => void;
-  onToggleFavorite: (book: Book) => void;
-  onCopyLink: (book: Book) => void;
-  onCopyTitle: (book: Book) => void;
-  onOpenEdit: (book: Book) => void;
-  onDelete: (book: Book) => void;
-};
 
 export default function BookCard({
   book,
@@ -61,7 +44,7 @@ export default function BookCard({
   onCopyTitle,
   onOpenEdit,
   onDelete,
-}: Props) {
+}: BookCardProps) {
   const cardId = isContinue ? `continue-${book.id}` : book.id;
 
   return (

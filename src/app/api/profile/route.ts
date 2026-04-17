@@ -38,7 +38,6 @@ export async function PUT(req: NextRequest) {
       gender,
       readingGoal,
       personality,
-      genZMode,
     } = body;
 
     const updates: Partial<Record<keyof typeof userProfiles._.columns, any>> = {
@@ -54,7 +53,6 @@ export async function PUT(req: NextRequest) {
     if (gender !== undefined) updates.gender = gender;
     if (readingGoal !== undefined) updates.readingGoal = readingGoal;
     if (personality !== undefined) updates.personality = personality;
-    if (genZMode !== undefined) updates.genZMode = genZMode;
 
     await db.update(userProfiles).set(updates).where(eq(userProfiles.userId, session.user.id));
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { useTranslation } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { User } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -9,6 +10,7 @@ import { useEffect, useState } from "react";
 export default function AccountTab() {
   const router = useRouter();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [data, setData] = useState({ firstName: "", lastName: "", age: "", gender: "" });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -38,11 +40,11 @@ export default function AccountTab() {
       !data.firstName.trim() ||
       !data.lastName.trim() ||
       isNaN(ageNum) ||
-      ageNum < 16 ||
+      ageNum < 13 ||
       ageNum > 99 ||
       !data.gender
     ) {
-      setError("Please ensure all fields are valid.");
+      setError(t("settings.validationError"));
       setTimeout(() => setError(null), 3000);
       return;
     }
@@ -60,7 +62,7 @@ export default function AccountTab() {
           gender: data.gender,
         }),
       });
-      if (!res.ok) throw new Error("Failed to save profile.");
+      if (!res.ok) throw new Error(t("settings.failedSave"));
       setSuccess(true);
       router.refresh();
       setTimeout(() => setSuccess(false), 3000);
@@ -73,7 +75,7 @@ export default function AccountTab() {
 
   if (loading)
     return (
-      <div style={{ padding: "40px 0", color: "var(--text-secondary)" }}>Loading profile...</div>
+      <div style={{ padding: "40px 0", color: "var(--text-secondary)" }}>{t("settings.loadingProfile")}</div>
     );
 
   const initials = (data.firstName[0] || "") + (data.lastName[0] || "");
@@ -85,11 +87,11 @@ export default function AccountTab() {
       transition={{ duration: 0.4 }}
     >
       <section className="settings-section">
-        <h2 className="settings-section-title">Profile</h2>
+        <h2 className="settings-section-title">{t("settings.profile")}</h2>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 32 }}>
           <div className="settings-form-group">
-            <label className="settings-label">First name</label>
+            <label className="settings-label">{t("settings.firstName")}</label>
             <div className="settings-input-wrapper">
               <div className="settings-avatar-placeholder">
                 {user?.image ? (
@@ -116,7 +118,7 @@ export default function AccountTab() {
             </div>
           </div>
           <div className="settings-form-group">
-            <label className="settings-label">Last name</label>
+            <label className="settings-label">{t("settings.lastName")}</label>
             <input
               type="text"
               className="settings-input"
@@ -128,27 +130,27 @@ export default function AccountTab() {
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
           <div className="settings-form-group">
-            <label className="settings-label">Age</label>
+            <label className="settings-label">{t("settings.age")}</label>
             <input
               type="number"
               className="settings-input"
               value={data.age}
               onChange={(e) => setData({ ...data, age: e.target.value })}
             />
-            <p className="settings-hint">Must be between 16 and 99.</p>
+            <p className="settings-hint">{t("settings.ageHint")}</p>
           </div>
           <div className="settings-form-group">
-            <label className="settings-label">Gender</label>
+            <label className="settings-label">{t("settings.gender")}</label>
             <select
               className="settings-input"
               value={data.gender}
               onChange={(e) => setData({ ...data, gender: e.target.value })}
             >
-              <option value="">Chọn giới tính</option>
-              <option value="male">Nam</option>
-              <option value="female">Nữ</option>
-              <option value="non-binary">Khác</option>
-              <option value="prefer-not-to-say">Không muốn nói</option>
+              <option value="">{t("settings.genderSelect")}</option>
+              <option value="male">{t("settings.genderMale")}</option>
+              <option value="female">{t("settings.genderFemale")}</option>
+              <option value="non-binary">{t("settings.genderNonBinary")}</option>
+              <option value="prefer-not-to-say">{t("settings.genderPreferNot")}</option>
             </select>
           </div>
         </div>
@@ -156,7 +158,7 @@ export default function AccountTab() {
 
       <div className="settings-save-bar">
         <button onClick={handleSave} disabled={saving} className="settings-btn-primary">
-          {saving ? "Saving..." : "Save Profile"}
+          {saving ? t("settings.saving") : t("settings.saveProfile")}
         </button>
         {error && (
           <span className="settings-status" style={{ color: "var(--status-error)" }}>
@@ -165,7 +167,7 @@ export default function AccountTab() {
         )}
         {success && (
           <span className="settings-status" style={{ color: "var(--status-success)" }}>
-            Profile saved!
+            {t("settings.profileSaved")}
           </span>
         )}
       </div>

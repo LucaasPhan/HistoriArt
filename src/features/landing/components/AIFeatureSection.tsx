@@ -1,9 +1,12 @@
 "use client";
 
+import { useTranslation } from "@/lib/i18n";
 import { MessageCircle, Sparkles } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";
 
 export default function AIFeatureSection() {
+  const { t } = useTranslation();
+
   return (
     <AnimatedSection
       style={{
@@ -16,7 +19,7 @@ export default function AIFeatureSection() {
     >
       <div style={{ textAlign: "center", marginBottom: 48 }}>
         <h2 style={{ fontSize: 28, fontWeight: 700 }}>
-          Trợ lý AI <span className="gradient-text">Fable Chat</span>
+          {t("ai.heading")} <span className="gradient-text">{t("ai.headingAccent")}</span>
         </h2>
         <p
           style={{
@@ -27,7 +30,7 @@ export default function AIFeatureSection() {
             margin: "12px auto 0",
           }}
         >
-          Bạn gặp những sự kiện khó hiểu hay muốn tìm hiểu thêm về bài đọc? Fable Chat luôn sẵn sàng giải đáp ngay lập tức, tóm tắt nội dung và mở rộng kiến thức ngay bên cạnh trang sách.
+          {t("ai.subtitle")}
         </p>
       </div>
 
@@ -146,7 +149,7 @@ export default function AIFeatureSection() {
             }}
           >
             <MessageCircle size={16} style={{ marginRight: 8 }} />
-            Hỏi Fable Chat về đoạn trích lịch sử này...
+            {t("ai.placeholder")}
           </div>
         </div>
       </div>

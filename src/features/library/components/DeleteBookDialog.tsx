@@ -9,15 +9,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { AlertTriangle } from "lucide-react";
+import { DeleteBookDialogProps } from "../types";
 
-type Props = {
-  open: boolean;
-  title?: string;
-  onOpenChange: (open: boolean) => void;
-  onConfirm: () => void;
-};
-
-export default function DeleteBookDialog({ open, title, onOpenChange, onConfirm }: Props) {
+export default function DeleteBookDialog({ open, title, onOpenChange, onConfirm }: DeleteBookDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent

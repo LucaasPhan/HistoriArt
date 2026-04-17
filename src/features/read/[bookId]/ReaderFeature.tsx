@@ -4,6 +4,7 @@ import PageMountSignaler from "@/components/PageMountSignaler";
 import { ThemeButton } from "@/components/ThemeButton";
 import { TransitionLink } from "@/components/TransitionLink";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslation } from "@/lib/i18n";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, BookOpen, Film, Highlighter, List, MessageCircle, Pencil } from "lucide-react";
 import React, { useEffect } from "react";
@@ -25,6 +26,7 @@ import type { MediaAnnotation } from "./types";
 export default function ReaderFeature({ bookId }: { bookId: string }) {
   const c = useReaderController({ bookId });
   const { isAuthenticated, user } = useAuth();
+  const { t } = useTranslation();
   const isAdmin = user?.role === "admin";
   const [focusedAnnotationId, setFocusedAnnotationId] = React.useState<string | null>(null);
   const [isAddMediaModalOpen, setIsAddMediaModalOpen] = React.useState(false);
@@ -257,13 +259,13 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                   }}
                 >
                   <ArrowLeft size={16} />
-                  <span className="mobile-hide-text">Thư viện</span>
+                  <span className="mobile-hide-text">{t("reader.library")}</span>
                 </button>
               </TransitionLink>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <BookOpen size={16} color="var(--accent-primary)" />
                 <span className="mobile-hide-text" style={{ fontSize: 14, fontWeight: 600 }}>
-                  {c.bookTitle || "Đang tải..."}
+                  {c.bookTitle || t("common.loading")}
                 </span>
 
                 {c.chapters.length > 0 && (
@@ -283,7 +285,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                       background: c.chaptersSidebarOpen ? "var(--bg-secondary)" : "transparent",
                     }}
                   >
-                    <List size={14} /> <span className="mobile-hide-text">Mục lục</span>
+                    <List size={14} /> <span className="mobile-hide-text">{t("reader.toc")}</span>
                   </button>
                 )}
               </div>
@@ -303,7 +305,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                 {isAdmin && (
                   <button
                     className="toolbar-btn"
-                    title="Chỉnh sửa"
+                    title={t("reader.edit")}
                     onClick={() => {
                       if (pinVerified) {
                         setShowPageEditor(true);
@@ -317,7 +319,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                 )}
                 <button
                   className={`toolbar-btn ${c.highlightsSidebarOpen ? "active" : ""}`}
-                  title="Ghi chú"
+                  title={t("reader.notes")}
                   onClick={() => {
                     c.setHighlightsSidebarOpen((o: boolean) => !o);
                     c.setChaptersSidebarOpen(false);
@@ -337,7 +339,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                 {!c.mediaPanelOpen && (
                   <button
                     className={`toolbar-btn ${c.mediaPanelOpen ? "active" : ""}`}
-                    title="Tư liệu"
+                    title={t("reader.media")}
                     onClick={() => {
                       c.setChatOpen(false);
                       c.setMediaPanelOpen(true);

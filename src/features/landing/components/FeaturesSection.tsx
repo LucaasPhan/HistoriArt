@@ -1,10 +1,14 @@
 "use client";
 
+import { useTranslation } from "@/lib/i18n";
+import type { TranslationKey } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { AnimatedSection, fadeUp } from "./AnimatedSection";
-import { FEATURES } from "../const";
+import { FEATURE_GRADIENTS, FEATURE_ICONS } from "../constants";
 
 export default function FeaturesSection() {
+  const { t } = useTranslation();
+
   return (
     <AnimatedSection
       style={{
@@ -18,7 +22,7 @@ export default function FeaturesSection() {
       <div id="features" style={{ scrollMarginTop: 80 }} />
       <div style={{ textAlign: "center", marginBottom: 56 }}>
         <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.02em" }}>
-          Đọc — Xem — Hỏi đáp — <span className="gradient-text">Ôn tập</span>
+          {t("features.heading")} <span className="gradient-text">{t("features.headingAccent")}</span>
         </h2>
         <p
           style={{
@@ -29,7 +33,7 @@ export default function FeaturesSection() {
             margin: "12px auto 0",
           }}
         >
-          Trải nghiệm học lịch sử hoàn toàn mới với công nghệ eBook đa phương tiện.
+          {t("features.subtitle")}
         </p>
       </div>
 
@@ -41,9 +45,9 @@ export default function FeaturesSection() {
           gap: 24,
         }}
       >
-        {FEATURES.map((f, i) => (
+        {FEATURE_ICONS.map((Icon, i) => (
           <motion.div
-            key={f.title}
+            key={i}
             variants={fadeUp}
             initial="hidden"
             whileInView="visible"
@@ -69,15 +73,17 @@ export default function FeaturesSection() {
                 width: 48,
                 height: 48,
                 borderRadius: "var(--radius-md)",
-                background: `linear-gradient(135deg, ${f.gradient[0]}, ${f.gradient[1]})`,
+                background: `linear-gradient(135deg, ${FEATURE_GRADIENTS[i][0]}, ${FEATURE_GRADIENTS[i][1]})`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <f.icon size={22} color="white" />
+              <Icon size={22} color="white" />
             </div>
-            <h3 style={{ fontSize: 18, fontWeight: 600 }}>{f.title}</h3>
+            <h3 style={{ fontSize: 18, fontWeight: 600 }}>
+              {t(`features.${i}.title` as TranslationKey)}
+            </h3>
             <p
               style={{
                 fontSize: 14,
@@ -85,7 +91,7 @@ export default function FeaturesSection() {
                 color: "var(--text-secondary)",
               }}
             >
-              {f.desc}
+              {t(`features.${i}.desc` as TranslationKey)}
             </p>
           </motion.div>
         ))}

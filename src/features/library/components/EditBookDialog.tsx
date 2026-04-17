@@ -1,21 +1,7 @@
-import { Loader2, BookOpen, X, Save, Upload } from "lucide-react";
-import { ChangeEvent, RefObject, useEffect } from "react";
-import { EditBookForm } from "../types";
+import { Loader2, BookOpen, X, Upload } from "lucide-react";
+import { useEffect } from "react";
+import { EditBookDialogProps } from "../types";
 import styles from "./styles/EditBookDialog.module.css";
-
-type Props = {
-  open: boolean;
-  form: EditBookForm;
-  isUploadingCover: boolean;
-  isSaving: boolean;
-  coverFileInputRef: RefObject<HTMLInputElement | null>;
-  onOpenChange: (open: boolean) => void;
-  onFieldChange: (field: keyof EditBookForm, value: string) => void;
-  onUploadClick: () => void;
-  onRemoveCover: () => void;
-  onFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onSave: () => void;
-};
 
 export default function EditBookDialog({
   open,
@@ -29,7 +15,7 @@ export default function EditBookDialog({
   onRemoveCover,
   onFileChange,
   onSave,
-}: Props) {
+}: EditBookDialogProps) {
   // Handle Escape key
   useEffect(() => {
     if (!open) return;

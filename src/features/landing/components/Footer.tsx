@@ -1,6 +1,10 @@
 "use client";
 
+import { useTranslation } from "@/lib/i18n";
+
 export default function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer
       style={{
@@ -13,7 +17,7 @@ export default function Footer() {
         fontSize: 13,
       }}
     >
-      <p>HistoriArt © {new Date().getFullYear()} — Nền tảng eBook lịch sử Việt Nam</p>
+      <p>HistoriArt © {new Date().getFullYear()} — {t("footer.text")}</p>
     </footer>
   );
 }

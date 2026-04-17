@@ -101,7 +101,6 @@ export const userProfiles = pgTable("user_profiles", {
   customPurpose: varchar("custom_purpose", { length: 500 }),
   readingGoal: text("reading_goal").notNull().default(""),
   personality: text("personality").notNull().default(""),
-  genZMode: boolean("gen_z_mode").notNull().default(false),
   communicationPreference: text("communication_preference")
     .$type<CommunicationPreference>()
     .notNull(),

@@ -5,21 +5,23 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { buildAssistantChatMessage, buildUserChatMessage } from "../helpers";
-import type { Highlight } from "../components/HighlightsSidebar";
-import type { ChatMessage, MediaAnnotation } from "../types";
+import {
+  CHAT_SAVE_DELAY,
+  HIGHLIGHTS_STORAGE_KEY_PREFIX,
+  LAST_PAGE_STORAGE_KEY_PREFIX,
+  MAX_HISTORY_MESSAGES,
+  MAX_MEDIA_ATTACHMENTS,
+  PAGE_RETRY_DELAY,
+  READER_MODE,
+} from "../constants";
+import type {
+  ChatMediaContext,
+  ChatMessage,
+  Highlight,
+  MediaAnnotation,
+  UseReaderControllerArgs,
+} from "../types";
 
-type UseReaderControllerArgs = {
-  bookId: string;
-};
-
-type ChatMediaContext = {
-  id: string;
-  mediaType: MediaAnnotation["mediaType"];
-  passageText?: string;
-  caption?: string;
-  mediaUrl?: string;
-  sources?: string[];
-};
 
 export default function useReaderController({ bookId }: UseReaderControllerArgs) {
   const searchParams = useSearchParams();
@@ -33,7 +35,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
   const [chaptersSidebarOpen, setChaptersSidebarOpen] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem(`last_page_${bookId}`, currentPage.toString());
+    localStorage.setItem(`${LAST_PAGE_STORAGE_KEY_PREFIX}${bookId}`, currentPage.toString());
 
     // Sync to DB
     fetch("/api/reading-progress", {
@@ -60,7 +62,10 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
   const [highlightsLoaded, setHighlightsLoaded] = useState(false);
   const [highlightsSidebarOpen, setHighlightsSidebarOpen] = useState(false);
 
-  const getHighlightsStorageKey = useCallback((bid: string) => `highlights_v2_${bid}`, []);
+  const getHighlightsStorageKey = useCallback(
+    (bid: string) => `${HIGHLIGHTS_STORAGE_KEY_PREFIX}${bid}`,
+    [],
+  );
 
   useEffect(() => {
     const saved = localStorage.getItem(getHighlightsStorageKey(bookId));
@@ -119,7 +124,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const [showCopied, setShowCopied] = useState(false);
-  const mode: ConversationMode = "buddy";
+  const mode: ConversationMode = READER_MODE;
 
   const totalPages = dynamicTotalPages;
   const content = dynamicContent;
@@ -190,7 +195,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages }),
       }).catch(() => {});
-    }, 400);
+    }, CHAT_SAVE_DELAY);
     return () => clearTimeout(timer);
   }, [messages, bookId, isChatLoaded]);
 
@@ -243,7 +248,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
 
           timeoutId = setTimeout(() => {
             setRetryTick((t) => t + 1);
-          }, 2000);
+          }, PAGE_RETRY_DELAY);
         } else if (data.content) {
           setDynamicContent(data.content);
           setDynamicTotalPages(data.totalPages);
@@ -295,7 +300,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
       setIsLoading(true);
 
       const preparedMediaContext: ChatMediaContext[] = (mediaContext || [])
-        .slice(0, 8)
+        .slice(0, MAX_MEDIA_ATTACHMENTS)
         .map((annotation) => ({
           id: annotation.id,
           mediaType: annotation.mediaType,
@@ -320,7 +325,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
             mode,
             mediaContext: preparedMediaContext,
             conversationHistory: messages
-              .slice(-8)
+              .slice(-MAX_HISTORY_MESSAGES)
               .map((m) => ({ role: m.role, content: m.content })),
           }),
         });

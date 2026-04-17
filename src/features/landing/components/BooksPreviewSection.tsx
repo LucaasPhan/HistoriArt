@@ -1,27 +1,18 @@
 "use client";
 
 import { TransitionLink } from "@/components/TransitionLink";
+import { useTranslation } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { ArrowRight, BookOpen } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { AnimatedSection, fadeUp } from "./AnimatedSection";
-
-type BookPreview = {
-  id: string;
-  title: string;
-  author: string;
-  description: string;
-  coverUrl?: string | null;
-  coverGradient: [string, string];
-  era: string;
-  totalPages: number;
-  estimatedReadTime: number;
-};
+import { BookPreview } from "../types";
 
 export default function BooksPreviewSection() {
   const [books, setBooks] = useState<BookPreview[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetch("/api/books")
@@ -45,7 +36,7 @@ export default function BooksPreviewSection() {
     >
       <div style={{ textAlign: "center", marginBottom: 48 }}>
         <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.02em" }}>
-          Thư viện <span className="gradient-text">lịch sử</span>
+          {t("books.heading")} <span className="gradient-text">{t("books.headingAccent")}</span>
         </h2>
         <p
           style={{
@@ -56,13 +47,13 @@ export default function BooksPreviewSection() {
             margin: "12px auto 0",
           }}
         >
-          Khám phá những tác phẩm kinh điển về lịch sử Việt Nam từ thời dựng nước đến thống nhất.
+          {t("books.subtitle")}
         </p>
       </div>
 
       {loading ? (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--text-tertiary)" }}>
-          Đang tải thư viện...
+          {t("books.loading")}
         </div>
       ) : (
         <div
@@ -228,8 +219,8 @@ export default function BooksPreviewSection() {
                       >
                         <span style={{ fontSize: 12, color: "rgba(255,255,255,0.8)" }}>
                           {book.estimatedReadTime
-                            ? `${book.estimatedReadTime} phút đọc`
-                            : `${book.totalPages} trang`}
+                            ? `${book.estimatedReadTime} ${t("books.readTime")}`
+                            : `${book.totalPages} ${t("books.pages")}`}
                         </span>
                         <motion.span
                           style={{
@@ -246,7 +237,7 @@ export default function BooksPreviewSection() {
                           }}
                           transition={{ duration: 0.2 }}
                         >
-                          Đọc ngay <ArrowRight size={12} />
+                          {t("books.readNow")} <ArrowRight size={12} />
                         </motion.span>
                       </div>
                     </motion.div>

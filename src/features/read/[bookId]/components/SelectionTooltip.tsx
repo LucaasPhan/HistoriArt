@@ -4,6 +4,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTranslation } from "@/lib/i18n";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Check, Copy, Film, MessageCircle, MoreVertical } from "lucide-react";
 import { memo } from "react";
@@ -35,6 +36,7 @@ const SelectionTooltip = memo(function SelectionTooltip({
 }: SelectionTooltipProps) {
   const isSingleWord =
     selectedText.trim().split(/\s+/).length === 1 && selectedText.trim().length > 0;
+  const { t } = useTranslation();
   return (
     <AnimatePresence>
       {selectionCoords && (
@@ -72,12 +74,12 @@ const SelectionTooltip = memo(function SelectionTooltip({
                 {showCopied ? (
                   <>
                     <Check size={14} color="#10b981" />
-                    <span>Đã sao chép!</span>
+                    <span>{t("common.copied")}</span>
                   </>
                 ) : (
                   <>
                     <BookOpen size={14} color="var(--accent-primary)" />
-                    <span>Tùy chọn</span>
+                    <span>{t("tooltip.options")}</span>
                     <MoreVertical size={14} style={{ marginLeft: 4, opacity: 0.6 }} />
                   </>
                 )}
@@ -121,7 +123,7 @@ const SelectionTooltip = memo(function SelectionTooltip({
                   }}
                 >
                   <BookOpen size={14} className="mr-2" />
-                  <span>Tra cứu</span>
+                  <span>{t("tooltip.lookup")}</span>
                 </DropdownMenuItem>
               )}
               {isAdmin && onAddMedia && (
@@ -132,7 +134,7 @@ const SelectionTooltip = memo(function SelectionTooltip({
                   }}
                 >
                   <Film size={14} className="mr-2" />
-                  <span className="font-medium text-[var(--accent-primary)]">Thêm tư liệu</span>
+                  <span className="font-medium text-[var(--accent-primary)]">{t("tooltip.addMedia")}</span>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
@@ -142,7 +144,7 @@ const SelectionTooltip = memo(function SelectionTooltip({
                 }}
               >
                 <Copy size={14} className="mr-2" />
-                <span>Sao chép</span>
+                <span>{t("tooltip.copy")}</span>
               </DropdownMenuItem>
               {onSendToChat && (
                 <DropdownMenuItem
@@ -152,7 +154,7 @@ const SelectionTooltip = memo(function SelectionTooltip({
                   }}
                 >
                   <MessageCircle size={14} className="mr-2" />
-                  <span>Gửi tới AI chat</span>
+                  <span>{t("tooltip.sendToChat")}</span>
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>

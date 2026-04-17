@@ -20,3 +20,26 @@ export interface MediaAnnotation {
   sources?: string[];
   chatSource?: "media" | "selection" | "highlight";
 }
+
+export interface Highlight {
+  id: string;
+  bookId: string;
+  userId: string;
+  text: string;
+  color: string;
+  pageNumber: number;
+  createdAt: string;
+}
+
+export type UseReaderControllerArgs = {
+  bookId: string;
+};
+
+export type ChatMediaContext = {
+  id: string;
+  mediaType: MediaAnnotation["mediaType"];
+  passageText?: string;
+  caption?: string;
+  mediaUrl?: string;
+  sources?: string[];
+};

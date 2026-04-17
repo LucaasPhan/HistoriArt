@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { memo, useEffect, useRef, useState } from "react";
+import { useTranslation } from "@/lib/i18n";
 
 type ReaderNavigationProps = {
   currentPage: number;
@@ -35,6 +36,7 @@ const ReaderNavigation = memo(function ReaderNavigation({
   const [isEditingPage, setIsEditingPage] = useState(false);
   const [pageInput, setPageInput] = useState(currentPage.toString());
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setPageInput(currentPage.toString());
@@ -104,7 +106,7 @@ const ReaderNavigation = memo(function ReaderNavigation({
             padding: "4px",
             color: "var(--text-primary)",
           }}
-          aria-label="Trang trước"
+          aria-label={t("reader.prevPage")}
         >
           <ChevronLeft size={20} />
         </button>
@@ -144,7 +146,7 @@ const ReaderNavigation = memo(function ReaderNavigation({
                 textUnderlineOffset: 4,
                 textDecorationColor: "var(--border-subtle)",
               }}
-              title="Nhảy đến trang"
+              title={t("reader.jumpToPage")}
             >
               {currentPage}
             </span>
@@ -167,7 +169,7 @@ const ReaderNavigation = memo(function ReaderNavigation({
             padding: "4px",
             color: "var(--text-primary)",
           }}
-          aria-label="Trang sau"
+          aria-label={t("reader.nextPage")}
         >
           <ChevronRight size={20} />
         </button>

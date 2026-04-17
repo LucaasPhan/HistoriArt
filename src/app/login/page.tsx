@@ -2,10 +2,13 @@
 
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import PageMountSignaler from "@/components/PageMountSignaler";
+import { useTranslation } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { BookOpen } from "lucide-react";
 
 export default function LoginPage() {
+  const { t } = useTranslation();
+
   return (
     <>
       <div
@@ -77,10 +80,10 @@ export default function LoginPage() {
                 marginBottom: 8,
               }}
             >
-              Welcome
+              {t("login.welcome")}
             </h1>
             <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>
-              Sign in to continue your reading adventure
+              {t("login.subtitle")}
             </p>
           </div>
 
