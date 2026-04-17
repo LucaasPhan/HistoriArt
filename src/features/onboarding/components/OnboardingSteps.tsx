@@ -1,5 +1,4 @@
 import { useTranslation } from "@/lib/i18n";
-import React from "react";
 import type { OnboardingData } from "../types";
 
 export interface StepProps {
