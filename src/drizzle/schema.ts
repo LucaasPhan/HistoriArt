@@ -157,6 +157,24 @@ export const bookChunks = pgTable(
   ],
 );
 
+export const conversations = pgTable(
+  "conversations",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    bookId: text("book_id").notNull(),
+    messages: jsonb("messages")
+      .$type<Array<{ role: "user" | "assistant"; content: string; timestamp: string }>>()
+      .notNull()
+      .default([]),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex("idx_conversation_user_book").on(table.userId, table.bookId)],
+);
+
 
 // ─── Media Annotations (multimedia tied to text passages) ──────
 export const mediaAnnotations = pgTable(

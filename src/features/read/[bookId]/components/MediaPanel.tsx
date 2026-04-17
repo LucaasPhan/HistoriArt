@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, Film, Pen, Trash2, X } from "lucide-react";
+import { BookOpen, Film, MessageCirclePlus, Pen, Trash2, X } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import type { MediaAnnotation } from "../types";
@@ -18,6 +18,7 @@ type MediaPanelProps = {
   onPlayMedia?: (media: MediaAnnotation | null) => void;
   onEdit?: (annotation: MediaAnnotation) => void;
   onDelete?: (id: string) => void;
+  onAddToChat?: (annotation: MediaAnnotation) => void;
   onAddGeneralMedia?: () => void;
 };
 
@@ -41,6 +42,7 @@ function MediaCard({
   onPlayMedia,
   onEdit,
   onDelete,
+  onAddToChat,
 }: {
   annotation: MediaAnnotation;
   isFocused?: boolean;
@@ -49,6 +51,7 @@ function MediaCard({
   onPlayMedia?: (media: MediaAnnotation | null) => void;
   onEdit?: (annotation: MediaAnnotation) => void;
   onDelete?: (id: string) => void;
+  onAddToChat?: (annotation: MediaAnnotation) => void;
 }) {
   const { mediaType, mediaUrl, caption, passageText, sources } = annotation;
   const [showSources, setShowSources] = useState(false);
@@ -82,24 +85,33 @@ function MediaCard({
       onClick={handleCardClick}
     >
       {/* Admin Actions */}
-      {isAdmin && (
-        <div className={styles.adminActions}>
-          <button
-            onClick={() => onEdit?.(annotation)}
-            className={styles.actionButton}
-            title="Sửa tư liệu"
-          >
-            <Pen size={12} />
-          </button>
-          <button
-            onClick={() => onDelete?.(annotation.id)}
-            className={`${styles.actionButton} ${styles.deleteButton}`}
-            title="Xóa tư liệu"
-          >
-            <Trash2 size={12} />
-          </button>
-        </div>
-      )}
+      <div className={styles.cardActions}>
+        <button
+          onClick={() => onAddToChat?.(annotation)}
+          className={styles.actionButton}
+          title="Thêm vào khung chat"
+        >
+          <MessageCirclePlus size={12} />
+        </button>
+        {isAdmin && (
+          <>
+            <button
+              onClick={() => onEdit?.(annotation)}
+              className={styles.actionButton}
+              title="Sửa tư liệu"
+            >
+              <Pen size={12} />
+            </button>
+            <button
+              onClick={() => onDelete?.(annotation.id)}
+              className={`${styles.actionButton} ${styles.deleteButton}`}
+              title="Xóa tư liệu"
+            >
+              <Trash2 size={12} />
+            </button>
+          </>
+        )}
+      </div>
 
       {mediaType === "image" && mediaUrl && (
         <div className={styles.imageWrapper}>
@@ -226,6 +238,7 @@ const MediaPanel = memo(function MediaPanel({
   onPlayMedia,
   onEdit,
   onDelete,
+  onAddToChat,
   onAddGeneralMedia,
 }: MediaPanelProps) {
   // Scroll focused card into view after panel animation
@@ -299,6 +312,7 @@ const MediaPanel = memo(function MediaPanel({
               onPlayMedia={onPlayMedia}
               onEdit={onEdit}
               onDelete={onDelete}
+              onAddToChat={onAddToChat}
             />
           ))
         )}

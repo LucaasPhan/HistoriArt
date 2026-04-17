@@ -1,0 +1,359 @@
+.container {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--sidebar-right-width);
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  z-index: 40;
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 100%;
+    z-index: 1100;
+  }
+}
+
+.header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headerSubtitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.aiCompanionLabel {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.messagesContainer {
+  flex: 1;
+  overflow: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.messageWrapper {
+  max-width: 85%;
+}
+
+.messageWrapperUser {
+  align-self: flex-end;
+}
+
+.messageWrapperAI {
+  align-self: flex-start;
+}
+
+.chatBubble {
+  padding: 10px 16px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.loadingContainer {
+  padding: 10px 16px;
+  align-self: flex-start;
+  display: flex;
+  gap: 4px;
+}
+
+.loadingDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+}
+
+.chatInteractionMode {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.chatForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.attachedMediaChip {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.attachedMediaText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.attachedMediaBadge {
+  width: fit-content;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  background: var(--accent-glow);
+  border-radius: 999px;
+  padding: 2px 7px;
+}
+
+.attachedMediaTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.attachedMediaPreview {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+}
+
+.attachedMediaClose {
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attachedMediaClose:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  padding: 8px 12px 8px 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.inputWrapper:focus-within {
+  border-color: var(--border-hover);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.textarea {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  min-height: 24px;
+  max-height: 200px;
+  font-size: 15px;
+  outline: none;
+  resize: none;
+  width: 100%;
+  font-family: inherit;
+  field-sizing: content;
+}
+
+.textarea:focus {
+  outline: none;
+}
+
+.textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.inputControls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.submitIconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  transition: all 0.2s;
+}
+
+.submitIconActive {
+  background: #c25e30;
+  color: white;
+  cursor: pointer;
+}
+
+.submitIconActive:hover {
+  background: #a94d24;
+}
+
+.submitIconDisabled {
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  cursor: not-allowed;
+}
+
+.signInBanner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 32px 24px 28px;
+  border-top: 1px solid var(--border-subtle);
+  text-align: center;
+  overflow: hidden;
+}
+
+.signInGlow {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 120px;
+  background: radial-gradient(ellipse, rgba(194, 94, 48, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.signInIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(194, 94, 48, 0.08);
+  border: 1px solid rgba(194, 94, 48, 0.15);
+  backdrop-filter: blur(8px);
+}
+
+.signInHeading {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.signInText {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  max-width: 260px;
+  margin: 0;
+}
+
+.signInCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 10px 16px;
+  border-radius: var(--radius-full);
+  background: var(--accent-gradient);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--shadow-glow);
+}
+
+.decorativeMessages {
+  filter: blur(2px);
+  opacity: 0.6;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.confirmOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.confirmDialog {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-subtle);
+  width: 100%;
+  max-width: 320px;
+}
+
+.confirmTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.confirmText {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.confirmDelete {
+  padding: 8px 16px;
+  font-size: 13px;
+  background: #ef4444;
+  color: white;
+  border-radius: var(--radius-md);
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}

@@ -1,10 +1,11 @@
 import { relations } from "drizzle-orm";
-import { account, bookChunks, books, mediaAnnotations, session, user } from "./schema";
+import { account, bookChunks, books, conversations, mediaAnnotations, session, user } from "./schema";
 
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
   books: many(books),
+  conversations: many(conversations),
   mediaAnnotations: many(mediaAnnotations),
 }));
 
@@ -40,6 +41,13 @@ export const bookChunksRelations = relations(bookChunks, ({ one }) => ({
 export const mediaAnnotationsRelations = relations(mediaAnnotations, ({ one }) => ({
   author: one(user, {
     fields: [mediaAnnotations.authorId],
+    references: [user.id],
+  }),
+}));
+
+export const conversationsRelations = relations(conversations, ({ one }) => ({
+  user: one(user, {
+    fields: [conversations.userId],
     references: [user.id],
   }),
 }));

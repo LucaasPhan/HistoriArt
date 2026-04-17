@@ -1,13 +1,24 @@
 "use client";
 
+import type { ConversationMode } from "@/lib/prompts";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { buildAssistantChatMessage, buildUserChatMessage } from "../helpers";
 import type { Highlight } from "../components/HighlightsSidebar";
-import type { MediaAnnotation } from "../types";
+import type { ChatMessage, MediaAnnotation } from "../types";
 
 type UseReaderControllerArgs = {
   bookId: string;
+};
+
+type ChatMediaContext = {
+  id: string;
+  mediaType: MediaAnnotation["mediaType"];
+  passageText?: string;
+  caption?: string;
+  mediaUrl?: string;
+  sources?: string[];
 };
 
 export default function useReaderController({ bookId }: UseReaderControllerArgs) {
@@ -18,6 +29,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
     !isNaN(initialPage) && initialPage >= 1 ? initialPage : 1,
   );
   const [mediaPanelOpen, setMediaPanelOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
   const [chaptersSidebarOpen, setChaptersSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -37,6 +49,11 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
     y: number;
   } | null>(null);
   const [pageDirection, setPageDirection] = useState<"next" | "prev">("next");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [isChatLoaded, setIsChatLoaded] = useState(false);
 
   // --- Highlights (Local Storage Only) ---
   const [highlights, setHighlights] = useState<Highlight[]>([]);
@@ -97,8 +114,12 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
   const [dynamicBookTitle, setDynamicBookTitle] = useState<string>("");
   const [pageLoading, setPageLoading] = useState(false);
   const [retryTick, setRetryTick] = useState(0);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  const typewriterFinishedRef = useRef<Set<number>>(new Set());
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const [showCopied, setShowCopied] = useState(false);
+  const mode: ConversationMode = "buddy";
 
   const totalPages = dynamicTotalPages;
   const content = dynamicContent;
@@ -116,6 +137,62 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
       })
       .catch(console.error);
   }, [bookId]);
+
+  const scrollToEnd = useCallback(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  const handleStopResponse = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsLoading(false);
+  }, []);
+
+  // Load chat from cloud storage
+  useEffect(() => {
+    let active = true;
+    fetch(`/api/conversations/${bookId}`, { cache: "no-store" })
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to fetch conversation");
+        return r.json() as Promise<{ messages?: ChatMessage[] }>;
+      })
+      .then((data) => {
+        if (!active) return;
+        try {
+          const parsed = Array.isArray(data.messages) ? data.messages : [];
+          setMessages(parsed);
+          parsed.forEach((_, i) => typewriterFinishedRef.current.add(i));
+        } catch (e) {
+          console.error("Failed to parse saved chat", e);
+        }
+      })
+      .catch(() => {
+        if (!active) return;
+        setMessages([]);
+      })
+      .finally(() => {
+        if (!active) return;
+        setIsChatLoaded(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [bookId]);
+
+  // Save chat to cloud storage
+  useEffect(() => {
+    if (!isChatLoaded) return;
+    const timer = setTimeout(() => {
+      fetch(`/api/conversations/${bookId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages }),
+      }).catch(() => {});
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [messages, bookId, isChatLoaded]);
 
   // Fetch page content for dynamic books
   useEffect(() => {
@@ -204,6 +281,111 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
       .catch(() => {});
   }, [bookId]);
 
+  const handleSendMessage = useCallback(
+    async (messageText?: string, mediaContext?: MediaAnnotation[]) => {
+      const text = (messageText || input).trim();
+      const hasMediaContext = (mediaContext?.length || 0) > 0;
+      if ((!text && !hasMediaContext) || isLoading) return false;
+      const outgoingText = text || "Phân tích tư liệu mình vừa đính kèm giúp mình.";
+
+      abortControllerRef.current = new AbortController();
+      const userMsg = buildUserChatMessage(outgoingText, new Date().toISOString());
+      setMessages((prev) => [...prev, userMsg]);
+      setInput("");
+      setIsLoading(true);
+
+      const preparedMediaContext: ChatMediaContext[] = (mediaContext || [])
+        .slice(0, 8)
+        .map((annotation) => ({
+          id: annotation.id,
+          mediaType: annotation.mediaType,
+          passageText: annotation.passageText?.slice(0, 500),
+          caption: annotation.caption?.slice(0, 700),
+          mediaUrl: annotation.mediaUrl,
+          sources: annotation.sources?.slice(0, 3).map((s) => s.slice(0, 250)),
+        }));
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: abortControllerRef.current.signal,
+          body: JSON.stringify({
+            message: outgoingText,
+            bookId,
+            bookTitle,
+            pageContent: content,
+            currentPage,
+            highlightedText: selectedText || undefined,
+            mode,
+            mediaContext: preparedMediaContext,
+            conversationHistory: messages
+              .slice(-8)
+              .map((m) => ({ role: m.role, content: m.content })),
+          }),
+        });
+
+        if (response.status === 401) {
+          setMessages((prev) => prev.slice(0, -1));
+          toast.error("Vui lòng đăng nhập để dùng AI chat.");
+          setIsLoading(false);
+          return false;
+        }
+
+        const data = (await response.json()) as {
+          response?: string;
+          error?: string;
+          navigation?: "next" | "prev" | null;
+        };
+
+        if (data.navigation === "next" && currentPage < totalPages) {
+          setPageDirection("next");
+          setCurrentPage((p) => p + 1);
+        } else if (data.navigation === "prev" && currentPage > 1) {
+          setPageDirection("prev");
+          setCurrentPage((p) => p - 1);
+        }
+
+        const aiMsg = buildAssistantChatMessage(
+          data.response || data.error || "Xin lỗi, mình chưa xử lý được yêu cầu này.",
+          new Date().toISOString(),
+        );
+
+        setMessages((prev) => [...prev, aiMsg]);
+        setIsTyping(true);
+      } catch (err: unknown) {
+        const errLike = err as { name?: string; message?: string };
+        if (errLike?.name === "AbortError") {
+          setIsLoading(false);
+          return false;
+        }
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: `Lỗi kết nối: ${errLike?.message || String(err)}. Vui lòng thử lại.`,
+            timestamp: new Date().toISOString(),
+          },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+      return true;
+    },
+    [
+      input,
+      isLoading,
+      bookId,
+      bookTitle,
+      content,
+      currentPage,
+      selectedText,
+      mode,
+      messages,
+      totalPages,
+    ],
+  );
+
   // Reader Utilities
   const handleTextSelection = useCallback(() => {
     const selection = window.getSelection();
@@ -258,6 +440,18 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
     return () => window.removeEventListener("keydown", handleKey);
   }, [currentPage, totalPages]);
 
+  // Auto-scroll chat
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
+
   return {
     // Layout/meta
     isDynamic: true,
@@ -297,8 +491,34 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
     // Media panel
     mediaPanelOpen,
     setMediaPanelOpen,
+    chatOpen,
+    setChatOpen,
     activeAnnotations,
     setActiveAnnotations,
+
+    // Chat
+    messages,
+    input,
+    setInput,
+    isLoading,
+    isTyping,
+    isChatLoaded,
+    chatEndRef,
+    typewriterFinishedRef,
+    mode,
+    scrollToEnd,
+    onStopResponse: handleStopResponse,
+    onSendMessage: handleSendMessage,
+    onInputChange: setInput,
+    onClearChat: useCallback(() => {
+      setMessages([]);
+      typewriterFinishedRef.current.clear();
+      fetch(`/api/conversations/${bookId}`, { method: "DELETE" }).catch(() => {});
+      toast.success("Đã xóa lịch sử chat");
+    }, [bookId]),
+    onLastMessageFinished: useCallback(() => {
+      setIsTyping(false);
+    }, []),
 
     // Selection
     selectedText,

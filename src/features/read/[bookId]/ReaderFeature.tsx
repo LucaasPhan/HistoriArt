@@ -5,11 +5,11 @@ import { ThemeButton } from "@/components/ThemeButton";
 import { TransitionLink } from "@/components/TransitionLink";
 import { useAuth } from "@/context/AuthContext";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, BookOpen, Film, Highlighter, List, Pencil } from "lucide-react";
+import { ArrowLeft, BookOpen, Film, Highlighter, List, MessageCircle, Pencil } from "lucide-react";
 import React, { useEffect } from "react";
-import { getGlobalVideo } from "./components/GlobalVideoManager";
 import AddMediaModal from "./components/AddMediaModal";
 import AudioIsland from "./components/AudioIsland";
+import ChatSidebar from "./components/ChatSidebar";
 import ChaptersSidebar from "./components/ChaptersSidebar";
 import HighlightsSidebar from "./components/HighlightsSidebar";
 import MediaPanel from "./components/MediaPanel";
@@ -31,16 +31,19 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
   const [isAddingMedia, setIsAddingMedia] = React.useState(false);
   const [editingAnnotation, setEditingAnnotation] = React.useState<MediaAnnotation | null>(null);
   const [playingMedia, setPlayingMedia] = React.useState<MediaAnnotation | null>(null);
+  const [attachedChatMedia, setAttachedChatMedia] = React.useState<MediaAnnotation | null>(null);
 
   // Admin page editing state
   const [pinVerified, setPinVerified] = React.useState(false);
   const [verifiedPin, setVerifiedPin] = React.useState("");
   const [showPinModal, setShowPinModal] = React.useState(false);
   const [showPageEditor, setShowPageEditor] = React.useState(false);
+  const { currentPage, setActiveAnnotations } = c;
 
   const handlePassageClick = React.useCallback(
     (annotationId: string) => {
       setFocusedAnnotationId(annotationId);
+      c.setChatOpen(false);
       c.setMediaPanelOpen(true);
     },
     [c],
@@ -49,19 +52,19 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
   const loadAnnotations = React.useCallback(async () => {
     try {
       const res = await fetch(
-        `/api/media-annotations?bookId=${bookId}&pageNumber=${c.currentPage}`,
+        `/api/media-annotations?bookId=${bookId}&pageNumber=${currentPage}`,
         { cache: "no-store" },
       );
       if (res.ok) {
         const data = await res.json();
-        c.setActiveAnnotations(data);
+        setActiveAnnotations(data);
       } else {
-        c.setActiveAnnotations([]);
+        setActiveAnnotations([]);
       }
-    } catch (e) {
-      c.setActiveAnnotations([]);
+    } catch {
+      setActiveAnnotations([]);
     }
-  }, [bookId, c.currentPage]); // omit `c` because `setActiveAnnotations` is stable and `c` triggers full re-eval
+  }, [bookId, currentPage, setActiveAnnotations]);
 
   // Load annotations for the current page
   useEffect(() => {
@@ -129,7 +132,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
           alert("Failed to add media, make sure you are logged in as admin");
         }
       }
-    } catch (e) {
+    } catch {
       alert("Error saving media");
     } finally {
       setIsAddingMedia(false);
@@ -147,7 +150,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
       } else {
         alert("Failed to delete annotation");
       }
-    } catch (e) {
+    } catch {
       alert("Error deleting annotation");
     }
   };
@@ -156,6 +159,40 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
     setEditingAnnotation(annotation);
     setIsAddMediaModalOpen(true);
   };
+
+  const openChatPanel = React.useCallback(() => {
+    c.setMediaPanelOpen(false);
+    setFocusedAnnotationId(null);
+    c.setChatOpen(true);
+  }, [c]);
+
+  const attachTextToChat = React.useCallback(
+    (text: string, source: "selection" | "highlight") => {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+
+      setAttachedChatMedia({
+        id: crypto.randomUUID(),
+        bookId,
+        mediaType: "annotation",
+        caption: trimmed,
+        passageText: trimmed,
+        chatSource: source,
+      });
+      openChatPanel();
+    },
+    [bookId, openChatPanel],
+  );
+
+  const handleAddMediaCardToChat = React.useCallback(
+    (annotation: MediaAnnotation) => {
+      setAttachedChatMedia({ ...annotation, chatSource: "media" });
+      openChatPanel();
+    },
+    [openChatPanel],
+  );
+
+  const rightSidebarOpen = c.mediaPanelOpen || c.chatOpen;
 
   return (
     <>
@@ -172,6 +209,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
           showCopied={c.showCopied}
           selectedText={c.selectedText}
           onCopy={c.copyToClipboard}
+          onSendToChat={() => attachTextToChat(c.selectedText, "selection")}
           onHighlight={c.onHighlight}
           isAdmin={isAdmin}
           onAddMedia={() => setIsAddMediaModalOpen(true)}
@@ -186,7 +224,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
             minHeight: "100vh",
             transition:
               "margin-right 0.4s cubic-bezier(0.4,0,0.2,1), margin-left 0.4s cubic-bezier(0.4,0,0.2,1)",
-            marginRight: c.mediaPanelOpen ? "var(--sidebar-right-width)" : 0,
+            marginRight: rightSidebarOpen ? "var(--sidebar-right-width)" : 0,
             marginLeft:
               c.highlightsSidebarOpen || c.chaptersSidebarOpen ? "var(--sidebar-left-width)" : 0,
           }}
@@ -251,92 +289,93 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <ThemeButton />
-              {isAdmin && (
-                <button
-                  className="btn-ghost"
-                  onClick={() => {
-                    if (pinVerified) {
-                      setShowPageEditor(true);
-                    } else {
-                      setShowPinModal(true);
-                    }
-                  }}
-                  style={{
-                    padding: "6px 14px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    fontSize: 13,
-                    color: "var(--accent-primary)",
-                    border: "1px solid var(--accent-primary)",
-                    borderRadius: "var(--radius-md)",
-                  }}
-                >
-                  <Pencil size={14} />
-                  <span className="mobile-hide-text">Chỉnh sửa</span>
-                </button>
-              )}
-              <button
-                className="btn-ghost"
-                onClick={() => {
-                  c.setHighlightsSidebarOpen((o: boolean) => !o);
-                  c.setChaptersSidebarOpen(false);
-                }}
+              <div
                 style={{
-                  padding: "6px 14px",
                   display: "flex",
                   alignItems: "center",
                   gap: 6,
-                  fontSize: 13,
-                  background: c.highlightsSidebarOpen ? "var(--bg-secondary)" : "transparent",
+                  background: "var(--bg-tertiary)",
+                  borderRadius: "var(--radius-full)",
+                  padding: "6px",
+                  border: "1px solid var(--border-subtle)",
                 }}
               >
-                <Highlighter size={14} />
-                <span className="mobile-hide-text">Ghi chú</span>
-              </button>
-              {!c.mediaPanelOpen && (
+                {isAdmin && (
+                  <button
+                    className="toolbar-btn"
+                    title="Chỉnh sửa"
+                    onClick={() => {
+                      if (pinVerified) {
+                        setShowPageEditor(true);
+                      } else {
+                        setShowPinModal(true);
+                      }
+                    }}
+                  >
+                    <Pencil size={20} />
+                  </button>
+                )}
                 <button
-                  className="btn-ghost"
-                  onClick={() => c.setMediaPanelOpen(true)}
-                  style={{
-                    padding: "6px 14px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    fontSize: 13,
-                    color: "var(--accent-primary)",
+                  className={`toolbar-btn ${c.highlightsSidebarOpen ? "active" : ""}`}
+                  title="Ghi chú"
+                  onClick={() => {
+                    c.setHighlightsSidebarOpen((o: boolean) => !o);
+                    c.setChaptersSidebarOpen(false);
                   }}
                 >
-                  <Film size={14} />
-                  <span className="mobile-hide-text">Tư liệu</span>
-                  {c.activeAnnotations.length > 0 && (
-                    <span
-                      style={{
-                        width: 18,
-                        height: 18,
-                        borderRadius: "50%",
-                        background: "var(--accent-gradient)",
-                        color: "white",
-                        fontSize: 10,
-                        fontWeight: 700,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {c.activeAnnotations.length}
-                    </span>
-                  )}
+                  <Highlighter size={20} />
                 </button>
-              )}
+                {!c.chatOpen && (
+                  <button
+                    className={`toolbar-btn ${c.chatOpen ? "active" : ""}`}
+                    title="Fable Chat"
+                    onClick={openChatPanel}
+                  >
+                    <MessageCircle size={20} />
+                  </button>
+                )}
+                {!c.mediaPanelOpen && (
+                  <button
+                    className={`toolbar-btn ${c.mediaPanelOpen ? "active" : ""}`}
+                    title="Tư liệu"
+                    onClick={() => {
+                      c.setChatOpen(false);
+                      c.setMediaPanelOpen(true);
+                    }}
+                    style={{ position: "relative" }}
+                  >
+                    <Film size={20} />
+                    {c.activeAnnotations.length > 0 && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          right: 0,
+                          width: 18,
+                          height: 18,
+                          borderRadius: "50%",
+                          background: "var(--accent-gradient)",
+                          color: "white",
+                          fontSize: 10,
+                          fontWeight: 700,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {c.activeAnnotations.length}
+                      </span>
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
           <ReaderNavigation
             currentPage={c.currentPage}
             totalPages={c.totalPages}
-            chatOpen={c.mediaPanelOpen}
+            chatOpen={rightSidebarOpen}
             highlightsSidebarOpen={c.highlightsSidebarOpen}
             onPrev={c.goPrev}
             onNext={c.goNext}
@@ -409,7 +448,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
           <ReaderNavigation
             currentPage={c.currentPage}
             totalPages={c.totalPages}
-            chatOpen={c.mediaPanelOpen}
+            chatOpen={rightSidebarOpen}
             highlightsSidebarOpen={c.highlightsSidebarOpen}
             onPrev={c.goPrev}
             onNext={c.goNext}
@@ -423,6 +462,35 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
         </div>
 
         <AnimatePresence>
+          {c.chatOpen && (
+            <ChatSidebar
+              key="chat-sidebar"
+              chatEndRef={c.chatEndRef}
+              messages={c.messages}
+              typewriterFinishedRef={c.typewriterFinishedRef}
+              isLoading={c.isLoading}
+              isTyping={c.isTyping}
+              input={c.input}
+              onInputChange={c.onInputChange}
+              onSubmitChat={async () => {
+                const didSend = await c.onSendMessage(
+                  undefined,
+                  attachedChatMedia ? [attachedChatMedia] : c.activeAnnotations,
+                );
+                if (didSend) {
+                  setAttachedChatMedia(null);
+                }
+              }}
+              onStopResponse={c.onStopResponse}
+              onClearChat={c.onClearChat}
+              onClose={() => c.setChatOpen(false)}
+              onLastMessageFinished={c.onLastMessageFinished}
+              scrollToEnd={c.scrollToEnd}
+              isAuthenticated={isAuthenticated}
+              attachedMedia={attachedChatMedia}
+              onClearAttachedMedia={() => setAttachedChatMedia(null)}
+            />
+          )}
           {c.mediaPanelOpen && (
             <MediaPanel
               key="media-panel"
@@ -437,6 +505,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               onPlayMedia={setPlayingMedia}
               onEdit={handleEditAnnotation}
               onDelete={handleDeleteAnnotation}
+              onAddToChat={handleAddMediaCardToChat}
               onAddGeneralMedia={() => {
                 setEditingAnnotation(null);
                 window.getSelection()?.removeAllRanges();
@@ -451,6 +520,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               onClose={() => c.setHighlightsSidebarOpen(false)}
               onDeleteHighlight={c.onDeleteHighlight}
               onClearAll={c.onClearAllHighlights}
+              onSendToChat={(text) => attachTextToChat(text, "highlight")}
               onNavigate={c.jumpToPage}
             />
           )}
@@ -466,14 +536,14 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
         </AnimatePresence>
 
         <AnimatePresence>
-          {!c.mediaPanelOpen && playingMedia?.mediaType === "audio" && (
+          {!rightSidebarOpen && playingMedia?.mediaType === "audio" && (
             <AudioIsland
               key="audio-island"
               annotation={playingMedia}
               onClose={() => setPlayingMedia(null)}
             />
           )}
-          {!c.mediaPanelOpen && playingMedia?.mediaType === "video" && (
+          {!rightSidebarOpen && playingMedia?.mediaType === "video" && (
             <VideoPopup
               key="video-popup"
               annotation={playingMedia}

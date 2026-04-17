@@ -376,6 +376,29 @@ body {
   background: var(--bg-secondary);
 }
 
+.toolbar-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.toolbar-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-primary);
+}
+.toolbar-btn.active {
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-card);
+}
+
 /* ─── Generic Input Overrides ──────────────────────────────── */
 .page-number-input {
   -moz-appearance: textfield;
@@ -430,13 +453,13 @@ body {
 /* ─── Chat Bubble ──────────────────────────────────────────── */
 .chat-bubble-user {
   background: var(--accent-gradient);
-  border-radius: 12px 12px 2px 12px;
+  border-radius: 16px 16px 2px 16px;
   color: white;
 }
 .chat-bubble-ai {
   background: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px 12px 12px 2px;
+  border-radius: 16px 16px 16px 2px;
   color: var(--text-primary);
 }
 

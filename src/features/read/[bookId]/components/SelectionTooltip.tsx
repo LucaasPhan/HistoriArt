@@ -5,7 +5,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, Check, Copy, Film, MoreVertical } from "lucide-react";
+import { BookOpen, Check, Copy, Film, MessageCircle, MoreVertical } from "lucide-react";
 import { memo } from "react";
 
 type SelectionCoords = { x: number; y: number };
@@ -15,6 +15,7 @@ type SelectionTooltipProps = {
   showCopied: boolean;
   selectedText: string;
   onCopy: () => void;
+  onSendToChat?: () => void;
   onHighlight: (color: string) => void;
   onLookUp?: () => void;
   isAdmin?: boolean;
@@ -26,6 +27,7 @@ const SelectionTooltip = memo(function SelectionTooltip({
   showCopied,
   selectedText,
   onCopy,
+  onSendToChat,
   onHighlight,
   onLookUp,
   isAdmin,
@@ -142,6 +144,17 @@ const SelectionTooltip = memo(function SelectionTooltip({
                 <Copy size={14} className="mr-2" />
                 <span>Sao chép</span>
               </DropdownMenuItem>
+              {onSendToChat && (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSendToChat();
+                  }}
+                >
+                  <MessageCircle size={14} className="mr-2" />
+                  <span>Gửi tới AI chat</span>
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
 

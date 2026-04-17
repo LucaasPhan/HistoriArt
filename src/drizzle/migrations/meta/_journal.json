@@ -50,6 +50,13 @@
       "when": 1776253817555,
       "tag": "0006_lumpy_franklin_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1776320000000,
+      "tag": "0007_mellow_starfox",
+      "breakpoints": true
     }
   ]
 }

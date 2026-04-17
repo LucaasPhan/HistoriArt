@@ -16,8 +16,8 @@ export function ThemeButton() {
     return (
       <div
         style={{
-          width: 36,
-          height: 36,
+          width: 42,
+          height: 42,
           borderRadius: "50%",
           background: "var(--bg-tertiary)",
           border: "1px solid var(--border-subtle)",
@@ -33,8 +33,8 @@ export function ThemeButton() {
         background: "var(--bg-tertiary)",
         border: "1px solid var(--border-subtle)",
         borderRadius: "50%",
-        width: 36,
-        height: 36,
+        width: 42,
+        height: 42,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -44,7 +44,7 @@ export function ThemeButton() {
       }}
       aria-label="Toggle Theme"
     >
-      {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+      {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
     </button>
   );
 }

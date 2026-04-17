@@ -1,3 +1,9 @@
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+  timestamp: string;
+}
+
 // Multimedia annotation attached to a passage
 export interface MediaAnnotation {
   id: string;
@@ -12,4 +18,5 @@ export interface MediaAnnotation {
   thumbnailUrl?: string;
   autoplay?: boolean;
   sources?: string[];
+  chatSource?: "media" | "selection" | "highlight";
 }
