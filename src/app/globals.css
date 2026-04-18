@@ -1,37 +1,4 @@
 @import "tailwindcss";
-@source "../";
-
-@theme {
-  --color-bg-primary: #fdfcf8;
-  --color-bg-secondary: #f7f5f0;
-  --color-bg-tertiary: #ebe8e0;
-  --color-bg-card: #ffffff;
-
-  --color-text-primary: #3d3a31;
-  --color-text-secondary: #797566;
-  --color-text-tertiary: #9e9a8b;
-  --color-text-accent: #d46e56;
-
-  --color-accent-primary: #d46e56;
-  --color-accent-secondary: #e3836b;
-  --color-accent-glow: rgba(212, 110, 86, 0.15);
-
-  --color-border-subtle: rgba(61, 58, 49, 0.08);
-  --color-border-hover: rgba(61, 58, 49, 0.15);
-
-  --shadow-glow: 0 0 40px rgba(212, 110, 86, 0.15);
-  --shadow-card: 0 4px 24px rgba(61, 58, 49, 0.06);
-
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
-  --radius-full: 9999px;
-
-  --font-sans: var(--font-inter), -apple-system, system-ui, sans-serif;
-  --font-serif: var(--font-playfair), Georgia, serif;
-  --font-mono: var(--font-jetbrains), monospace;
-}
 
 /* ─── Design Tokens (Claude Aesthetic) ───────────────────────── */
 :root {
