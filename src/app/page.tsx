@@ -9,6 +9,7 @@ import DemoPreviewSection from "@/features/landing/components/DemoPreviewSection
 import FeaturesSection from "@/features/landing/components/FeaturesSection";
 import Footer from "@/features/landing/components/Footer";
 import HeroSection from "@/features/landing/components/HeroSection";
+import AboutSection from "@/features/landing/components/AboutSection";
 import MeetTheTeamSection from "@/features/landing/components/MeetTheTeamSection";
 
 export default function LandingPage() {
@@ -17,10 +18,9 @@ export default function LandingPage() {
       <div style={{ minHeight: "100vh", overflow: "hidden" }}>
         <LanguageSwitcher position="bottom-right" />
         <HeroSection />
+        <AboutSection />
         <FeaturesSection />
         <BooksPreviewSection />
-        <DemoPreviewSection />
-        <AIFeatureSection />
         <MeetTheTeamSection />
         <Footer />
       </div>

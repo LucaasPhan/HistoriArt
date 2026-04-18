@@ -13,12 +13,37 @@ interface BookInfoPopoverProps {
 }
 
 export default function BookInfoPopover({ children, bookData }: BookInfoPopoverProps) {
+  const [open, setOpen] = React.useState(false);
+  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+
   if (!bookData) return <>{children}</>;
 
+  const handleMouseEnter = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      setOpen(true);
+    }, 1000);
+  };
+
+  const handleMouseLeave = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    setOpen(false);
+  };
+
   return (
-    <Popover.Root>
+    <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
-        <div className={styles.titleTrigger}>{children}</div>
+        <div 
+          className={styles.titleTrigger}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onClick={(e) => e.preventDefault()}
+        >
+          {children}
+        </div>
       </Popover.Trigger>
 
       <Popover.Portal>
@@ -27,6 +52,11 @@ export default function BookInfoPopover({ children, bookData }: BookInfoPopoverP
           side="bottom"
           align="start"
           sideOffset={20}
+          onMouseEnter={() => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+            setOpen(true);
+          }}
+          onMouseLeave={handleMouseLeave}
         >
           <div className={styles.cardContainer}>
             {/* Background Layer */}
@@ -52,7 +82,7 @@ export default function BookInfoPopover({ children, bookData }: BookInfoPopoverP
             <div className={styles.contentSide}>
               <h3 className={styles.title}>{bookData.title}</h3>
               <p className={styles.author}>{bookData.author}</p>
-              
+
               <p className={styles.description}>
                 {bookData.description || "Chưa có mô tả cho tác phẩm này. Hãy bắt đầu đọc để khám phá nội dung hấp dẫn bên trong."}
               </p>

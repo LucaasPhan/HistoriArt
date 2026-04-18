@@ -2,9 +2,9 @@
 
 import { TransitionLink } from "@/components/TransitionLink";
 import { useTranslation } from "@/lib/i18n";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { ArrowRight, BookOpen, ChevronDown, Sparkles } from "lucide-react";
-import { fadeUp } from "./AnimatedSection";
+import Image from "next/image";
 
 export default function HeroSection() {
   const { t } = useTranslation();
@@ -20,99 +20,107 @@ export default function HeroSection() {
         justifyContent: "center",
         minHeight: "100vh",
         textAlign: "center",
-        padding: "120px 24px 80px",
-        gap: 32,
+        padding: "80px 24px",
+        background: "var(--bg-primary)",
+        gap: 0,
         overflow: "hidden",
       }}
     >
-      {/* ─── Background Layer with Blur ────────────────────────── */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          zIndex: -2,
-          backgroundImage: "url('/bg.jpeg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
-          filter: "blur(5px) brightness(0.6)",
-          transform: "scale(2)", // Scale up to hide blurred edges
-        }}
-      />
-
-      {/* ─── Dark Gradient Overlay ────────────────────────────── */}
+      {/* ─── Background Elements ─────────────────── */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           zIndex: -1,
-          background: "linear-gradient(to bottom, rgba(34,32,30,0.4) 0%, var(--bg-primary) 100%)",
-          maskImage: "linear-gradient(to bottom, black 70%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to bottom, black 70%, transparent 100%)",
         }}
-      />
+      >
+        <Image
+          src="/assets/bg.jpeg"
+          alt="Background"
+          fill
+          style={{ objectFit: "cover", opacity: 0.35 }}
+          priority
+        />
+        {/* Gradient overlays to blend the image perfectly */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `
+              linear-gradient(to bottom, var(--bg-primary) 0%, transparent 20%, transparent 80%, var(--bg-primary) 100%),
+              radial-gradient(circle at center, transparent 0%, var(--bg-primary) 90%),
+              radial-gradient(circle at center, var(--accent-glow) 0%, transparent 70%)
+            `,
+            opacity: 0.9,
+          }}
+        />
+      </div>
+
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
         style={{
           display: "inline-flex",
           alignItems: "center",
           gap: 8,
-          padding: "6px 16px",
+          padding: "8px 16px",
           borderRadius: "var(--radius-full)",
-          background: "var(--accent-glow)",
-          border: "1px solid rgba(212, 110, 86, 0.15)",
-          fontSize: 13,
+          background: "var(--bg-card)",
+          border: "1px solid var(--border-subtle)",
+          fontSize: 14,
           color: "var(--accent-primary)",
           fontWeight: 600,
+          marginBottom: 32,
+          boxShadow: "var(--shadow-card)",
+          position: "relative",
+          zIndex: 2,
         }}
       >
-        <Sparkles size={14} />
+        <Sparkles size={16} />
         {t("hero.badge")}
       </motion.div>
 
       <motion.h1
-        variants={fadeUp}
-        initial="hidden"
-        animate="visible"
-        custom={0}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.1 }}
         style={{
-          fontSize: "clamp(36px, 6vw, 72px)",
+          fontSize: "clamp(48px, 8vw, 92px)",
           fontWeight: 800,
-          lineHeight: 1.1,
-          letterSpacing: "-0.03em",
-          maxWidth: 800,
+          lineHeight: 1.05,
+          letterSpacing: "-0.04em",
+          maxWidth: 1000,
           color: "var(--text-primary)",
+          marginBottom: 32,
+          position: "relative",
+          zIndex: 2,
         }}
       >
         {t("hero.titleLine1")}
         <br />
-        <span className="gradient-text" style={{ fontSize: "inherit", fontWeight: "inherit" }}>
-          {t("hero.titleLine2")}
-        </span>
+        <span className="gradient-text">{t("hero.titleLine2")}</span>
       </motion.h1>
 
       <motion.p
-        variants={fadeUp}
-        initial="hidden"
-        animate="visible"
-        custom={1}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
         style={{
-          fontSize: "clamp(16px, 2vw, 20px)",
-          lineHeight: 1.7,
+          fontSize: "clamp(18px, 1.5vw, 22px)",
+          lineHeight: 1.6,
           color: "var(--text-secondary)",
-          maxWidth: 560,
+          maxWidth: 600,
+          marginBottom: 48,
         }}
       >
         {t("hero.subtitle")}
       </motion.p>
 
       <motion.div
-        variants={fadeUp}
-        initial="hidden"
-        animate="visible"
-        custom={2}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.3 }}
         style={{
           display: "flex",
           gap: 16,
@@ -122,53 +130,76 @@ export default function HeroSection() {
       >
         <TransitionLink href="/library">
           <motion.button
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
             className="btn-primary"
             style={{
-              padding: "14px 32px",
+              padding: "16px 40px",
               fontSize: 16,
-              fontWeight: 600,
+              height: "auto",
               display: "flex",
               alignItems: "center",
-              gap: 10,
-              borderRadius: "var(--radius-full)",
+              gap: 12,
             }}
           >
-            <BookOpen size={18} />
+            <BookOpen size={20} />
             {t("hero.cta")}
-            <ArrowRight size={16} />
+            <ArrowRight size={20} />
           </motion.button>
         </TransitionLink>
 
         <motion.button
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.97 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() =>
             document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })
           }
           className="btn-ghost"
           style={{
-            padding: "14px 28px",
+            padding: "16px 40px",
             fontSize: 16,
+            height: "auto",
             display: "flex",
             alignItems: "center",
-            gap: 8,
-            borderRadius: "var(--radius-full)",
+            gap: 10,
           }}
         >
           {t("hero.learnMore")}
-          <ChevronDown size={16} />
+          <ChevronDown size={20} />
         </motion.button>
       </motion.div>
 
-      {/* Scroll indicator */}
+      {/* ─── Floating Decorative Elements ─────────── */}
       <motion.div
-        animate={{ y: [0, 8, 0] }}
-        transition={{ repeat: Infinity, duration: 2 }}
-        style={{ position: "absolute", bottom: 32 }}
+        animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }}
+        transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+        style={{ position: "absolute", top: "20%", left: "10%", opacity: 0.6 }}
       >
-        <ChevronDown size={24} color="var(--text-tertiary)" />
+        <Sparkles size={48} color="var(--accent-primary)" strokeWidth={1.5} />
+      </motion.div>
+
+      <motion.div
+        animate={{ y: [0, 15, 0], rotate: [0, -5, 0] }}
+        transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+        style={{ position: "absolute", bottom: "25%", right: "12%", opacity: 0.4 }}
+      >
+        <BookOpen size={64} color="var(--accent-secondary)" strokeWidth={1} />
+      </motion.div>
+
+      <motion.div
+        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+        transition={{ repeat: Infinity, duration: 3, delay: 1 }}
+        style={{ position: "absolute", top: "35%", right: "8%" }}
+      >
+        <Sparkles size={24} color="var(--accent-primary)" />
+      </motion.div>
+
+      <motion.div
+        animate={{ y: [0, -10, 0], x: [0, 10, 0] }}
+        transition={{ repeat: Infinity, duration: 6 }}
+        style={{ position: "absolute", bottom: "35%", left: "15%", opacity: 0.3 }}
+      >
+        <Sparkles size={32} color="var(--accent-secondary)" />
       </motion.div>
     </section>
   );

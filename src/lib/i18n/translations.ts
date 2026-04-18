@@ -6,12 +6,8 @@ export const translations = {
   vi: {
     // ── Common ──
     "common.loading": "Đang tải...",
-    "common.save": "Lưu",
-    "common.cancel": "Hủy",
     "common.delete": "Xóa",
     "common.confirm": "Xác nhận",
-    "common.error": "Lỗi",
-    "common.refresh": "Làm mới",
     "common.copied": "Đã sao chép!",
 
     // ── Navbar ──
@@ -22,8 +18,6 @@ export const translations = {
     "user.signOut": "Đăng xuất",
     "user.signingOut": "Đang đăng xuất...",
     "user.settings": "Cài đặt",
-    "user.lightMode": "Chế độ sáng",
-    "user.darkMode": "Chế độ tối",
     "user.errorTitle": "Lỗi",
     "user.errorRefresh": "Làm mới",
 
@@ -33,8 +27,8 @@ export const translations = {
 
     // ── Landing — Hero ──
     "hero.badge": "Nền tảng eBook lịch sử với đa phương tiện",
-    "hero.titleLine1": "Lịch sử Việt Nam",
-    "hero.titleLine2": "qua trang sách sống động",
+    "hero.titleLine1": "Mở mang trí tuệ,",
+    "hero.titleLine2": "cùng những trang sách",
     "hero.subtitle":
       "Từ Bạch Đằng đến Điện Biên Phủ — đọc lịch sử với hình ảnh, phim tư liệu và âm nhạc chèn thẳng vào từng trang sách.",
     "hero.cta": "Bắt đầu đọc",
@@ -66,21 +60,11 @@ export const translations = {
     "books.subtitle":
       "Khám phá những tác phẩm kinh điển về lịch sử Việt Nam từ thời dựng nước đến thống nhất.",
     "books.loading": "Đang tải thư viện...",
-    "books.readTime": "phút đọc",
-    "books.pages": "trang",
-    "books.readNow": "Đọc ngay",
 
     // ── Landing — Demo Preview ──
-    "demo.heading": "Tư liệu",
-    "demo.headingAccent": "ngay trong trang sách",
-    "demo.subtitle": "Khi đọc đến đoạn có sự kiện lịch sử, tư liệu sẽ tự động hiện ra bên phải.",
     "demo.relatedMedia": "Tư liệu liên quan",
 
     // ── Landing — AI Feature ──
-    "ai.heading": "Trợ lý AI",
-    "ai.headingAccent": "Fable Chat",
-    "ai.subtitle":
-      "Bạn gặp những sự kiện khó hiểu hay muốn tìm hiểu thêm về bài đọc? Fable Chat luôn sẵn sàng giải đáp ngay lập tức, tóm tắt nội dung và mở rộng kiến thức ngay bên cạnh trang sách.",
     "ai.placeholder": "Hỏi Fable Chat về đoạn trích lịch sử này...",
 
     // ── Landing — Team ──
@@ -103,6 +87,15 @@ export const translations = {
     "team.member.5.desc":
       "Sáng tạo các tài liệu hình ảnh sống động để đưa lịch sử Việt Nam đến gần hơn với mọi người.",
 
+    // ── Landing — About ──
+    "about.heading": "Gìn giữ lịch sử qua",
+    "about.headingAccent": "nghệ thuật hiện đại",
+    "about.subtitle":
+      "HistoriArt kết hợp công nghệ AI với đa phương tiện để mang những câu chuyện lịch sử vào cuộc sống. Chúng tôi tin rằng mọi câu chuyện từ quá khứ đều xứng đáng được nhìn thấy, nghe thấy và trải nghiệm trọn vẹn.",
+    "about.libraryTitle": "Thư viện Lịch Sử",
+    "about.libraryDesc": "Bộ sưu tập lịch sử được tuyển chọn",
+    "about.explore": "Khám phá",
+
     // ── Landing — Footer ──
     "footer.text": "Nền tảng eBook lịch sử Việt Nam",
 
@@ -118,6 +111,7 @@ export const translations = {
     "library.errorLoadingBooks": "Lỗi khi tải thư viện",
     "library.errorLoadingBooksDescription": "Vui lòng thử lại sau",
     "library.library": "Tủ Sách Lịch Sử",
+    "library.viewAll": "Xem tất cả thư viện",
 
     // ── Reader — Top Bar ──
     "reader.library": "Thư viện",
@@ -194,11 +188,7 @@ export const translations = {
 
     // ── Settings — General ──
     "settings.generalTitle": "Chung",
-    "settings.appearance": "Giao diện",
     "settings.appearanceHint": "Chọn giao diện cho HistoriArt.",
-    "settings.fontSize": "Cỡ chữ",
-    "settings.fontSmall": "Nhỏ",
-    "settings.fontLarge": "Lớn",
     "settings.language": "Ngôn ngữ",
     "settings.languageHint": "Chọn ngôn ngữ giao diện cho HistoriArt.",
 
@@ -355,10 +345,6 @@ export const translations = {
     "admin.acceptedAnswers": "Đáp án chấp nhận (mỗi dòng một đáp án)",
     "admin.options": "Các lựa chọn",
     "admin.correctOption": "Đáp án đúng",
-    "admin.saveDraft": "Lưu bản nháp",
-    "admin.publishNow": "Xuất bản ngay",
-    "admin.addAll": "Thêm tất cả",
-    "admin.addToDraft": "Thêm vào bản nháp",
     "admin.questionCount": "Số lượng câu hỏi",
     "admin.passRate": "Tỷ lệ pass",
     "admin.deleteConfirm": "Bạn có chắc chắn muốn xóa câu hỏi này?",
@@ -375,6 +361,28 @@ export const translations = {
     "dashboard.totalQuizzes": "Tổng bài quiz",
     "dashboard.bestScore": "Điểm cao nhất",
 
+    // ── Landing — Mockups ──
+    "mockup.library.title": "Thư viện",
+    "mockup.library.search": "Tìm kiếm",
+    "mockup.library.continue": "Tiếp tục đọc",
+    "mockup.media.title": "Tư liệu liên quan",
+    "mockup.chat.title": "Fable Chat",
+    "mockup.chat.userMessage": "Hãy cho tôi biết về Trận Điện Biên Phủ.",
+    "mockup.chat.aiMessage":
+      "Trận Điện Biên Phủ (1954) là thắng lợi quyết định của Việt Nam, dẫn đến chấm dứt ách thống trị của thực dân Pháp tại Đông Dương và là cột mốc lớn trong lịch sử thế giới.",
+    "mockup.chat.placeholder": "Hỏi Fable bất cứ điều gì...",
+    "mockup.quiz.title": "Quiz Lịch sử",
+    "mockup.quiz.questionCount": "Câu hỏi {current}/{total}",
+    "mockup.quiz.question": "Ai là người đã lãnh đạo cuộc khởi nghĩa Lam Sơn đánh đuổi quân Minh?",
+    "mockup.quiz.option1": "Lê Lợi",
+    "mockup.quiz.option2": "Lý Thường Kiệt",
+    "mockup.quiz.option3": "Trần Hưng Đạo",
+    "mockup.quiz.option4": "Quang Trung",
+    "mockup.community.title": "Hoạt động Cộng đồng",
+    "mockup.community.contribute": "Đóng góp",
+    "mockup.community.drop": "Thả tệp để đóng góp",
+    "mockup.community.contributedBy": "Đóng góp bởi",
+
     // ── Navbar extras ──
     "nav.dashboard": "Trang cá nhân",
     "nav.admin": "Quản trị",
@@ -383,12 +391,8 @@ export const translations = {
   en: {
     // ── Common ──
     "common.loading": "Loading...",
-    "common.save": "Save",
-    "common.cancel": "Cancel",
     "common.delete": "Delete",
     "common.confirm": "Confirm",
-    "common.error": "Error",
-    "common.refresh": "Refresh",
     "common.copied": "Copied!",
 
     // ── Navbar ──
@@ -399,8 +403,6 @@ export const translations = {
     "user.signOut": "Sign out",
     "user.signingOut": "Signing out...",
     "user.settings": "Settings",
-    "user.lightMode": "Light Mode",
-    "user.darkMode": "Dark Mode",
     "user.errorTitle": "Error",
     "user.errorRefresh": "Refresh",
 
@@ -410,8 +412,8 @@ export const translations = {
 
     // ── Landing — Hero ──
     "hero.badge": "Multimedia eBook platform for Vietnamese history",
-    "hero.titleLine1": "Vietnamese History",
-    "hero.titleLine2": "through vivid book pages",
+    "hero.titleLine1": "Expand your mind,",
+    "hero.titleLine2": "reading a book",
     "hero.subtitle":
       "From Bạch Đằng to Điện Biên Phủ — read history with images, documentary footage and music embedded right into every page.",
     "hero.cta": "Start Reading",
@@ -443,22 +445,11 @@ export const translations = {
     "books.subtitle":
       "Explore classic works on Vietnamese history from the founding era to reunification.",
     "books.loading": "Loading library...",
-    "books.readTime": "min read",
-    "books.pages": "pages",
-    "books.readNow": "Read now",
 
     // ── Landing — Demo Preview ──
-    "demo.heading": "Resources",
-    "demo.headingAccent": "right inside the book",
-    "demo.subtitle":
-      "When you reach a historical event, related media appears automatically to the side.",
     "demo.relatedMedia": "Related Media",
 
     // ── Landing — AI Feature ──
-    "ai.heading": "AI Assistant",
-    "ai.headingAccent": "Fable Chat",
-    "ai.subtitle":
-      "Encounter confusing events or want to learn more about the reading? Fable Chat is always ready to answer instantly, summarize content and expand knowledge right beside the book page.",
     "ai.placeholder": "Ask Fable Chat about this historical passage...",
 
     // ── Landing — Team ──
@@ -479,6 +470,15 @@ export const translations = {
     "team.member.5.role": "Media Specialist",
     "team.member.5.desc": "Creating immersive visual assets to bring Vietnamese history to life.",
 
+    // ── Landing — About ──
+    "about.heading": "Preserving History through",
+    "about.headingAccent": "Modern Art",
+    "about.subtitle":
+      "HistoriArt combines AI technology with immersive multimedia to bring historical narratives to life. We believe that every story from the past deserves to be seen, heard, and experienced in full color.",
+    "about.libraryTitle": "HistoriArt Library",
+    "about.libraryDesc": "Curated historical collection",
+    "about.explore": "Explore",
+
     // ── Landing — Footer ──
     "footer.text": "Vietnamese History eBook Platform",
 
@@ -494,6 +494,7 @@ export const translations = {
     "library.errorLoadingBooks": "Error loading books",
     "library.errorLoadingBooksDescription": "Please try again later",
     "library.library": "Historic Bookshelves",
+    "library.viewAll": "View All Library",
 
     // ── Reader — Top Bar ──
     "reader.library": "Library",
@@ -570,11 +571,7 @@ export const translations = {
 
     // ── Settings — General ──
     "settings.generalTitle": "General",
-    "settings.appearance": "Appearance",
     "settings.appearanceHint": "Choose how HistoriArt looks to you.",
-    "settings.fontSize": "Font Size",
-    "settings.fontSmall": "Small",
-    "settings.fontLarge": "Large",
     "settings.language": "Language",
     "settings.languageHint": "Choose the display language for HistoriArt.",
 
@@ -733,10 +730,6 @@ export const translations = {
     "admin.acceptedAnswers": "Accepted answers (one per line)",
     "admin.options": "Options",
     "admin.correctOption": "Correct option",
-    "admin.saveDraft": "Save Draft",
-    "admin.publishNow": "Publish Now",
-    "admin.addAll": "Add All",
-    "admin.addToDraft": "Add to Draft",
     "admin.questionCount": "Question count",
     "admin.passRate": "Pass Rate",
     "admin.deleteConfirm": "Are you sure you want to delete this question?",
@@ -752,6 +745,28 @@ export const translations = {
     "dashboard.result": "Result",
     "dashboard.totalQuizzes": "Total Quizzes",
     "dashboard.bestScore": "Best Score",
+
+    // ── Landing — Mockups ──
+    "mockup.library.title": "Library",
+    "mockup.library.search": "Search",
+    "mockup.library.continue": "Continue Reading",
+    "mockup.media.title": "Related Media",
+    "mockup.chat.title": "Fable Chat",
+    "mockup.chat.userMessage": "Tell me about the Battle of Dien Bien Phu.",
+    "mockup.chat.aiMessage":
+      "The Battle of Dien Bien Phu (1954) was a decisive victory for Vietnam. It led to the end of French colonial rule in Indochina and was a major milestone in world history.",
+    "mockup.chat.placeholder": "Ask Fable anything...",
+    "mockup.quiz.title": "History Quiz",
+    "mockup.quiz.questionCount": "Question {current}/{total}",
+    "mockup.quiz.question": "Who led the Lam Son Uprising against the Ming dynasty?",
+    "mockup.quiz.option1": "Le Loi",
+    "mockup.quiz.option2": "Ly Thuong Kiet",
+    "mockup.quiz.option3": "Tran Hung Dao",
+    "mockup.quiz.option4": "Quang Trung",
+    "mockup.community.title": "Community Activity",
+    "mockup.community.contribute": "Contribute",
+    "mockup.community.drop": "Drop files to contribute",
+    "mockup.community.contributedBy": "Contributed by",
 
     // ── Navbar extras ──
     "nav.dashboard": "Dashboard",

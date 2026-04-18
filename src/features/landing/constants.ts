@@ -57,32 +57,22 @@ export const TEAM = [
 export const FEATURES = [
   {
     icon: BookOpen,
-    title: "Sách lịch sử sống động",
-    desc: "Đọc những tác phẩm kinh điển về lịch sử Việt Nam, từ thời Hùng Vương đến ngày thống nhất.",
     gradient: ["#8B0000", "#D4A574"],
   },
   {
     icon: Film,
-    title: "Tư liệu đa phương tiện",
-    desc: "Hình ảnh, video, và âm thanh lịch sử hiện ngay khi bạn đọc đến đoạn văn liên quan.",
     gradient: ["#1B4332", "#52B788"],
   },
   {
     icon: Sparkles,
-    title: "Trợ lý AI Fable",
-    desc: "Hỏi đáp, tóm tắt và mở rộng kiến thức lịch sử tức thì ngay bên cạnh trang sách đang đọc.",
     gradient: ["#D46E56", "#E3836B"],
   },
   {
     icon: HelpCircle,
-    title: "Ôn tập qua quiz",
-    desc: "Kiểm tra kiến thức lịch sử sau mỗi chương với câu hỏi trắc nghiệm thú vị.",
     gradient: ["#2C1810", "#C4956A"],
   },
   {
     icon: Users,
-    title: "Cộng đồng đóng góp",
-    desc: "Người đọc có thể đề xuất và đóng góp thêm hình ảnh, video để làm phong phú thư viện.",
     gradient: ["#283618", "#606C38"],
   },
 ];

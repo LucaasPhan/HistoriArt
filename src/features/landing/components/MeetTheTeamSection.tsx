@@ -1,358 +1,324 @@
 "use client";
 
 import { useTranslation } from "@/lib/i18n";
-import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Facebook, Github, Linkedin } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Facebook, Github, Linkedin, Sparkles } from "lucide-react";
+import { useState } from "react";
 import { TEAM } from "../constants";
-import { AnimatedSection, fadeUp } from "./AnimatedSection";
+import { AnimatedSection } from "./AnimatedSection";
 
 export default function MeetTheTeamSection() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [isPaused, setIsPaused] = useState(false);
   const { t } = useTranslation();
-
-  const scrollLeft = () => {
-    if (scrollRef.current) {
-      const cardWidth = scrollRef.current.children[0].clientWidth + 24; // width + gap
-      scrollRef.current.scrollBy({ left: -cardWidth, behavior: "smooth" });
-    }
-  };
-
-  const scrollRight = () => {
-    if (scrollRef.current) {
-      const { scrollLeft: currentLeft, scrollWidth, clientWidth } = scrollRef.current;
-      const cardWidth = scrollRef.current.children[0].clientWidth + 24;
-
-      // If we've reached the end (with a 10px margin for precision), loop back to the start
-      if (currentLeft + clientWidth >= scrollWidth - 10) {
-        scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
-      } else {
-        scrollRef.current.scrollBy({ left: cardWidth, behavior: "smooth" });
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (isPaused) return;
-
-    const intervalId = setInterval(() => {
-      scrollRight();
-    }, 3500);
-
-    return () => clearInterval(intervalId);
-  }, [isPaused]);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
     <AnimatedSection
       style={{
         position: "relative",
         zIndex: 1,
-        padding: "80px 24px",
-        maxWidth: 1100,
-        margin: "0 auto",
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        padding: "40px 24px",
+        background: "var(--bg-primary)",
+        overflow: "hidden",
       }}
     >
       <div id="team" style={{ scrollMarginTop: 80 }} />
 
-      {/* Title area with navigation buttons */}
+      {/* Decorative Background Glows */}
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-end",
-          marginBottom: 56,
-          flexWrap: "wrap",
-          gap: 24,
+          position: "absolute",
+          top: "20%",
+          left: "10%",
+          width: 400,
+          height: 400,
+          background: "radial-gradient(circle, var(--accent-glow) 0%, transparent 70%)",
+          opacity: 0.15,
+          pointerEvents: "none",
+          zIndex: -1,
         }}
-      >
-        <div style={{ textAlign: "left", flex: "1 1 300px" }}>
-          <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>
+      />
+      <div
+        style={{
+          position: "absolute",
+          bottom: "10%",
+          right: "5%",
+          width: 500,
+          height: 500,
+          background: "radial-gradient(circle, var(--accent-glow) 0%, transparent 70%)",
+          opacity: 0.1,
+          pointerEvents: "none",
+          zIndex: -1,
+        }}
+      />
+
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        {/* Section Header */}
+        <div style={{ textAlign: "center", marginBottom: "clamp(24px, 5vh, 48px)" }}>
+          <h2
+            style={{
+              fontSize: "clamp(28px, 4vw, 42px)",
+              fontWeight: 800,
+              marginBottom: 12,
+              color: "var(--text-primary)",
+              letterSpacing: "-0.03em",
+            }}
+          >
             {t("team.heading")} <span className="gradient-text">{t("team.headingAccent")}</span>
           </h2>
           <p
             style={{
+              fontSize: "clamp(14px, 1.5vw, 16px)",
               color: "var(--text-secondary)",
-              fontSize: 16,
-              marginTop: 12,
-              maxWidth: 500,
-              margin: "12px 0 0 0",
+              maxWidth: 650,
+              margin: "0 auto",
+              lineHeight: 1.5,
             }}
           >
             {t("team.subtitle")}
           </p>
         </div>
 
-        {/* Carousel controls (hidden on desktop) */}
-        <div className="team-controls" style={{ display: "flex", gap: 12 }}>
-          <button
-            onClick={scrollLeft}
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: "50%",
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-subtle)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              transition: "all 0.2s",
-              color: "var(--text-primary)",
-              boxShadow: "var(--shadow-sm)",
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = "var(--text-primary)";
-              e.currentTarget.style.transform = "scale(1.05)";
-              e.currentTarget.style.color = "var(--text-primary)";
-              setIsPaused(true);
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = "var(--border-subtle)";
-              e.currentTarget.style.transform = "scale(1)";
-              e.currentTarget.style.color = "var(--text-primary)";
-              setIsPaused(false);
-            }}
-          >
-            <ChevronLeft size={24} />
-          </button>
-          <button
-            onClick={scrollRight}
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: "50%",
-              background: "var(--bg-card)",
-              border: "1px solid var(--border-subtle)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              transition: "all 0.2s",
-              color: "var(--text-primary)",
-              boxShadow: "var(--shadow-sm)",
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = "var(--text-primary)";
-              e.currentTarget.style.transform = "scale(1.05)";
-              setIsPaused(true);
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = "var(--border-subtle)";
-              e.currentTarget.style.transform = "scale(1)";
-              setIsPaused(false);
-            }}
-          >
-            <ChevronRight size={24} />
-          </button>
-        </div>
-      </div>
-
-      {/* Carousel Container */}
-      <div
-        style={{ margin: "0 -24px", padding: "0 24px" }}
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-        onTouchStart={() => setIsPaused(true)}
-        onTouchEnd={() => setIsPaused(false)}
-      >
+        {/* Dynamic Grid Layout */}
         <div
-          ref={scrollRef}
-          className="team-carousel-container team-layout-container"
+          className="team-grid"
           style={{
             display: "flex",
-            gap: 24,
-            paddingBottom: 40,
-            paddingTop: 8,
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: 40,
+            padding: "20px 0",
           }}
         >
-          {TEAM.map((member, i) => (
-            <motion.div
-              key={member.name}
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              custom={i}
-              whileHover={{ y: -8, boxShadow: "var(--shadow-glow)" }}
-              className="team-card"
-              style={{
-                scrollSnapAlign: "center",
-                background: "var(--bg-card)",
-                border: "1px solid var(--border-subtle)",
-                borderRadius: "var(--radius-lg)",
-                padding: 32,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                textAlign: "center",
-                gap: 16,
-                transition: "box-shadow 0.3s, transform 0.3s",
-                position: "relative",
-                overflow: "hidden",
-                cursor: "pointer",
-              }}
-            >
-              {/* Background gradient accent */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 80,
-                  background: `linear-gradient(135deg, ${member.gradient[0]}, ${member.gradient[1]})`,
-                  opacity: 0.15,
-                  zIndex: 0,
-                }}
-              />
+          {TEAM.map((member, i) => {
+            const isHovered = hoveredIndex === i;
+            const primaryColor = member.gradient[0];
+            const secondaryColor = member.gradient[1];
 
-              <div
-                style={{
-                  width: 96,
-                  height: 96,
-                  borderRadius: "50%",
-                  background: `linear-gradient(135deg, ${member.gradient[0]}, ${member.gradient[1]})`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  position: "relative",
-                  zIndex: 1,
-                  border: "4px solid var(--bg-card)",
-                  boxShadow: "var(--shadow-md)",
-                  overflow: "hidden",
-                }}
-              >
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              </div>
-
-              <div
+            return (
+              <motion.div
+                key={member.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+                onMouseEnter={() => setHoveredIndex(i)}
+                onMouseLeave={() => setHoveredIndex(null)}
                 style={{
                   position: "relative",
-                  zIndex: 1,
+                  background: "rgba(255, 255, 255, 0.03)",
+                  backdropFilter: "blur(20px)",
+                  borderRadius: "28px",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  padding: "32px 24px 72px",
                   display: "flex",
                   flexDirection: "column",
-                  gap: 8,
+                  alignItems: "center",
+                  textAlign: "center",
+                  width: "clamp(260px, 18vw, 300px)",
+                  transition: "all 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
+                  boxShadow: isHovered
+                    ? `0 20px 40px rgba(0,0,0,0.3), 0 0 20px ${primaryColor}22`
+                    : "0 10px 30px rgba(0,0,0,0.1)",
                 }}
               >
-                <h3
-                  style={{ fontSize: 20, fontWeight: 700, margin: 0, color: "var(--text-primary)" }}
-                >
-                  {member.name}
-                </h3>
-                <span
+                {/* Profile Halo */}
+                <div
                   style={{
-                    fontSize: 14,
-                    fontWeight: 600,
-                    color: "#ffffff",
-                    background: `linear-gradient(135deg, ${member.gradient[0]}, ${member.gradient[1]})`,
-                    padding: "4px 16px",
-                    borderRadius: 16,
-                    display: "inline-block",
-                    alignSelf: "center",
-                    boxShadow: "var(--shadow-sm)",
+                    position: "relative",
+                    width: 120,
+                    height: 120,
+                    marginBottom: 24,
                   }}
                 >
-                  {t(`team.member.${i + 1}.role` as any)}
-                </span>
-              </div>
+                  <AnimatePresence>
+                    {isHovered && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 0.6, scale: 1.2 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        style={{
+                          position: "absolute",
+                          inset: -10,
+                          borderRadius: "50%",
+                          background: `radial-gradient(circle, ${primaryColor} 0%, transparent 70%)`,
+                          zIndex: 0,
+                        }}
+                      />
+                    )}
+                  </AnimatePresence>
 
-              <p
-                style={{
-                  fontSize: 14,
-                  lineHeight: 1.6,
-                  color: "var(--text-secondary)",
-                  position: "relative",
-                  zIndex: 1,
-                  margin: 0,
-                }}
-              >
-                {t(`team.member.${i + 1}.desc` as any)}
-              </p>
+                  <div
+                    style={{
+                      position: "relative",
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: "50%",
+                      padding: "4px",
+                      background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`,
+                      zIndex: 1,
+                      boxShadow: "0 8px 16px rgba(0,0,0,0.2)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: "50%",
+                        overflow: "hidden",
+                        border: "3px solid var(--bg-primary)",
+                      }}
+                    >
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          transition: "transform 0.4s ease",
+                          transform: isHovered ? "scale(1.1)" : "scale(1)",
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  gap: 16,
-                  marginTop: "auto",
-                  paddingTop: 16,
-                  position: "relative",
-                  zIndex: 1,
-                }}
-              >
-                <a
-                  href={member.socials.facebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "var(--text-secondary)", transition: "color 0.2s" }}
-                  onMouseOver={(e) => (e.currentTarget.style.color = member.gradient[0])}
-                  onMouseOut={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+                {/* Member Info */}
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>
+                    <h3
+                      style={{
+                        fontSize: "clamp(16px, 1.8vw, 18px)",
+                        fontWeight: 700,
+                        color: "var(--text-primary)",
+                        margin: 0,
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {member.name}
+                    </h3>
+                  </div>
+                  <div style={{ minHeight: 30, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <span
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 800,
+                        color: "white",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.1em",
+                        background: primaryColor,
+                        padding: "4px 12px",
+                        borderRadius: "100px",
+                        boxShadow: `0 4px 12px ${primaryColor}44`,
+                        display: "inline-block",
+                      }}
+                    >
+                      {t(`team.member.${i + 1}.role` as any)}
+                    </span>
+                  </div>
+                </div>
+
+                <p
+                  style={{
+                    fontSize: "clamp(12px, 1.4vw, 13px)",
+                    lineHeight: 1.5,
+                    color: "var(--text-secondary)",
+                    margin: 0,
+                  }}
                 >
-                  <Facebook size={18} />
-                </a>
-                <a
-                  href={member.socials.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "var(--text-secondary)", transition: "color 0.2s" }}
-                  onMouseOver={(e) => (e.currentTarget.style.color = member.gradient[0])}
-                  onMouseOut={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+                  {t(`team.member.${i + 1}.desc` as any)}
+                </p>
+
+                {/* Floating Social Pill */}
+                <motion.div
+                  animate={{
+                    y: isHovered ? 0 : 10,
+                    opacity: isHovered ? 1 : 0,
+                  }}
+                  style={{
+                    position: "absolute",
+                    bottom: 24,
+                    left: "50%",
+                    x: "-50%",
+                    display: "flex",
+                    gap: 12,
+                    padding: "6px 16px",
+                    background: "rgba(255, 255, 255, 0.05)",
+                    backdropFilter: "blur(10px)",
+                    borderRadius: "100px",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                  }}
                 >
-                  <Linkedin size={18} />
-                </a>
-                <a
-                  href={member.socials.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "var(--text-secondary)", transition: "color 0.2s" }}
-                  onMouseOver={(e) => (e.currentTarget.style.color = member.gradient[0])}
-                  onMouseOut={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
-                >
-                  <Github size={18} />
-                </a>
-              </div>
-            </motion.div>
-          ))}
+                  <a
+                    href={member.socials.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "var(--text-secondary)", transition: "color 0.2s" }}
+                    onMouseOver={(e) => (e.currentTarget.style.color = primaryColor)}
+                    onMouseOut={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+                  >
+                    <Facebook size={18} />
+                  </a>
+                  <a
+                    href={member.socials.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "var(--text-secondary)", transition: "color 0.2s" }}
+                    onMouseOver={(e) => (e.currentTarget.style.color = primaryColor)}
+                    onMouseOut={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+                  >
+                    <Linkedin size={18} />
+                  </a>
+                  <a
+                    href={member.socials.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "var(--text-secondary)", transition: "color 0.2s" }}
+                    onMouseOver={(e) => (e.currentTarget.style.color = primaryColor)}
+                    onMouseOut={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+                  >
+                    <Github size={18} />
+                  </a>
+                </motion.div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
 
       <style
         dangerouslySetInnerHTML={{
           __html: `
-        @media (min-width: 1200px) {
-          .team-layout-container {
-            display: flex !important;
-            flex-wrap: wrap !important;
-            justify-content: center !important;
-          }
-          .team-controls {
-            display: none !important;
+        @media (max-width: 1024px) {
+          .team-grid {
+             gap: 48px !important;
           }
           .team-card {
-            flex: 0 0 320px !important;
-            width: 320px !important;
+             margin-top: 0 !important;
           }
         }
-        @media (max-width: 1199px) {
-          .team-layout-container {
+        @media (max-width: 640px) {
+          .team-grid {
             display: flex !important;
             overflow-x: auto !important;
             scroll-snap-type: x mandatory !important;
             scrollbar-width: none;
-            -ms-overflow-style: none;
+            padding: 20px 0 40px !important;
+            margin: 0 -24px !important;
+            padding-left: 24px !important;
+            padding-right: 24px !important;
+            gap: 20px !important;
           }
-          .team-card {
-            flex: 0 0 300px !important;
+          .team-grid > div {
+            flex: 0 0 85% !important;
+            scroll-snap-align: center !important;
+            margin-top: 0 !important;
           }
-          .team-layout-container::-webkit-scrollbar {
+          .team-grid::-webkit-scrollbar {
             display: none;
           }
         }
