@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTranslation } from "@/lib/i18n";
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, Check, Copy, Film, MessageCircle, MoreVertical } from "lucide-react";
+import { BookOpen, Check, Film, MessageCircle, MoreVertical } from "lucide-react";
 import { memo } from "react";
 
 type SelectionCoords = { x: number; y: number };
@@ -139,15 +139,6 @@ const SelectionTooltip = memo(function SelectionTooltip({
                   </span>
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onCopy();
-                }}
-              >
-                <Copy size={14} className="mr-2" />
-                <span>{t("tooltip.copy")}</span>
-              </DropdownMenuItem>
               {onSendToChat && (
                 <DropdownMenuItem
                   onClick={(e) => {

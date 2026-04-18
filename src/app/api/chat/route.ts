@@ -13,6 +13,29 @@ import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
+// --- Simple in-memory rate limiter ---
+const chatRateLimits = new Map<string, { count: number; lastReset: number }>();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const MAX_MESSAGES = 5;
+
+function checkRateLimit(userId: string): { success: boolean; timeLeft?: number } {
+  const now = Date.now();
+  const limit = chatRateLimits.get(userId);
+
+  if (!limit || now - limit.lastReset > RATE_LIMIT_WINDOW) {
+    chatRateLimits.set(userId, { count: 1, lastReset: now });
+    return { success: true };
+  }
+
+  if (limit.count >= MAX_MESSAGES) {
+    const timeLeft = Math.ceil((limit.lastReset + RATE_LIMIT_WINDOW - now) / 1000);
+    return { success: false, timeLeft };
+  }
+
+  limit.count += 1;
+  return { success: true };
+}
+
 export async function POST(req: NextRequest) {
   try {
     const session = await verifySession();
@@ -20,6 +43,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "You must be signed in to use the AI chat." },
         { status: 401 },
+      );
+    }
+
+    const { success, timeLeft } = checkRateLimit(session.user.id);
+    if (!success) {
+      return NextResponse.json(
+        { error: `Rate limit exceeded. Please wait ${timeLeft} seconds.` },
+        { status: 429 },
       );
     }
 

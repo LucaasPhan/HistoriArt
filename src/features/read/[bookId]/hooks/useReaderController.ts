@@ -1,6 +1,7 @@
 "use client";
 
 import type { ConversationMode } from "@/lib/prompts";
+import { useTranslation } from "@/lib/i18n";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -24,6 +25,7 @@ import type {
 } from "../../types";
 
 export default function useReaderController({ bookId }: UseReaderControllerArgs) {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
 
@@ -148,15 +150,19 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
       };
       setHighlights((prev) => [...prev, newHighlight]);
       setSelectionCoords(null);
-      toast.success("Đã lưu ghi chú");
+      toast.success(t("reader.noteSaved"), {
+        style: { background: "#000", color: "#fff", border: "1px solid #333" },
+      });
     },
     [selectedText, currentPage, bookId],
   );
 
   const handleDeleteHighlight = useCallback((id: string) => {
     setHighlights((prev) => prev.filter((h) => h.id !== id));
-    toast.success("Đã xóa ghi chú");
-  }, []);
+    toast.success(t("reader.noteDeleted"), {
+        style: { background: "#000", color: "#fff", border: "1px solid #333" },
+    });
+  }, [t]);
 
   // --- Active annotations (multimedia) ---
   const [activeAnnotations, setActiveAnnotations] = useState<MediaAnnotation[]>([]);
@@ -467,7 +473,9 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
 
         if (response.status === 401) {
           setMessages((prev) => prev.slice(0, -1));
-          toast.error("Vui lòng đăng nhập để dùng AI chat.");
+          toast.error(t("chat.loginRequired"), {
+            style: { background: "#000", color: "#fff", border: "1px solid #333" },
+          });
           setIsLoading(false);
           return false;
         }
@@ -655,8 +663,10 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
       setMessages([]);
       typewriterFinishedRef.current.clear();
       fetch(`/api/conversations/${bookId}`, { method: "DELETE" }).catch(() => {});
-      toast.success("Đã xóa lịch sử chat");
-    }, [bookId]),
+      toast.success(t("chat.historyCleared"), {
+        style: { background: "#000", color: "#fff", border: "1px solid #333" },
+      });
+    }, [bookId, t]),
     onLastMessageFinished: useCallback(() => {
       setIsTyping(false);
     }, []),
@@ -677,8 +687,10 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
     onDeleteHighlight: handleDeleteHighlight,
     onClearAllHighlights: useCallback(() => {
       setHighlights([]);
-      toast.success("Đã xóa tất cả ghi chú");
-    }, []),
+      toast.success(t("reader.allNotesDeleted"), {
+        style: { background: "#000", color: "#fff", border: "1px solid #333" },
+      });
+    }, [t]),
 
     // Chapters
     chapters,

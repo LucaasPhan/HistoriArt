@@ -1,6 +1,4 @@
-"use client";
-
-import React, { memo } from "react";
+import React, { memo, useEffect } from "react";
 import type { Highlight } from "../../types";
 
 type ContentElement = {
@@ -31,6 +29,16 @@ const ReaderContent = memo(function ReaderContent({
   annotations,
   onPassageClick,
 }: ReaderContentProps) {
+  useEffect(() => {
+    const handleCopy = (e: ClipboardEvent) => {
+      e.preventDefault();
+      // Optional: alert or toast to inform user that copying is disabled
+    };
+
+    window.addEventListener("copy", handleCopy);
+    return () => window.removeEventListener("copy", handleCopy);
+  }, []);
+
   return (
     <div
       style={{

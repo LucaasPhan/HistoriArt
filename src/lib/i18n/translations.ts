@@ -22,6 +22,13 @@ export const translations = {
     "user.errorTitle": "Lỗi",
     "user.errorRefresh": "Làm mới",
 
+    // ── Auth & Security ──
+    "auth.pinInvalid": "Mã PIN không đúng. Vui lòng thử lại.",
+    "auth.tooManyAttempts": "Quá nhiều lần thử. Vui lòng thử lại sau {minutes} phút.",
+    "auth.lockedOut": "Quá nhiều lần thử. Tài khoản bị tạm khóa trong 30 phút.",
+    "auth.missingPin": "Vui lòng nhập đủ 4 chữ số",
+    "auth.verifyError": "Lỗi xác minh. Vui lòng thử lại.",
+
     // ── Login ──
     "login.welcome": "Chào mừng",
     "login.subtitle": "Đăng nhập để tiếp tục hành trình đọc sách",
@@ -140,6 +147,8 @@ export const translations = {
     "chat.video": "Video",
     "chat.audio": "Âm thanh",
     "chat.annotation": "Chú thích",
+    "chat.loginRequired": "Vui lòng đăng nhập để dùng AI chat.",
+    "chat.historyCleared": "Đã xóa lịch sử chat",
     "chat.decorativeUser": "Bạn có thể giải thích chủ đề chính của chương này không?",
     "chat.decorativeAI":
       "Chương này tập trung vào xung đột giữa quyền lực và lương tâm, thể hiện qua các quyết định mà nhân vật chính buộc phải đưa ra.",
@@ -157,6 +166,9 @@ export const translations = {
     "media.sources": "Nguồn tham khảo",
 
     // ── Reader — Highlights ──
+    "reader.noteSaved": "Đã lưu ghi chú",
+    "reader.noteDeleted": "Đã xóa ghi chú",
+    "reader.allNotesDeleted": "Đã xóa tất cả ghi chú",
     "highlights.title": "Ghi chú",
     "highlights.newestFirst": "Mới nhất",
     "highlights.oldestFirst": "Cũ nhất",
@@ -403,11 +415,18 @@ export const translations = {
 
     // ── User Menu ──
     "user.signIn": "Sign In",
-    "user.signOut": "Sign out",
+    "user.signOut": "Sign Out",
     "user.signingOut": "Signing out...",
     "user.settings": "Settings",
     "user.errorTitle": "Error",
-    "user.errorRefresh": "Refresh",
+    "user.errorRefresh": "Refresh Page",
+
+    // ── Auth & Security ──
+    "auth.pinInvalid": "Invalid PIN. Please try again.",
+    "auth.tooManyAttempts": "Too many attempts. Please try again in {minutes} minutes.",
+    "auth.lockedOut": "Too many attempts. Account locked for 30 minutes.",
+    "auth.missingPin": "Please enter 4 digits",
+    "auth.verifyError": "Verification error. Please try again.",
 
     // ── Login ──
     "login.welcome": "Welcome",
@@ -525,6 +544,8 @@ export const translations = {
     "chat.video": "Video",
     "chat.audio": "Audio",
     "chat.annotation": "Annotation",
+    "chat.loginRequired": "Please sign in to use AI chat.",
+    "chat.historyCleared": "Chat history cleared",
     "chat.decorativeUser": "Can you explain the main theme of this chapter?",
     "chat.decorativeAI":
       "This chapter focuses on the conflict between power and conscience, expressed through the decisions the protagonist is forced to make.",
@@ -542,6 +563,9 @@ export const translations = {
     "media.sources": "References",
 
     // ── Reader — Highlights ──
+    "reader.noteSaved": "Note saved",
+    "reader.noteDeleted": "Note deleted",
+    "reader.allNotesDeleted": "All notes deleted",
     "highlights.title": "Highlights",
     "highlights.newestFirst": "Newest First",
     "highlights.oldestFirst": "Oldest First",

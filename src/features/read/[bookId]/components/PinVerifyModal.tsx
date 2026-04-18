@@ -2,6 +2,7 @@
 
 import { Lock } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "@/lib/i18n";
 import styles from "./styles/PinVerifyModal.module.css";
 
 interface PinVerifyModalProps {
@@ -20,6 +21,7 @@ export default function PinVerifyModal({
   const [digits, setDigits] = useState(["", "", "", ""]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Focus first input when modal opens
@@ -77,7 +79,7 @@ export default function PinVerifyModal({
   const handleVerify = useCallback(async () => {
     const pin = digits.join("");
     if (pin.length !== 4) {
-      setError("Vui lòng nhập đủ 4 chữ số");
+      setError(t("auth.missingPin"));
       return;
     }
 
@@ -96,12 +98,14 @@ export default function PinVerifyModal({
       if (data.valid) {
         onVerified(pin);
       } else {
-        setError("Mã PIN không đúng. Vui lòng thử lại.");
+        // Use server-provided error if available (already translated or code-based),
+        // otherwise fallback to a generic invalid PIN message.
+        setError(data.error || t("auth.pinInvalid"));
         setDigits(["", "", "", ""]);
         inputRefs.current[0]?.focus();
       }
     } catch {
-      setError("Lỗi xác minh. Vui lòng thử lại.");
+      setError(t("auth.verifyError"));
     } finally {
       setLoading(false);
     }
