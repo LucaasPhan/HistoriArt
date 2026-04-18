@@ -16,11 +16,11 @@ export default function MeetTheTeamSection() {
       style={{
         position: "relative",
         zIndex: 1,
-        height: "100vh",
+        minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
-        padding: "40px 24px",
+        justifyContent: "flex-start",
+        padding: "160px 24px 80px",
         background: "var(--bg-primary)",
         overflow: "hidden",
       }}
