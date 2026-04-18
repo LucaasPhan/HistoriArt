@@ -51,9 +51,31 @@ const UnauthenticatedUser = () => {
       <DropdownMenuTrigger asChild>
         <div style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer" }}>
           <Avatar>
-            <div style={{ position: "relative", zIndex: 1, borderRadius: "var(--radius-full)" }} title="Guest Menu">
+            <div
+              style={{
+                position: "relative",
+                zIndex: 1,
+                borderRadius: "var(--radius-full)",
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              title="Guest Menu"
+            >
               <AvatarImage src="/assets/avatar/guest.webp" />
-              <AvatarFallback>?</AvatarFallback>
+              <AvatarFallback
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%",
+                  height: "100%",
+                }}
+              >
+                ?
+              </AvatarFallback>
             </div>
           </Avatar>
         </div>
@@ -255,11 +277,30 @@ const User = memo(() => {
             >
               <Avatar>
                 <div
-                  style={{ position: "relative", zIndex: 1, borderRadius: "var(--radius-full)" }}
+                  style={{
+                    position: "relative",
+                    zIndex: 1,
+                    borderRadius: "var(--radius-full)",
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
                   title="Account Settings"
                 >
                   <AvatarImage src={user.image || "/assets/avatar/blue.webp"} />
-                  <AvatarFallback>{initials.toUpperCase()}</AvatarFallback>
+                  <AvatarFallback
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
+                    {initials.toUpperCase()}
+                  </AvatarFallback>
                 </div>
               </Avatar>
             </motion.div>

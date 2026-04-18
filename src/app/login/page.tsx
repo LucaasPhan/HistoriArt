@@ -21,19 +21,6 @@ export default function LoginPage() {
           position: "relative",
         }}
       >
-        {/* Background decoration */}
-        <div
-          style={{
-            position: "fixed",
-            width: 500,
-            height: 500,
-            borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)",
-            top: "10%",
-            right: "10%",
-            pointerEvents: "none",
-          }}
-        />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
