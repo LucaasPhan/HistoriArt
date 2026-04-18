@@ -15,12 +15,13 @@ import {
 } from "../constants";
 import { buildAssistantChatMessage, buildUserChatMessage } from "../helpers";
 import type {
+  BookMetadata,
   ChatMediaContext,
   ChatMessage,
   Highlight,
   MediaAnnotation,
   UseReaderControllerArgs,
-} from "../types";
+} from "../../types";
 
 export default function useReaderController({ bookId }: UseReaderControllerArgs) {
   const searchParams = useSearchParams();
@@ -166,6 +167,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
   const pageRequests = useRef<Record<number, boolean>>({});
   const [dynamicTotalPages, setDynamicTotalPages] = useState<number>(0);
   const [dynamicBookTitle, setDynamicBookTitle] = useState<string>("");
+  const [bookMetadata, setBookMetadata] = useState<BookMetadata | null>(null);
   const [pageLoading, setPageLoading] = useState(false);
   const [retryTick, setRetryTick] = useState(0);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -411,7 +413,10 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
       .then((r) => r.json())
       .then((data) => {
         const found = data.books?.find((b: { id: string }) => b.id === bookId);
-        if (found) setDynamicBookTitle(found.title);
+        if (found) {
+          setDynamicBookTitle(found.title);
+          setBookMetadata(found);
+        }
       })
       .catch(() => {});
   }, [bookId]);
@@ -593,6 +598,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
     totalPages,
     content,
     bookTitle,
+    bookMetadata,
     pageLoading,
 
     // Page navigation

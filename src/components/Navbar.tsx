@@ -2,6 +2,7 @@
 
 import { useTranslation } from "@/lib/i18n";
 import { BookOpen } from "lucide-react";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { TransitionLink } from "./TransitionLink";
 import UserMenu from "./UserMenu";
@@ -39,16 +40,12 @@ export function Navbar() {
         >
           <div
             style={{
-              width: 36,
-              height: 36,
-              borderRadius: "var(--radius-md)",
-              background: "var(--accent-gradient)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <BookOpen size={20} color="white" />
+            <Image src="/assets/logo.png" alt="Logo" width={48} height={48} />
           </div>
           <span
             style={{
@@ -72,7 +69,6 @@ export function Navbar() {
                 </span>
               </button>
             </TransitionLink>
-
             <UserMenu />
           </div>
         </div>

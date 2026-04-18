@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { HighlightItem } from "./HighlightItem";
 import styles from "./styles/HighlightsSidebar.module.css";
 
-import type { Highlight } from "../types";
+import type { Highlight } from "../../types";
 
 type HighlightsSidebarProps = {
   highlights: Highlight[];

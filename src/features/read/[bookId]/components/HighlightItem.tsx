@@ -1,6 +1,6 @@
 import { GripVertical, MessageCircle, Trash2 } from "lucide-react";
 import { useState } from "react";
-import type { Highlight } from "../types";
+import type { Highlight } from "../../types";
 
 type HighlightItemProps = {
   highlight: Highlight;

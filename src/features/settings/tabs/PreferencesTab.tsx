@@ -35,10 +35,10 @@ export default function PreferencesTab() {
                 margin: "0 0 4px",
               }}
             >
-              Cấu hình lại Hồ sơ / Retake Questionnaire
+              {t("settings.retakeOnboardingTitle")}
             </h3>
             <p style={{ margin: 0, fontSize: 13, color: "var(--text-secondary)" }}>
-              Thực hiện lại bài khảo sát để cập nhật mục tiêu đọc và phong cách trò chuyện.
+              {t("settings.retakeOnboardingDesc")}
             </p>
           </div>
           <button
@@ -55,7 +55,7 @@ export default function PreferencesTab() {
               whiteSpace: "nowrap",
             }}
           >
-            Bắt đầu / Start
+            {t("settings.retakeOnboardingButton")}
           </button>
         </div>
       </section>

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Film, X } from "lucide-react";
-import type { MediaAnnotation } from "../types";
+import type { MediaAnnotation } from "../../types";
 import VideoContainer from "./VideoContainer";
 
 type Props = {

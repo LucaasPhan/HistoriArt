@@ -224,6 +224,9 @@ export const translations = {
     // ── Settings — Preferences ──
     "settings.readerPrefs": "Tùy chỉnh đọc sách",
     "settings.readerPrefsDesc": "Cài đặt trải nghiệm đọc sách theo ý bạn.",
+    "settings.retakeOnboardingTitle": "Cấu hình lại Hồ sơ",
+    "settings.retakeOnboardingDesc": "Thực hiện lại bài khảo sát để cập nhật mục tiêu đọc và phong cách trò chuyện.",
+    "settings.retakeOnboardingButton": "Bắt đầu",
 
     // ── Settings — Security ──
     "settings.securityTitle": "Bảo mật",
@@ -597,6 +600,9 @@ export const translations = {
     // ── Settings — Preferences ──
     "settings.readerPrefs": "Reader Preferences",
     "settings.readerPrefsDesc": "Customize your reading experience to your liking.",
+    "settings.retakeOnboardingTitle": "Retake Questionnaire",
+    "settings.retakeOnboardingDesc": "Retake the survey to update your reading goals and conversation style.",
+    "settings.retakeOnboardingButton": "Start",
 
     // ── Settings — Security ──
     "settings.securityTitle": "Security",

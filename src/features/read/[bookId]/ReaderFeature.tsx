@@ -12,6 +12,7 @@ import { ArrowLeft, BookOpen, Film, Highlighter, List, MessageCircle, Pencil } f
 import React, { useEffect } from "react";
 import AddMediaModal from "./components/AddMediaModal";
 import AudioIsland from "./components/AudioIsland";
+import BookInfoPopover from "../components/BookInfoPopover";
 import ChaptersSidebar from "./components/ChaptersSidebar";
 import ChatSidebar from "./components/ChatSidebar";
 import HighlightsSidebar from "./components/HighlightsSidebar";
@@ -23,7 +24,7 @@ import ReaderNavigation from "./components/ReaderNavigation";
 import SelectionTooltip from "./components/SelectionTooltip";
 import VideoPopup from "./components/VideoPopup";
 import useReaderController from "./hooks/useReaderController";
-import type { MediaAnnotation } from "./types";
+import type { MediaAnnotation } from "../types";
 
 export default function ReaderFeature({ bookId }: { bookId: string }) {
   const c = useReaderController({ bookId });
@@ -267,10 +268,12 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                 </button>
               </TransitionLink>
               <div style={{ display: "flex", alignItems: "center", gap: "var(--toolbar-gap-inner, 8px)" }}>
-                <BookOpen size={16} color="var(--accent-primary)" />
-                <span className="mobile-hide-text" style={{ fontSize: 14, fontWeight: 600 }}>
-                  {c.bookTitle || t("common.loading")}
-                </span>
+                <BookInfoPopover bookData={c.bookMetadata}>
+                  <BookOpen size={16} color="var(--accent-primary)" />
+                  <span className="mobile-hide-text" style={{ fontSize: 14, fontWeight: 600 }}>
+                    {c.bookTitle || t("common.loading")}
+                  </span>
+                </BookInfoPopover>
 
                 {c.chapters.length > 0 && (
                   <button

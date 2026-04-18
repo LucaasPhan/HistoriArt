@@ -13,6 +13,7 @@ import { useTranslation } from "@/lib/i18n";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
+  BookOpen,
   Cog,
   LayoutDashboard,
   Loader2,
@@ -41,34 +42,101 @@ import { Skeleton } from "./ui/skeleton";
 
 const UnauthenticatedUser = () => {
   const { t } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        animate={{ opacity: 1 }}
-        initial={{ opacity: 0 }}
-        transition={{
-          duration: 0.3,
-          ease: "easeInOut",
+    <DropdownMenu onOpenChange={setIsMenuOpen} open={isMenuOpen} modal={false}>
+      <DropdownMenuTrigger asChild>
+        <div style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer" }}>
+          <Avatar>
+            <div style={{ position: "relative", zIndex: 1, borderRadius: "var(--radius-full)" }} title="Guest Menu">
+              <AvatarImage src="/assets/avatar/guest.webp" />
+              <AvatarFallback>?</AvatarFallback>
+            </div>
+          </Avatar>
+        </div>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent
+        align="end"
+        style={{
+          position: "relative",
+          zIndex: 100001,
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+          background: "var(--bg-card)",
+          padding: "8px",
+          width: "220px",
+          border: "1px solid var(--border-subtle)",
+          borderRadius: "var(--radius-md)",
+          boxShadow: "var(--shadow-card)",
         }}
       >
-        <Link href="/login">
-          <Button
-            style={{
-              height: "36px",
-              padding: "0 20px",
-              fontSize: "14px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-            }}
-          >
-            <SquareUserRound size={16} />
-            <span style={{ fontWeight: 600, letterSpacing: "0.02em" }}>{t("user.signIn")}</span>
-          </Button>
-        </Link>
-      </motion.div>
-    </AnimatePresence>
+        <div style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", padding: "8px 12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <Avatar style={{ width: 28, height: 28 }}>
+              <AvatarImage src="/assets/avatar/guest.webp" />
+              <AvatarFallback>?</AvatarFallback>
+            </Avatar>
+            <p style={{ margin: 0, fontSize: "14px", fontWeight: 600, color: "var(--text-secondary)" }}>
+              Guest
+            </p>
+          </div>
+          <motion.div whileHover={{ scale: 1.15, rotate: 15 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleTheme();
+              }}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                transition: "background 0.2s ease",
+              }}
+              className="hover:bg-muted"
+            >
+              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            </Button>
+          </motion.div>
+        </div>
+
+        <DropdownMenuItem
+          style={{ display: "flex", gap: "8px", padding: "8px 12px", cursor: "pointer", borderRadius: "var(--radius-sm)", fontSize: "14px" }}
+          onClick={() => router.push("/library")}
+          onMouseOver={(e) => (e.currentTarget.style.background = "var(--bg-secondary)")}
+          onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
+        >
+          <BookOpen size={16} />
+          {t("nav.library")}
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          style={{ display: "flex", gap: "8px", padding: "8px 12px", cursor: "pointer", borderRadius: "var(--radius-sm)", fontSize: "14px" }}
+          onClick={() => router.push("/settings")}
+          onMouseOver={(e) => (e.currentTarget.style.background = "var(--bg-secondary)")}
+          onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
+        >
+          <Cog size={16} />
+          {t("user.settings")}
+        </DropdownMenuItem>
+
+        <div style={{ margin: "4px 0", height: "1px", background: "var(--border-subtle)" }} />
+
+        <DropdownMenuItem
+          style={{ display: "flex", gap: "8px", padding: "10px 12px", cursor: "pointer", borderRadius: "var(--radius-sm)", fontSize: "14px", background: "var(--accent-primary)", color: "white", fontWeight: 600 }}
+          onClick={() => router.push("/login")}
+        >
+          <SquareUserRound size={16} />
+          {t("user.signIn")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
@@ -219,31 +287,49 @@ const User = memo(() => {
               display: "flex",
               width: "100%",
               alignItems: "center",
-              justifyContent: "flex-start",
+              justifyContent: "space-between",
               gap: "8px",
               padding: "8px 12px",
             }}
           >
-            <Avatar>
-              <AvatarImage
-                src={user.image || "/assets/avatar/blue.webp"}
-                style={{ border: "none" }}
-              />
-              <AvatarFallback style={{ border: "none" }}>{initials.toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <p
-              style={{
-                margin: 0,
-                maxWidth: "120px",
-                fontSize: "14px",
-                fontWeight: 500,
-                whiteSpace: "pre-line",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {displayName}
-            </p>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", overflow: "hidden" }}>
+              <Avatar style={{ width: 32, height: 32 }}>
+                <AvatarImage src={user.image || "/assets/avatar/blue.webp"} style={{ border: "none" }} />
+                <AvatarFallback style={{ border: "none" }}>{initials.toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  maxWidth: "100px",
+                }}
+              >
+                {displayName}
+              </p>
+            </div>
+            <motion.div whileHover={{ scale: 1.15, rotate: 15 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleTheme();
+                }}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: "50%",
+                  transition: "background 0.2s ease",
+                }}
+                className="hover:bg-muted"
+              >
+                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+              </Button>
+            </motion.div>
           </div>
 
           <DropdownMenuItem
@@ -263,13 +349,10 @@ const User = memo(() => {
             }}
             onMouseOver={(e) => (e.currentTarget.style.background = "var(--bg-secondary)")}
             onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
-            onSelect={(e) => {
-              e.preventDefault();
-              toggleTheme();
-            }}
+            onClick={() => router.push("/library")}
           >
-            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-            {theme === "dark" ? t("user.lightMode") : t("user.darkMode")}
+            <BookOpen size={16} />
+            {t("nav.library")}
           </DropdownMenuItem>
 
           <DropdownMenuItem

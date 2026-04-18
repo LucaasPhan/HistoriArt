@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Volume2, X } from "lucide-react";
-import type { MediaAnnotation } from "../types";
+import type { MediaAnnotation } from "../../types";
 import CustomAudioPlayer from "./CustomAudioPlayer";
 
 type Props = {

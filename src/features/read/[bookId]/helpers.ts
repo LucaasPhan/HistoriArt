@@ -1,4 +1,4 @@
-import type { ChatMessage } from "./types";
+import type { ChatMessage } from "../types";
 
 export function buildAssistantChatMessage(responseText: string, timestampISO: string): ChatMessage {
   return {

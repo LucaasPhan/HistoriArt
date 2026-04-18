@@ -2,7 +2,7 @@ import { handleTextareaShortcuts } from "@/lib/textarea-shortcuts";
 import imageCompression from "browser-image-compression";
 import { BookOpen, Film, Plus, Save, Trash2, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import type { MediaAnnotation } from "../types";
+import type { MediaAnnotation } from "../../types";
 import styles from "./styles/AddMediaModal.module.css";
 
 type AddMediaModalProps = {

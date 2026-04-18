@@ -6,7 +6,7 @@ import { BookOpen, Film, MessageCirclePlus, Pen, Trash2, X } from "lucide-react"
 import { memo, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { PANEL_ANIMATION_DELAY, PULSE_HIGHLIGHT_DURATION } from "../constants";
-import type { MediaAnnotation } from "../types";
+import type { MediaAnnotation } from "../../types";
 import CustomAudioPlayer from "./CustomAudioPlayer";
 import VideoContainer from "./VideoContainer";
 import styles from "./styles/MediaPanel.module.css";

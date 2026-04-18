@@ -5,7 +5,7 @@ import { useTranslation } from "@/lib/i18n";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUp, LogIn, MessageCircle, Sparkles, Square, Trash2, X } from "lucide-react";
 import React, { memo } from "react";
-import type { ChatMessage, MediaAnnotation } from "../types";
+import type { ChatMessage, MediaAnnotation } from "../../types";
 import styles from "./styles/ChatSidebar.module.css";
 import TypewriterText from "./TypewriterText";
 

@@ -35,6 +35,19 @@ export type UseReaderControllerArgs = {
   bookId: string;
 };
 
+export interface BookMetadata {
+  id: string;
+  title: string;
+  author: string;
+  description: string;
+  coverUrl: string | null;
+  coverGradient: [string, string];
+  era: string;
+  totalPages: number;
+  estimatedReadTime: number | null;
+  isSample: boolean;
+}
+
 export type ChatMediaContext = {
   id: string;
   mediaType: MediaAnnotation["mediaType"];
