@@ -182,7 +182,7 @@ export default function AdminQuizManagerPage() {
                   style={{ gap: "6px", padding: "8px 16px", background: "var(--bg-secondary)", color: "var(--text-primary)", border: "1px solid var(--border-subtle)" }}
                 >
                   <Check size={13} className="text-green-500" />
-                  {t("admin.publishAll") || "Công bố tất cả"}
+                  {"Publish All"}
                 </button>
 
                 <button
