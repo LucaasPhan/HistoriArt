@@ -34,12 +34,12 @@ const ReaderNavigation = memo(function ReaderNavigation({
   isAuthenticated,
 }: ReaderNavigationProps) {
   const [isEditingPage, setIsEditingPage] = useState(false);
-  const [pageInput, setPageInput] = useState(currentPage.toString());
+  const [pageInput, setPageInput] = useState((currentPage ?? 1).toString());
   const inputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
 
   useEffect(() => {
-    setPageInput(currentPage.toString());
+    setPageInput((currentPage ?? 1).toString());
   }, [currentPage]);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const ReaderNavigation = memo(function ReaderNavigation({
     if (e && "preventDefault" in e) e.preventDefault();
 
     if (pageInput.trim() === "") {
-      setPageInput(currentPage.toString());
+      setPageInput((currentPage ?? 1).toString());
       setIsEditingPage(false);
       return;
     }

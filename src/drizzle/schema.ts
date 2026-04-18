@@ -203,6 +203,25 @@ export const mediaAnnotations = pgTable(
   ],
 );
 
+// ─── Chapters — maps chapter names to page ranges per book ────
+// Used to gate quiz access and group questions
+export const chapters = pgTable(
+  "chapters",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    bookId: text("book_id").notNull(),
+    chapterNumber: integer("chapter_number").notNull(),
+    title: text("title").notNull(),
+    startPage: integer("start_page").notNull(),
+    endPage: integer("end_page").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("idx_chapter_book").on(table.bookId),
+    index("idx_chapter_book_num").on(table.bookId, table.chapterNumber),
+  ],
+);
+
 // ─── Quiz Questions (per-chapter quiz) ────────────────────────
 export const quizQuestions = pgTable(
   "quiz_questions",
@@ -215,6 +234,14 @@ export const quizQuestions = pgTable(
     options: jsonb("options").$type<string[]>().notNull(),
     correctIndex: integer("correct_index").notNull(),
     explanation: text("explanation"),
+    questionType: text("question_type")
+      .$type<"multiple_choice" | "true_false" | "short_answer">()
+      .notNull()
+      .default("multiple_choice"),
+    acceptedAnswers: jsonb("accepted_answers").$type<string[]>(),
+    chapterNumber: integer("chapter_number"),
+    createdBy: text("created_by").references(() => user.id),
+    isPublished: boolean("is_published").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [index("idx_quiz_book").on(table.bookId)],
@@ -228,11 +255,31 @@ export const quizResults = pgTable(
     userId: text("user_id").notNull(),
     bookId: text("book_id").notNull(),
     chapterId: text("chapter_id"),
+    chapterNumber: integer("chapter_number"),
     score: integer("score").notNull(),
     totalQuestions: integer("total_questions").notNull(),
     completedAt: timestamp("completed_at").notNull().defaultNow(),
   },
   (table) => [index("idx_quiz_result_user").on(table.userId, table.bookId)],
+);
+
+// ─── Quiz Preferences per user per book ───────────────────────
+// Stores "don't show again" preference and syncs language preference
+export const quizPreferences = pgTable(
+  "quiz_preferences",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    bookId: text("book_id").notNull(),
+    suppressPopup: boolean("suppress_popup").notNull().default(false),
+    language: text("language").$type<"vi" | "en">().notNull().default("vi"),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("idx_quiz_pref_user_book").on(table.userId, table.bookId),
+  ],
 );
 
 

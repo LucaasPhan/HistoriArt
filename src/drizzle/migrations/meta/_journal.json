@@ -64,6 +64,13 @@
       "when": 1776413174824,
       "tag": "0008_pink_bedlam",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1776460065231,
+      "tag": "0009_open_makkari",
+      "breakpoints": true
     }
   ]
 }

@@ -34,7 +34,26 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
   const [chatOpen, setChatOpen] = useState(false);
   const [chaptersSidebarOpen, setChaptersSidebarOpen] = useState(false);
 
+  // --- Quiz State ---
+  const [quizModalOpen, setQuizModalOpen] = useState(false);
+  const [showChapterCompleteDialog, setShowChapterCompleteDialog] = useState(false);
+  const [activeQuizChapter, setActiveQuizChapter] = useState(0);
+  const [completedChapters, setCompletedChapters] = useState<number[]>([]);
+  const [suppressQuizPopup, setSuppressQuizPopup] = useState(false);
+
   useEffect(() => {
+    fetch(`/api/quiz/preferences?bookId=${bookId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.preferences) {
+          setSuppressQuizPopup(data.preferences.suppressPopup);
+        }
+      })
+      .catch(console.error);
+  }, [bookId]);
+
+  useEffect(() => {
+    if (currentPage == null) return;
     localStorage.setItem(`${LAST_PAGE_STORAGE_KEY_PREFIX}${bookId}`, currentPage.toString());
 
     // Sync to DB
@@ -130,19 +149,72 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
   const content = dynamicContent;
   const bookTitle = dynamicBookTitle;
 
-  const [chapters, setChapters] = useState<{ title: string; page: number }[]>([]);
+  // --- Chapters ---
+  const [chapters, setChapters] = useState<{ title: string; page: number; endPage?: number }[]>([]);
 
   useEffect(() => {
     fetch(`/api/books/${bookId}/chapters`)
       .then((res) => res.json())
       .then((data) => {
         if (data.chapters) {
-          setChapters(data.chapters);
+          // API returns startPage (DB schema), normalize to page for the reader
+          setChapters(data.chapters.map((c: any) => ({
+            title: c.title,
+            page: c.startPage ?? c.page ?? 1,
+            endPage: c.endPage,
+          })));
         }
       })
       .catch(console.error);
   }, [bookId]);
 
+  // Detect chapter completion
+  const prevPageRef = useRef(currentPage);
+
+  useEffect(() => {
+    if (chapters.length === 0) return;
+
+    // Moving forward to next page
+    if (currentPage > prevPageRef.current) {
+      const prevPage = prevPageRef.current;
+      const prevChapterIdx = [...chapters].reverse().findIndex((c) => c.page <= prevPage);
+
+      if (prevChapterIdx !== -1) {
+        const actualIdx = chapters.length - 1 - prevChapterIdx;
+        const currentChapterIdx = [...chapters].reverse().findIndex((c) => c.page <= currentPage);
+        const actualCurrentIdx = chapters.length - 1 - currentChapterIdx;
+
+        // Crossed a chapter boundary
+        if (
+          actualIdx !== actualCurrentIdx ||
+          (chapters[actualIdx].endPage && prevPage === chapters[actualIdx].endPage && currentPage > prevPage)
+        ) {
+          const completedChapter = actualIdx + 1; // 1-indexed
+          if (!completedChapters.includes(completedChapter)) {
+            setCompletedChapters((prev) => [...prev, completedChapter]);
+            if (!suppressQuizPopup) {
+              setActiveQuizChapter(completedChapter);
+              setShowChapterCompleteDialog(true);
+            }
+          }
+        }
+      }
+    }
+
+    // Last page of the book
+    if (currentPage === dynamicTotalPages && dynamicTotalPages > 0) {
+      const lastChapter = chapters.length;
+      if (!completedChapters.includes(lastChapter)) {
+        setCompletedChapters((prev) => [...prev, lastChapter]);
+        if (!suppressQuizPopup) {
+          setActiveQuizChapter(lastChapter);
+          setShowChapterCompleteDialog(true);
+        }
+      }
+    }
+
+    prevPageRef.current = currentPage;
+  }, [currentPage, chapters, suppressQuizPopup, completedChapters, dynamicTotalPages]);
   const scrollToEnd = useCallback(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
@@ -548,6 +620,16 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
     chapters,
     chaptersSidebarOpen,
     setChaptersSidebarOpen,
+
+    // Quiz
+    quizModalOpen,
+    setQuizModalOpen,
+    showChapterCompleteDialog,
+    setShowChapterCompleteDialog,
+    activeQuizChapter,
+    setActiveQuizChapter,
+    completedChapters,
+    setSuppressQuizPopup,
 
     // Content editing (admin)
     setContent: useCallback((newContent: string) => {

@@ -22,6 +22,9 @@ import SelectionTooltip from "./components/SelectionTooltip";
 import VideoPopup from "./components/VideoPopup";
 import useReaderController from "./hooks/useReaderController";
 import type { MediaAnnotation } from "./types";
+import { QuizButton } from "@/features/quiz/components/QuizButton";
+import { QuizModal } from "@/features/quiz/components/QuizModal";
+import { ChapterCompleteDialog } from "@/features/quiz/components/ChapterCompleteDialog";
 
 export default function ReaderFeature({ bookId }: { bookId: string }) {
   const c = useReaderController({ bookId });
@@ -302,6 +305,12 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                   border: "1px solid var(--border-subtle)",
                 }}
               >
+                <QuizButton 
+                  bookId={bookId} 
+                  currentChapter={c.activeQuizChapter} 
+                  completedChapters={c.completedChapters} 
+                  onClick={() => c.setQuizModalOpen(true)} 
+                />
                 {isAdmin && (
                   <button
                     className="toolbar-btn"
@@ -591,6 +600,28 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
           onSaved={(newContent) => {
             c.setContent(newContent);
           }}
+        />
+
+        <ChapterCompleteDialog
+          isOpen={c.showChapterCompleteDialog}
+          chapterNumber={c.activeQuizChapter}
+          bookId={bookId}
+          onStartQuiz={() => {
+            c.setShowChapterCompleteDialog(false);
+            c.setQuizModalOpen(true);
+          }}
+          onSkip={() => c.setShowChapterCompleteDialog(false)}
+          onDontShowAgain={() => {
+            c.setSuppressQuizPopup(true);
+            c.setShowChapterCompleteDialog(false);
+          }}
+        />
+
+        <QuizModal
+          isOpen={c.quizModalOpen}
+          bookId={bookId}
+          chapterNumber={c.activeQuizChapter}
+          onClose={() => c.setQuizModalOpen(false)}
         />
       </div>
       <PageMountSignaler />

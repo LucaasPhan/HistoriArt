@@ -1,5 +1,17 @@
 import { relations } from "drizzle-orm";
-import { account, bookChunks, books, conversations, mediaAnnotations, session, user } from "./schema";
+import {
+  account,
+  bookChunks,
+  books,
+  chapters,
+  conversations,
+  mediaAnnotations,
+  quizPreferences,
+  quizQuestions,
+  quizResults,
+  session,
+  user,
+} from "./schema";
 
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
@@ -7,6 +19,8 @@ export const userRelations = relations(user, ({ many }) => ({
   books: many(books),
   conversations: many(conversations),
   mediaAnnotations: many(mediaAnnotations),
+  quizPreferences: many(quizPreferences),
+  quizQuestions: many(quizQuestions),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -48,6 +62,24 @@ export const mediaAnnotationsRelations = relations(mediaAnnotations, ({ one }) =
 export const conversationsRelations = relations(conversations, ({ one }) => ({
   user: one(user, {
     fields: [conversations.userId],
+    references: [user.id],
+  }),
+}));
+
+export const chaptersRelations = relations(chapters, () => ({}));
+
+export const quizQuestionsRelations = relations(quizQuestions, ({ one }) => ({
+  creator: one(user, {
+    fields: [quizQuestions.createdBy],
+    references: [user.id],
+  }),
+}));
+
+export const quizResultsRelations = relations(quizResults, () => ({}));
+
+export const quizPreferencesRelations = relations(quizPreferences, ({ one }) => ({
+  user: one(user, {
+    fields: [quizPreferences.userId],
     references: [user.id],
   }),
 }));

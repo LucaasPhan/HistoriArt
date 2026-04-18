@@ -178,3 +178,54 @@ ${supplementaryContext || "None"}
   messages.push({ role: "user", content: userMessage });
   return messages;
 }
+
+export const QUIZ_GENERATION_PROMPT = (pageContent: string, count: number) => `
+Bạn là giáo viên lịch sử Việt Nam. Dựa vào đoạn văn bản sau, hãy tạo ${count} câu hỏi kiểm tra đa dạng về lịch sử.
+
+Yêu cầu:
+- Tạo hỗn hợp: trắc nghiệm (multiple_choice), đúng/sai (true_false), và tự luận ngắn (short_answer)
+- Câu hỏi phải bám sát nội dung đoạn văn
+- Ngôn ngữ: Tiếng Việt
+- Độ khó phù hợp học sinh THCS-THPT
+
+Trả về JSON array theo định dạng sau, không có text nào khác:
+[
+  {
+    "questionType": "multiple_choice",
+    "question": "...",
+    "options": ["A. ...", "B. ...", "C. ...", "D. ..."],
+    "correctIndex": 0,
+    "explanation": "..."
+  },
+  {
+    "questionType": "true_false",
+    "question": "...",
+    "correctIndex": 0,
+    "explanation": "..."
+  },
+  {
+    "questionType": "short_answer",
+    "question": "...",
+    "acceptedAnswers": ["đáp án 1", "đáp án 2"],
+    "explanation": "..."
+  }
+]
+
+Nội dung sách:
+${pageContent}
+`;
+
+export const QUIZ_GRADING_PROMPT = (
+  question: string,
+  userAnswer: string,
+  acceptedAnswers: string[],
+) => `
+Câu hỏi: ${question}
+Câu trả lời của học sinh: "${userAnswer}"
+Các đáp án chấp nhận được: ${acceptedAnswers.map((a) => `"${a}"`).join(", ")}
+
+Hãy đánh giá câu trả lời của học sinh. Câu trả lời đúng nếu truyền đạt được ý nghĩa tương tự với bất kỳ đáp án nào được chấp nhận, dù không cần giống từng chữ.
+
+Trả về JSON (không có text nào khác):
+{ "isCorrect": true, "feedback": "Giải thích ngắn gọn tại sao đúng hoặc sai" }
+`;
