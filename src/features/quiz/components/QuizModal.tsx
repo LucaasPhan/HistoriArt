@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/lib/i18n";
-import { CheckCircle, Loader2, Trophy, X, XCircle } from "lucide-react";
+import { CheckCircle2, HelpCircle, Loader2, Trophy, X, XCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import useQuizController from "../hooks/useQuizController";
 import type { QuizAnswer } from "../types";
@@ -72,32 +72,21 @@ export function QuizModal({ isOpen, bookId, chapterNumber, onClose }: QuizModalP
   return (
     <div className={styles.overlay} onClick={handleClose}>
       <div onClick={(e) => e.stopPropagation()} className={styles.modal}>
-        {/* Header (matches EditBookDialog) */}
+        {/* Header (matches Mockup) */}
         <div className={styles.modalHeader}>
           <div className={styles.modalHeaderContent}>
-            <div className={styles.trophyBox}>
-              <Trophy size={18} color="white" />
+            <div className={styles.helpCircleBox}>
+              <HelpCircle size={18} color="var(--accent-primary)" />
             </div>
             <div>
-              <div className={styles.modalTitle}>{t("quiz.title") || "Quiz"}</div>
-              {ctrl.quizState !== "complete" && ctrl.totalQuestions > 0 && (
-                <div className={styles.modalSubtitle}>
-                  {t("quiz.question")} {ctrl.currentIndex + 1} {t("quiz.of")} {ctrl.totalQuestions}
-                </div>
-              )}
+              <div className={styles.modalTitle}>{t("quiz.title")}</div>
             </div>
           </div>
-          <button onClick={handleClose} className={styles.closeBtn}>
-            <X size={16} />
-          </button>
+          <div className={styles.modalSubtitle} style={{ marginLeft: "auto" }}>
+            {t("mockup.quiz.questionCount", { current: ctrl.currentIndex + 1, total: ctrl.totalQuestions })}
+          </div>
         </div>
 
-        {/* Progress bar */}
-        {ctrl.quizState !== "complete" && ctrl.totalQuestions > 0 && (
-          <div className={styles.progressContainer}>
-            <div className={styles.progressBar} style={{ width: `${progress}%` }} />
-          </div>
-        )}
 
         <div className={styles.scrollArea}>
           {/* Loading state */}
@@ -142,15 +131,17 @@ export function QuizModal({ isOpen, bookId, chapterNumber, onClose }: QuizModalP
                       if (isCorrect) {
                         stateClass = styles.optionBtnCorrect;
                         innerContent = (
-                          <div className="flex items-center gap-2">
-                            <CheckCircle size={16} /> <span className="text-[14px]">{opt}</span>
+                          <div className="flex items-center justify-between w-full">
+                            <span>{opt}</span>
+                            <CheckCircle2 size={16} />
                           </div>
                         );
                       } else if (wasChosen) {
                         stateClass = styles.optionBtnIncorrect;
                         innerContent = (
-                          <div className="flex items-center gap-2">
-                            <XCircle size={16} /> <span className="text-[14px]">{opt}</span>
+                          <div className="flex items-center justify-between w-full">
+                            <span>{opt}</span>
+                            <XCircle size={16} />
                           </div>
                         );
                       } else {
@@ -192,7 +183,7 @@ export function QuizModal({ isOpen, bookId, chapterNumber, onClose }: QuizModalP
                         stateClass = styles.optionBtnCorrect;
                         innerContent = (
                           <div className="flex w-full items-center justify-center gap-2">
-                            <CheckCircle size={16} /> {label}
+                            <CheckCircle2 size={16} /> {label}
                           </div>
                         );
                       } else if (wasChosen) {
@@ -250,7 +241,7 @@ export function QuizModal({ isOpen, bookId, chapterNumber, onClose }: QuizModalP
                 >
                   <div className={styles.feedbackHeader}>
                     {currentAnswer.isCorrect ? (
-                      <CheckCircle size={16} className="text-green-500" />
+                      <CheckCircle2 size={16} className="text-green-500" />
                     ) : (
                       <XCircle size={16} className="text-red-500" />
                     )}
@@ -290,10 +281,9 @@ export function QuizModal({ isOpen, bookId, chapterNumber, onClose }: QuizModalP
                   {ctrl.score}/{ctrl.totalQuestions}
                 </p>
                 <p className={styles.scoreSmall}>
-                  {t("quiz.completedPercent").replace(
-                    "{percent}",
-                    String(Math.round((ctrl.score / (ctrl.totalQuestions || 1)) * 100)),
-                  )}
+                  {t("quiz.completedPercent", {
+                    percent: Math.round((ctrl.score / (ctrl.totalQuestions || 1)) * 100),
+                  })}
                 </p>
               </div>
 
@@ -306,14 +296,14 @@ export function QuizModal({ isOpen, bookId, chapterNumber, onClose }: QuizModalP
                     <div key={q.id} className={styles.detailRow}>
                       <div className="mt-0.5 shrink-0">
                         {ans?.isCorrect ? (
-                          <CheckCircle size={14} className="text-green-500" />
+                          <CheckCircle2 size={14} className="text-green-500" />
                         ) : (
                           <XCircle size={14} className="text-red-500" />
                         )}
                       </div>
                       <div className={styles.detailQuestion}>
                         <span className={styles.detailNumber}>
-                          {t("quiz.questionNumber").replace("{number}", String(i + 1))}
+                          {t("quiz.questionNumber", { number: i + 1 })}
                         </span>
                         {q.question}
                       </div>
@@ -339,6 +329,13 @@ export function QuizModal({ isOpen, bookId, chapterNumber, onClose }: QuizModalP
             </div>
           )}
         </div>
+
+        {/* Progress bar above actions */}
+        {ctrl.quizState !== "complete" && ctrl.totalQuestions > 0 && (
+          <div className={styles.progressContainer}>
+            <div className={styles.progressBar} style={{ width: `${progress}%` }} />
+          </div>
+        )}
 
         {/* ── Sticky Footer: Action Buttons ── */}
         {ctrl.currentQuestion && ctrl.quizState !== "complete" && (

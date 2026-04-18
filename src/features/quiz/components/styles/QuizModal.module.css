@@ -17,12 +17,12 @@
 }
 
 .modal {
-  @apply flex max-h-[85vh] w-[92%] max-w-[600px] flex-col p-8;
+  @apply flex max-h-[90vh] w-[95%] max-w-[640px] flex-col p-7;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
-  animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 32px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6);
+  animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes slide-up {
@@ -37,16 +37,15 @@
 }
 
 .modalHeader {
-  @apply mb-5 flex shrink-0 items-center justify-between;
+  @apply mb-8 flex shrink-0 items-center justify-between;
 }
 
 .modalHeaderContent {
-  @apply flex items-center gap-3;
+  @apply flex items-center gap-4;
 }
 
-.trophyBox {
-  @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-md;
-  background: var(--accent-gradient);
+.helpCircleBox {
+  @apply flex h-10 w-10 shrink-0 items-center justify-center;
 }
 
 .modalTitle {
@@ -55,13 +54,13 @@
 }
 
 .modalSubtitle {
-  @apply mt-[2px] text-[13px];
-  color: var(--text-secondary);
+  @apply text-[13px] font-semibold;
+  color: var(--text-tertiary);
 }
 
 .progressContainer {
-  @apply mb-5 h-1 shrink-0 overflow-hidden rounded-full;
-  background: var(--border-subtle);
+  @apply mt-10 mb-6 h-1 w-full shrink-0 overflow-hidden rounded-full;
+  background: var(--bg-tertiary);
 }
 
 .progressBar {
@@ -110,8 +109,9 @@
 }
 
 .questionText {
-  @apply text-[16px] leading-relaxed font-bold;
+  @apply mb-8 text-[20px] leading-snug font-extrabold;
   color: var(--text-primary);
+  letter-spacing: -0.015em;
 }
 
 .optionsList {
@@ -119,10 +119,12 @@
 }
 
 .optionBtn {
-  @apply w-full rounded-[var(--radius-md)] border p-4 text-left transition-all;
+  @apply w-full rounded-2xl border p-[16px_22px] text-left transition-all;
   color: var(--text-primary);
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
   border-color: var(--border-subtle);
+  font-weight: 600;
+  font-size: 15px;
 }
 
 .optionBtn:hover:not(:disabled) {
@@ -135,9 +137,9 @@
 }
 
 .optionBtnCorrect {
-  background-color: rgba(34, 197, 94, 0.1);
-  border-color: rgb(34, 197, 94);
-  color: rgb(21, 128, 61);
+  background-color: rgba(var(--accent-rgb), 0.05);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
 }
 
 .optionBtnIncorrect {
@@ -267,7 +269,7 @@
 }
 
 .stickyFooter {
-  @apply mt-2 flex shrink-0 items-center justify-end;
+  @apply flex shrink-0 items-center justify-end;
 }
 
 .completeActions {

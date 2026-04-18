@@ -6,7 +6,7 @@ import { type Language, type TranslationKey, translations } from "./translations
 type LanguageContextType = {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: TranslationKey) => string;
+  t: (key: TranslationKey, variables?: Record<string, string | number>) => string;
 };
 
 const LanguageContext = createContext<LanguageContextType | null>(null);
@@ -43,8 +43,14 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   }, [language, mounted]);
 
   const t = useCallback(
-    (key: TranslationKey): string => {
-      return translations[language][key] ?? key;
+    (key: TranslationKey, variables?: Record<string, string | number>): string => {
+      let text: string = translations[language][key] ?? key;
+      if (variables) {
+        Object.entries(variables).forEach(([k, v]) => {
+          text = text.replace(new RegExp(`{${k}}`, "g"), String(v));
+        });
+      }
+      return text;
     },
     [language],
   );

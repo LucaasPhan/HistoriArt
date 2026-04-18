@@ -175,7 +175,7 @@ export default function FeaturesSection() {
                           color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
                         }}
                       >
-                        {t(`features.${i}.title`)}
+                        {t(`features.${i}.title` as any)}
                       </h3>
                       <AnimatePresence>
                         {isActive && (
@@ -192,7 +192,7 @@ export default function FeaturesSection() {
                               overflow: "hidden",
                             }}
                           >
-                            {t(`features.${i}.desc`)}
+                            {t(`features.${i}.desc` as any)}
                           </motion.p>
                         )}
                       </AnimatePresence>

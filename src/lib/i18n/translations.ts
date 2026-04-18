@@ -9,6 +9,7 @@ export const translations = {
     "common.delete": "Xóa",
     "common.confirm": "Xác nhận",
     "common.copied": "Đã sao chép!",
+    "common.cancel": "Hủy",
 
     // ── Navbar ──
     "nav.library": "Thư viện",
@@ -181,6 +182,7 @@ export const translations = {
 
     // ── Settings ──
     "settings.title": "Cài đặt",
+    "settings.appearance": "Giao diện",
     "settings.general": "Chung",
     "settings.account": "Tài khoản",
     "settings.preferences": "Tùy chỉnh đọc",
@@ -286,7 +288,7 @@ export const translations = {
     "ob.misc.otherPlaceholder": "Nhập mục đích của bạn...",
 
     // ── Quiz UI ──
-    "quiz.title": "Câu hỏi ôn tập",
+    "quiz.title": "Quiz Lịch Sử",
     "quiz.chapterComplete": "Bạn đã hoàn thành chương này!",
     "quiz.takeQuizPrompt": "Bạn có muốn làm quiz không?",
     "quiz.startQuiz": "Bắt đầu làm quiz",
@@ -394,6 +396,7 @@ export const translations = {
     "common.delete": "Delete",
     "common.confirm": "Confirm",
     "common.copied": "Copied!",
+    "common.cancel": "Cancel",
 
     // ── Navbar ──
     "nav.library": "Library",
@@ -564,6 +567,7 @@ export const translations = {
 
     // ── Settings ──
     "settings.title": "Settings",
+    "settings.appearance": "Appearance",
     "settings.general": "General",
     "settings.account": "Account",
     "settings.preferences": "Reader Preferences",
@@ -670,7 +674,7 @@ export const translations = {
     "ob.misc.otherPlaceholder": "Type your purpose...",
 
     // ── Quiz UI ──
-    "quiz.title": "Chapter Quiz",
+    "quiz.title": "History Quiz",
     "quiz.chapterComplete": "Chapter complete!",
     "quiz.takeQuizPrompt": "Would you like to take the quiz?",
     "quiz.startQuiz": "Start Quiz",

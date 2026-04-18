@@ -4,6 +4,7 @@ import { useTranslation } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { ArrowRight, BookOpen } from "lucide-react";
+import { TransitionLink } from "@/components/TransitionLink";
 
 export default function AboutSection() {
   const { t } = useTranslation();
@@ -114,7 +115,8 @@ export default function AboutSection() {
                 </div>
               </div>
             </div>
-            <button
+            <TransitionLink
+              href="/library"
               style={{
                 padding: "10px 18px",
                 fontSize: 13,
@@ -131,7 +133,7 @@ export default function AboutSection() {
               }}
             >
               {t("about.explore")} <ArrowRight size={14} />
-            </button>
+            </TransitionLink>
           </motion.div>
         </motion.div>
 
