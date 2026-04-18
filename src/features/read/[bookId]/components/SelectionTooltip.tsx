@@ -134,7 +134,9 @@ const SelectionTooltip = memo(function SelectionTooltip({
                   }}
                 >
                   <Film size={14} className="mr-2" />
-                  <span className="font-medium text-[var(--accent-primary)]">{t("tooltip.addMedia")}</span>
+                  <span className="font-medium text-[var(--accent-primary)]">
+                    {t("tooltip.addMedia")}
+                  </span>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem

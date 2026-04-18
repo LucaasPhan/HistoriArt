@@ -47,16 +47,16 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ book
     // 3. Map to DB structure and compute endPage
     const mappedChaps = chaps.map((chap, i) => {
       const isLast = i === chaps.length - 1;
-      const endPage = isLast 
-        ? chunks[chunks.length - 1].pageNumber || chunks[chunks.length - 1].chunkIndex 
+      const endPage = isLast
+        ? chunks[chunks.length - 1].pageNumber || chunks[chunks.length - 1].chunkIndex
         : chaps[i + 1].page - 1;
-        
+
       return {
         bookId,
         chapterNumber: i + 1,
         title: chap.title,
         startPage: chap.page,
-        endPage: endPage
+        endPage: endPage,
       };
     });
 

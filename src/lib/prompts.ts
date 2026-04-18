@@ -1,12 +1,6 @@
 import { ChatUserContext, CommunicationPreference } from "@/drizzle/constants";
 
-export type ConversationMode =
-  | "explain"
-  | "quiz"
-  | "discuss"
-  | "summarize"
-  | "cbt"
-  | "buddy";
+export type ConversationMode = "explain" | "quiz" | "discuss" | "summarize" | "cbt" | "buddy";
 
 export function detectNavigationIntent(message: string): "next" | "prev" | null {
   const lower = message.toLowerCase().trim();
@@ -38,11 +32,16 @@ function purposeLens(purpose: string, customPurpose?: string | null): string {
   }
 
   const map: Record<string, string> = {
-    "learn-and-grow": "learning and personal growth - focus on drawing out lessons, challenging perspectives gently, and expanding historical knowledge",
-    "academic": "academic research - maintain a scholastic tone, provide accurate facts, focus on dates, and support study efforts",
-    "explore-stories": "exploring stories - prioritize narrative immersion, vivid descriptions of historical events, and entertaining folklore",
-    "media-experience": "multimedia experience - reference imagery, videos, and visual context frequently to bring history to life",
-    "other": "general engagement - follow their lead, remain flexible, and adapt to their reading style",
+    "learn-and-grow":
+      "learning and personal growth - focus on drawing out lessons, challenging perspectives gently, and expanding historical knowledge",
+    academic:
+      "academic research - maintain a scholastic tone, provide accurate facts, focus on dates, and support study efforts",
+    "explore-stories":
+      "exploring stories - prioritize narrative immersion, vivid descriptions of historical events, and entertaining folklore",
+    "media-experience":
+      "multimedia experience - reference imagery, videos, and visual context frequently to bring history to life",
+    other:
+      "general engagement - follow their lead, remain flexible, and adapt to their reading style",
   };
 
   const purposes = purpose.split(",").map((p) => p.trim());
@@ -54,10 +53,14 @@ function purposeLens(purpose: string, customPurpose?: string | null): string {
 
 function commStyleDirective(pref: CommunicationPreference): string {
   const map: Record<CommunicationPreference, string> = {
-    "professor": "Maintain a highly academic, objective, and detailed tone. Use precise terminology, structure your arguments logically, and avoid slang.",
-    "narrator": "Speak like an engaging documentary narrator. Use dramatic pauses in text, vivid language, and a storytelling cadence.",
-    "guide": "Act as a friendly, accessible tour guide. Keep explanations simple, welcoming, and easy to understand for beginners.",
-    "quick": "Be extremely brief and direct. Use bullet points heavily, answer questions immediately, and avoid lengthy prose.",
+    professor:
+      "Maintain a highly academic, objective, and detailed tone. Use precise terminology, structure your arguments logically, and avoid slang.",
+    narrator:
+      "Speak like an engaging documentary narrator. Use dramatic pauses in text, vivid language, and a storytelling cadence.",
+    guide:
+      "Act as a friendly, accessible tour guide. Keep explanations simple, welcoming, and easy to understand for beginners.",
+    quick:
+      "Be extremely brief and direct. Use bullet points heavily, answer questions immediately, and avoid lengthy prose.",
   };
   return map[pref] ?? map["guide"];
 }
@@ -65,10 +68,13 @@ function commStyleDirective(pref: CommunicationPreference): string {
 function readingGoalDirective(goal: string | null | undefined): string {
   if (!goal) return "";
   const map: Record<string, string> = {
-    "facts": "Focus strictly on extracting factual information, precise dates, key figures, and geographical context.",
-    "insights": "Provide deep analytical insights, explaining the underlying causes, cultural context, and long-term consequences of events.",
-    "epic": "Highlight the drama, epic battles, and heroic moments. Lean into the tension and excitement of the historical narrative.",
-    "roots": "Focus on national heritage, cultural pride, and drawing connections between historical struggles and modern identity.",
+    facts:
+      "Focus strictly on extracting factual information, precise dates, key figures, and geographical context.",
+    insights:
+      "Provide deep analytical insights, explaining the underlying causes, cultural context, and long-term consequences of events.",
+    epic: "Highlight the drama, epic battles, and heroic moments. Lean into the tension and excitement of the historical narrative.",
+    roots:
+      "Focus on national heritage, cultural pride, and drawing connections between historical struggles and modern identity.",
   };
 
   const selected = goal
@@ -83,18 +89,20 @@ function readingGoalDirective(goal: string | null | undefined): string {
 function personalityDirective(personality: string | null | undefined): string {
   if (!personality) return "";
   const map: Record<string, string> = {
-    "researcher": "Be precise, logical, and detail-oriented. Answer with a fact-checking mindset and offer nuanced perspectives.",
-    "storyteller": "Be expressive, imaginative, and metaphorical. Focus on character motivations and the emotional arc of history.",
-    "student": "Provide quick summaries, key takeaways, and mnemonic devices to help them remember vital information.",
-    "explorer": "Adopt a flexible, curious tone. Feel free to bring up tangentially related historical facts to feed their curiosity.",
+    researcher:
+      "Be precise, logical, and detail-oriented. Answer with a fact-checking mindset and offer nuanced perspectives.",
+    storyteller:
+      "Be expressive, imaginative, and metaphorical. Focus on character motivations and the emotional arc of history.",
+    student:
+      "Provide quick summaries, key takeaways, and mnemonic devices to help them remember vital information.",
+    explorer:
+      "Adopt a flexible, curious tone. Feel free to bring up tangentially related historical facts to feed their curiosity.",
   };
 
   const val = map[personality.trim()];
   if (val) return `- **Reading Persona:** ${val}`;
   return "";
 }
-
-
 
 export function buildUserCalibration(user?: ChatUserContext): string {
   if (!user) return "";
@@ -144,8 +152,7 @@ export function buildRAGPrompt(
   supplementaryContext: string,
   userProfile?: ChatUserContext,
 ): Array<{ role: "system" | "user" | "assistant"; content: string }> {
-  const baseSystemPrompt =
-    (SYSTEM_PROMPTS as Record<string, string>)[mode] ?? SYSTEM_PROMPTS.buddy;
+  const baseSystemPrompt = (SYSTEM_PROMPTS as Record<string, string>)[mode] ?? SYSTEM_PROMPTS.buddy;
 
   const calibration = buildUserCalibration(userProfile);
 
@@ -180,7 +187,7 @@ ${supplementaryContext || "None"}
 }
 
 export const QUIZ_GENERATION_PROMPT = (pageContent: string, count: number) => `
-Bạn là giáo viên lịch sử Việt Nam. Dựa vào đoạn văn bản sau, hãy tạo ${count} câu hỏi kiểm tra đa dạng về lịch sử.
+Bạn là giáo viên lịch sử Việt Nam. Dựa vào đoạn văn bản sau, hãy tạo ${count} câu hỏi quiz đa dạng về lịch sử.
 
 Yêu cầu:
 - Tạo hỗn hợp: trắc nghiệm (multiple_choice), đúng/sai (true_false), và tự luận ngắn (short_answer)
@@ -219,13 +226,36 @@ export const QUIZ_GRADING_PROMPT = (
   question: string,
   userAnswer: string,
   acceptedAnswers: string[],
-) => `
-Câu hỏi: ${question}
-Câu trả lời của học sinh: "${userAnswer}"
-Các đáp án chấp nhận được: ${acceptedAnswers.map((a) => `"${a}"`).join(", ")}
+  language: "vi" | "en" = "vi",
+) => {
+  const isEn = language === "en";
+  return `
+You are Fable — a warm, enthusiastic reading companion who is reviewing history together with the user.
+You are NOT a teacher and NOT grading an exam. You are just checking in with your friend to see how well they understood the material.
 
-Hãy đánh giá câu trả lời của học sinh. Câu trả lời đúng nếu truyền đạt được ý nghĩa tương tự với bất kỳ đáp án nào được chấp nhận, dù không cần giống từng chữ.
+${isEn ? "Question discussed" : "Câu hỏi vừa thảo luận"}: ${question}
 
-Trả về JSON (không có text nào khác):
-{ "isCorrect": true, "feedback": "Giải thích ngắn gọn tại sao đúng hoặc sai" }
+${isEn ? "Their answer" : "Câu trả lời của bạn"}: "${userAnswer}"
+
+${isEn ? "Key points to mention" : "Các ý chính cần đề cập"}: ${acceptedAnswers.map((a) => `"${a}"`).join(", ")}
+
+${
+  isEn
+    ? `Evaluate the answer in a natural, friendly way:
+- The answer is correct if it conveys a similar meaning to any of the key points, even if the wording differs.
+- If correct: react positively, confirm, and optionally add a small interesting detail.
+- If incorrect: gently point in the right direction, NO judgment, NO formal teacher language like "the answer fails to convey...".
+- Keep the feedback short, 1-2 sentences, conversational.
+- Write in English.`
+    : `Hãy đánh giá câu trả lời một cách tự nhiên, thân thiện:
+- Câu trả lời đúng nếu truyền đạt được ý nghĩa tương tự với bất kỳ ý nào trong danh sách, dù không cần giống từng chữ.
+- Nếu đúng: phản ứng vui vẻ, xác nhận và có thể bổ sung thêm một chi tiết thú vị nhỏ.
+- Nếu sai: nhẹ nhàng gợi ý hướng đúng, KHÔNG phán xét, KHÔNG dùng ngôn ngữ giáo điều như "câu trả lời không truyền đạt được...".
+- Giữ phản hồi ngắn gọn, 1-2 câu, tự nhiên như đang nói chuyện.
+- Viết bằng tiếng Việt.`
+}
+
+Return JSON only (no other text):
+{ "isCorrect": true/false, "feedback": "${isEn ? "Fable's friendly feedback" : "Phản hồi thân thiện của Fable"}" }
 `;
+};

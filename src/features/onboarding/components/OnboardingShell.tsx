@@ -32,11 +32,10 @@ export default function OnboardingShell({ steps, step, children }: Props) {
         {/* Step dots */}
         <div className="ob-dots">
           {steps.map((_, i) => (
-            <span key={i} className={`ob-dot${i === step ? " ob-dot--active" : ""}`} />
+            <span key={i} className={`ob-dot${i === step ? "ob-dot--active" : ""}`} />
           ))}
         </div>
       </div>
     </div>
   );
 }
-

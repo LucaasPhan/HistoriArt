@@ -44,7 +44,9 @@ export async function GET() {
     }
 
     const dbBooks = await db.query.books.findMany({
-      where: isAdmin ? eq(books.isSample, false) : and(eq(books.userId, userId), eq(books.isSample, false)),
+      where: isAdmin
+        ? eq(books.isSample, false)
+        : and(eq(books.userId, userId), eq(books.isSample, false)),
       orderBy: (books, { desc }) => [desc(books.createdAt)],
     });
 
@@ -161,7 +163,10 @@ export async function DELETE(request: NextRequest) {
 
     const expectedPin = process.env.ADMIN_DELETE_PIN;
     if (!expectedPin) {
-      return NextResponse.json({ error: "Admin delete PIN not configured on server" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Admin delete PIN not configured on server" },
+        { status: 500 },
+      );
     }
 
     if (pin !== expectedPin) {
@@ -273,19 +278,29 @@ export async function PATCH(request: NextRequest) {
       });
 
       // 2. Migrate book_chunks (has FK constraint)
-      await db
-        .update(bookChunks)
-        .set({ bookId: newBookId })
-        .where(eq(bookChunks.bookId, bookId));
+      await db.update(bookChunks).set({ bookId: newBookId }).where(eq(bookChunks.bookId, bookId));
 
       // 3. Migrate other tables (no FK constraints, just text columns)
-      const { mediaAnnotations, quizQuestions, quizResults, favoriteBooks, readingProgress } = await import("@/drizzle/schema");
+      const { mediaAnnotations, quizQuestions, quizResults, favoriteBooks, readingProgress } =
+        await import("@/drizzle/schema");
 
-      await db.update(mediaAnnotations).set({ bookId: newBookId }).where(eq(mediaAnnotations.bookId, bookId));
-      await db.update(quizQuestions).set({ bookId: newBookId }).where(eq(quizQuestions.bookId, bookId));
+      await db
+        .update(mediaAnnotations)
+        .set({ bookId: newBookId })
+        .where(eq(mediaAnnotations.bookId, bookId));
+      await db
+        .update(quizQuestions)
+        .set({ bookId: newBookId })
+        .where(eq(quizQuestions.bookId, bookId));
       await db.update(quizResults).set({ bookId: newBookId }).where(eq(quizResults.bookId, bookId));
-      await db.update(favoriteBooks).set({ bookId: newBookId }).where(eq(favoriteBooks.bookId, bookId));
-      await db.update(readingProgress).set({ bookId: newBookId }).where(eq(readingProgress.bookId, bookId));
+      await db
+        .update(favoriteBooks)
+        .set({ bookId: newBookId })
+        .where(eq(favoriteBooks.bookId, bookId));
+      await db
+        .update(readingProgress)
+        .set({ bookId: newBookId })
+        .where(eq(readingProgress.bookId, bookId));
 
       // 4. Delete old book (no chunks left pointing to it)
       await db.delete(books).where(eq(books.id, bookId));

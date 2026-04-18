@@ -164,9 +164,7 @@ export default function HighlightsSidebar({
 
       <div className={styles.content}>
         {orderedHighlights.length === 0 ? (
-          <p className={styles.emptyState}>
-            {t("highlights.empty")}
-          </p>
+          <p className={styles.emptyState}>{t("highlights.empty")}</p>
         ) : (
           <Reorder.Group
             axis="y"

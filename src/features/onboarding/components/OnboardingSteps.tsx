@@ -13,7 +13,7 @@ export function StepPersonal({ data, set }: StepProps) {
     <div>
       <h2 className="ob-title">{t("ob.step1.title")}</h2>
       <p className="ob-subtitle">{t("ob.step1.subtitle")}</p>
-      
+
       <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
         <input
           className="ob-input"
@@ -65,18 +65,41 @@ export function StepPersonal({ data, set }: StepProps) {
 // ─── PART 2: StepPurpose ───
 export function StepPurpose({ data, set }: StepProps) {
   const { t } = useTranslation();
-  
+
   const PURPOSES = [
-    { value: "learn-and-grow", label: t("ob.purpose.learn"), desc: t("ob.purpose.learnDesc"), emoji: "🌱" },
-    { value: "academic", label: t("ob.purpose.academic"), desc: t("ob.purpose.academicDesc"), emoji: "🎓" },
-    { value: "explore-stories", label: t("ob.purpose.stories"), desc: t("ob.purpose.storiesDesc"), emoji: "📖" },
-    { value: "media-experience", label: t("ob.purpose.media"), desc: t("ob.purpose.mediaDesc"), emoji: "🎬" },
+    {
+      value: "learn-and-grow",
+      label: t("ob.purpose.learn"),
+      desc: t("ob.purpose.learnDesc"),
+      emoji: "🌱",
+    },
+    {
+      value: "academic",
+      label: t("ob.purpose.academic"),
+      desc: t("ob.purpose.academicDesc"),
+      emoji: "🎓",
+    },
+    {
+      value: "explore-stories",
+      label: t("ob.purpose.stories"),
+      desc: t("ob.purpose.storiesDesc"),
+      emoji: "📖",
+    },
+    {
+      value: "media-experience",
+      label: t("ob.purpose.media"),
+      desc: t("ob.purpose.mediaDesc"),
+      emoji: "🎬",
+    },
     { value: "other", label: t("ob.purpose.other"), desc: t("ob.purpose.otherDesc"), emoji: "○" },
   ];
 
   const handleToggle = (val: string) => {
     if (data.purposeOfUse.includes(val)) {
-      set("purposeOfUse", data.purposeOfUse.filter((x) => x !== val));
+      set(
+        "purposeOfUse",
+        data.purposeOfUse.filter((x) => x !== val),
+      );
     } else {
       set("purposeOfUse", [...data.purposeOfUse, val]);
     }
@@ -86,7 +109,7 @@ export function StepPurpose({ data, set }: StepProps) {
     <div>
       <h2 className="ob-title">{t("ob.step2.title")}</h2>
       <p className="ob-subtitle">{t("ob.step2.subtitle")}</p>
-      
+
       <div className="spu-grid">
         {PURPOSES.map((p) => {
           const isActive = data.purposeOfUse.includes(p.value);
@@ -106,7 +129,7 @@ export function StepPurpose({ data, set }: StepProps) {
           );
         })}
       </div>
-      
+
       {data.purposeOfUse.includes("other") && (
         <div className="spu-custom-wrap">
           <input
@@ -125,17 +148,25 @@ export function StepPurpose({ data, set }: StepProps) {
 // ─── PART 3: StepReadingGoal ───
 export function StepReadingGoal({ data, set }: StepProps) {
   const { t } = useTranslation();
-  
+
   const GOALS = [
     { value: "facts", label: t("ob.goal.facts"), desc: t("ob.goal.factsDesc"), emoji: "📅" },
-    { value: "insights", label: t("ob.goal.insights"), desc: t("ob.goal.insightsDesc"), emoji: "💡" },
+    {
+      value: "insights",
+      label: t("ob.goal.insights"),
+      desc: t("ob.goal.insightsDesc"),
+      emoji: "💡",
+    },
     { value: "epic", label: t("ob.goal.epic"), desc: t("ob.goal.epicDesc"), emoji: "⚔️" },
     { value: "roots", label: t("ob.goal.roots"), desc: t("ob.goal.rootsDesc"), emoji: "🇻🇳" },
   ];
 
   const handleToggle = (val: string) => {
     if (data.readingGoal.includes(val)) {
-      set("readingGoal", data.readingGoal.filter((x) => x !== val));
+      set(
+        "readingGoal",
+        data.readingGoal.filter((x) => x !== val),
+      );
     } else {
       set("readingGoal", [...data.readingGoal, val]);
     }
@@ -145,7 +176,7 @@ export function StepReadingGoal({ data, set }: StepProps) {
     <div>
       <h2 className="ob-title">{t("ob.step3.title")}</h2>
       <p className="ob-subtitle">{t("ob.step3.subtitle")}</p>
-      
+
       <div className="spu-grid">
         {GOALS.map((p) => {
           const isActive = data.readingGoal.includes(p.value);
@@ -156,13 +187,13 @@ export function StepReadingGoal({ data, set }: StepProps) {
               className={`scs-card ${isActive ? "scs-card--active" : ""}`}
               onClick={() => handleToggle(p.value)}
             >
-               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                 <span style={{ fontSize: 24 }}>{p.emoji}</span>
-                 <div style={{ textAlign: "left" }}>
-                   <div className="scs-label">{p.label}</div>
-                   <div className="scs-desc">{p.desc}</div>
-                 </div>
-               </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span style={{ fontSize: 24 }}>{p.emoji}</span>
+                <div style={{ textAlign: "left" }}>
+                  <div className="scs-label">{p.label}</div>
+                  <div className="scs-desc">{p.desc}</div>
+                </div>
+              </div>
             </button>
           );
         })}
@@ -171,33 +202,52 @@ export function StepReadingGoal({ data, set }: StepProps) {
   );
 }
 
-
 // ─── PART 4: StepPersonality ───
 export function StepPersonality({ data, set }: StepProps) {
   const { t } = useTranslation();
-  
+
   const PERSONALITIES = [
-    { value: "researcher", label: t("ob.personality.researcher"), desc: t("ob.personality.researcherDesc"), emoji: "🧐" },
-    { value: "storyteller", label: t("ob.personality.storyteller"), desc: t("ob.personality.storytellerDesc"), emoji: "🎭" },
-    { value: "student", label: t("ob.personality.student"), desc: t("ob.personality.studentDesc"), emoji: "🎒" },
-    { value: "explorer", label: t("ob.personality.explorer"), desc: t("ob.personality.explorerDesc"), emoji: "🧭" },
+    {
+      value: "researcher",
+      label: t("ob.personality.researcher"),
+      desc: t("ob.personality.researcherDesc"),
+      emoji: "🧐",
+    },
+    {
+      value: "storyteller",
+      label: t("ob.personality.storyteller"),
+      desc: t("ob.personality.storytellerDesc"),
+      emoji: "🎭",
+    },
+    {
+      value: "student",
+      label: t("ob.personality.student"),
+      desc: t("ob.personality.studentDesc"),
+      emoji: "🎒",
+    },
+    {
+      value: "explorer",
+      label: t("ob.personality.explorer"),
+      desc: t("ob.personality.explorerDesc"),
+      emoji: "🧭",
+    },
   ];
 
   return (
     <div>
       <h2 className="ob-title">{t("ob.step4.title")}</h2>
       <p className="ob-subtitle">{t("ob.step4.subtitle")}</p>
-      
+
       <div className="scs-list">
         {PERSONALITIES.map((p) => {
           const isActive = data.personality === p.value;
           return (
-             <button
-             key={p.value}
-             type="button"
-             className={`scs-card ${isActive ? "scs-card--active" : ""}`}
-             onClick={() => set("personality", p.value)}
-           >
+            <button
+              key={p.value}
+              type="button"
+              className={`scs-card ${isActive ? "scs-card--active" : ""}`}
+              onClick={() => set("personality", p.value)}
+            >
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <span style={{ fontSize: 24 }}>{p.emoji}</span>
                 <div style={{ textAlign: "left" }}>
@@ -205,7 +255,7 @@ export function StepPersonality({ data, set }: StepProps) {
                   <div className="scs-desc">{p.desc}</div>
                 </div>
               </div>
-           </button>
+            </button>
           );
         })}
       </div>
@@ -213,11 +263,10 @@ export function StepPersonality({ data, set }: StepProps) {
   );
 }
 
-
 // ─── PART 5: StepCommStyle ───
 export function StepCommStyle({ data, set }: StepProps) {
   const { t } = useTranslation();
-  
+
   const COMM_PREFS = [
     { value: "professor", label: t("ob.comm.professor"), desc: t("ob.comm.professorDesc") },
     { value: "narrator", label: t("ob.comm.narrator"), desc: t("ob.comm.narratorDesc") },
@@ -229,7 +278,7 @@ export function StepCommStyle({ data, set }: StepProps) {
     <div>
       <h2 className="ob-title">{t("ob.step5.title")}</h2>
       <p className="ob-subtitle">{t("ob.step5.subtitle")}</p>
-      
+
       <div className="scs-list" style={{ marginBottom: 24 }}>
         {COMM_PREFS.map((p) => {
           const isActive = data.communicationPreference === p.value;
@@ -251,7 +300,6 @@ export function StepCommStyle({ data, set }: StepProps) {
           );
         })}
       </div>
-      
     </div>
   );
 }

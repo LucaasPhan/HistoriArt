@@ -1,13 +1,13 @@
-import { CommunicationPreference, Gender, PurposeOfUse } from "@/drizzle/constants";
+import { CommunicationPreference, Gender } from "@/drizzle/constants";
 
 export interface OnboardingData {
-  firstName:               string;
-  lastName:                string;
-  age:                     string;
-  gender:                  Gender | "";
-  purposeOfUse:            string[];
-  customPurpose?:          string;
-  readingGoal:             string[];
-  personality:             string;
+  firstName: string;
+  lastName: string;
+  age: string;
+  gender: Gender | "";
+  purposeOfUse: string[];
+  customPurpose?: string;
+  readingGoal: string[];
+  personality: string;
   communicationPreference: CommunicationPreference | "";
 }

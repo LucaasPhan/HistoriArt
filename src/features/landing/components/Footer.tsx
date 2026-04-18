@@ -17,7 +17,9 @@ export default function Footer() {
         fontSize: 13,
       }}
     >
-      <p>HistoriArt © {new Date().getFullYear()} — {t("footer.text")}</p>
+      <p>
+        HistoriArt © {new Date().getFullYear()} — {t("footer.text")}
+      </p>
     </footer>
   );
 }

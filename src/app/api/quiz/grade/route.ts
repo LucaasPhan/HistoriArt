@@ -15,15 +15,16 @@ export async function POST(req: NextRequest) {
       userAnswer: string;
       acceptedAnswers: string[];
       question: string;
+      language?: "vi" | "en";
     };
 
-    const { userAnswer, acceptedAnswers, question } = body;
+    const { userAnswer, acceptedAnswers, question, language = "vi" } = body;
 
     if (!userAnswer || !acceptedAnswers || !question) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const prompt = QUIZ_GRADING_PROMPT(question, userAnswer, acceptedAnswers);
+    const prompt = QUIZ_GRADING_PROMPT(question, userAnswer, acceptedAnswers, language);
     let responseText = "";
 
     // Try OpenAI first
@@ -53,9 +54,10 @@ export async function POST(req: NextRequest) {
     // Parse the JSON response
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      return NextResponse.json(
-        { isCorrect: false, feedback: "Không thể chấm điểm. Vui lòng thử lại." },
-      );
+      return NextResponse.json({
+        isCorrect: false,
+        feedback: "Không thể chấm điểm. Vui lòng thử lại.",
+      });
     }
 
     const gradeResult = JSON.parse(jsonMatch[0]) as {

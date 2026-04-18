@@ -4,7 +4,6 @@ import type { ConversationMode } from "@/lib/prompts";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { buildAssistantChatMessage, buildUserChatMessage } from "../helpers";
 import {
   CHAT_SAVE_DELAY,
   HIGHLIGHTS_STORAGE_KEY_PREFIX,
@@ -14,6 +13,7 @@ import {
   PAGE_RETRY_DELAY,
   READER_MODE,
 } from "../constants";
+import { buildAssistantChatMessage, buildUserChatMessage } from "../helpers";
 import type {
   ChatMediaContext,
   ChatMessage,
@@ -21,7 +21,6 @@ import type {
   MediaAnnotation,
   UseReaderControllerArgs,
 } from "../types";
-
 
 export default function useReaderController({ bookId }: UseReaderControllerArgs) {
   const searchParams = useSearchParams();
@@ -39,6 +38,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
   const [showChapterCompleteDialog, setShowChapterCompleteDialog] = useState(false);
   const [activeQuizChapter, setActiveQuizChapter] = useState(0);
   const [completedChapters, setCompletedChapters] = useState<number[]>([]);
+  const [quizzesDone, setQuizzesDone] = useState<number[]>([]);
   const [suppressQuizPopup, setSuppressQuizPopup] = useState(false);
 
   useEffect(() => {
@@ -51,6 +51,36 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
       })
       .catch(console.error);
   }, [bookId]);
+
+  // Load finished quizzes and reading progress
+  useEffect(() => {
+    // 1. Load Quiz Results
+    fetch(`/api/quiz/results?bookId=${bookId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.results)) {
+          const done = data.results
+            .map((r: { chapterNumber: number | null }) => r.chapterNumber)
+            .filter((n: number | null): n is number => n != null);
+          if (done.length > 0) {
+            setQuizzesDone(done);
+            setCompletedChapters((prev) => Array.from(new Set([...prev, ...done])));
+          }
+        }
+      })
+      .catch(console.error);
+
+    // 2. Load Reading Progress
+    fetch(`/api/reading-progress`)
+      .then((res) => res.json())
+      .then((data) => {
+        const lastPage = data.progress?.[bookId];
+        if (lastPage && lastPage > currentPage) {
+          setCurrentPage(lastPage);
+        }
+      })
+      .catch(console.error);
+  }, [bookId]); // Run once on mount or when bookId changes
 
   useEffect(() => {
     if (currentPage == null) return;
@@ -158,15 +188,35 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
       .then((data) => {
         if (data.chapters) {
           // API returns startPage (DB schema), normalize to page for the reader
-          setChapters(data.chapters.map((c: any) => ({
-            title: c.title,
-            page: c.startPage ?? c.page ?? 1,
-            endPage: c.endPage,
-          })));
+          const mappedChapters = data.chapters.map(
+            (c: {
+              title: string;
+              start_page?: number;
+              startPage?: number;
+              end_page?: number;
+              endPage?: number;
+            }) => ({
+              title: c.title,
+              page: c.startPage ?? c.start_page ?? 1,
+              endPage: c.endPage ?? c.end_page,
+            }),
+          );
+          setChapters(mappedChapters);
+
+          // Calculate completed chapters based on current progress
+          const initialCompleted: number[] = [];
+          mappedChapters.forEach((ch: any, idx: number) => {
+            if (ch.endPage && currentPage >= ch.endPage) {
+              initialCompleted.push(idx + 1);
+            }
+          });
+          if (initialCompleted.length > 0) {
+            setCompletedChapters((prev) => Array.from(new Set([...prev, ...initialCompleted])));
+          }
         }
       })
       .catch(console.error);
-  }, [bookId]);
+  }, [bookId, currentPage]);
 
   // Detect chapter completion
   const prevPageRef = useRef(currentPage);
@@ -187,7 +237,9 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
         // Crossed a chapter boundary
         if (
           actualIdx !== actualCurrentIdx ||
-          (chapters[actualIdx].endPage && prevPage === chapters[actualIdx].endPage && currentPage > prevPage)
+          (chapters[actualIdx].endPage &&
+            prevPage === chapters[actualIdx].endPage &&
+            currentPage > prevPage)
         ) {
           const completedChapter = actualIdx + 1; // 1-indexed
           if (!completedChapters.includes(completedChapter)) {
@@ -215,6 +267,12 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
 
     prevPageRef.current = currentPage;
   }, [currentPage, chapters, suppressQuizPopup, completedChapters, dynamicTotalPages]);
+
+  // Determine current viewing chapter (1-indexed)
+  const currentChapterIdx = [...chapters].reverse().findIndex((c) => c.page <= currentPage);
+  const currentViewingChapter =
+    currentChapterIdx !== -1 ? chapters.length - currentChapterIdx : chapters.length > 0 ? 1 : 0;
+
   const scrollToEnd = useCallback(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
@@ -629,18 +687,23 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
     activeQuizChapter,
     setActiveQuizChapter,
     completedChapters,
+    quizzesDone,
     setSuppressQuizPopup,
+    currentViewingChapter,
 
     // Content editing (admin)
-    setContent: useCallback((newContent: string) => {
-      setDynamicContent(newContent);
-      // Update the page cache so navigating away and back shows the edited content
-      const cached = pageCache.current[currentPage];
-      if (cached) {
-        pageCache.current[currentPage] = { ...cached, content: newContent };
-      } else {
-        pageCache.current[currentPage] = { content: newContent, totalPages: dynamicTotalPages };
-      }
-    }, [currentPage, dynamicTotalPages]),
+    setContent: useCallback(
+      (newContent: string) => {
+        setDynamicContent(newContent);
+        // Update the page cache so navigating away and back shows the edited content
+        const cached = pageCache.current[currentPage];
+        if (cached) {
+          pageCache.current[currentPage] = { ...cached, content: newContent };
+        } else {
+          pageCache.current[currentPage] = { content: newContent, totalPages: dynamicTotalPages };
+        }
+      },
+      [currentPage, dynamicTotalPages],
+    ),
   };
 }

@@ -7,10 +7,7 @@ function hasCloudflareEmbeddingConfig() {
   const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
   const apiToken = process.env.CLOUDFLARE_API_TOKEN;
   return (
-    !!accountId &&
-    !!apiToken &&
-    !accountId.includes("CHANGE_ME") &&
-    !apiToken.includes("CHANGE_ME")
+    !!accountId && !!apiToken && !accountId.includes("CHANGE_ME") && !apiToken.includes("CHANGE_ME")
   );
 }
 
@@ -22,7 +19,9 @@ export async function searchBookChunks(
   bookId: string,
   queryEmbedding: number[],
   limit = 5,
-): Promise<Array<{ content: string; pageNumber: number; chapterNumber: number; similarity: number }>> {
+): Promise<
+  Array<{ content: string; pageNumber: number; chapterNumber: number; similarity: number }>
+> {
   const embeddingStr = `[${queryEmbedding.join(",")}]`;
 
   const results = await db.execute(sql`
@@ -45,7 +44,11 @@ export async function searchBookChunks(
   }>;
 }
 
-export async function getPageContent(bookId: string, pageNumber: number, range = 1): Promise<string> {
+export async function getPageContent(
+  bookId: string,
+  pageNumber: number,
+  range = 1,
+): Promise<string> {
   const chunks = await db
     .select({ content: bookChunks.content, pageNumber: bookChunks.pageNumber })
     .from(bookChunks)

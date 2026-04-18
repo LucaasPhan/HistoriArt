@@ -54,17 +54,23 @@ const ChatSidebar = memo(function ChatSidebar({
       : attachedMedia.chatSource === "highlight"
         ? t("chat.highlight")
         : attachedMedia.mediaType === "image"
-      ? t("chat.image")
-      : attachedMedia.mediaType === "video"
-        ? t("chat.video")
-        : attachedMedia.mediaType === "audio"
-          ? t("chat.audio")
-          : t("chat.annotation")
+          ? t("chat.image")
+          : attachedMedia.mediaType === "video"
+            ? t("chat.video")
+            : attachedMedia.mediaType === "audio"
+              ? t("chat.audio")
+              : t("chat.annotation")
     : "";
-  const attachedPreview = attachedMedia?.caption?.trim() || attachedMedia?.passageText?.trim() || "";
+  const attachedPreview =
+    attachedMedia?.caption?.trim() || attachedMedia?.passageText?.trim() || "";
 
   return (
-    <motion.div initial={{ x: 480 }} animate={{ x: 0 }} exit={{ x: 480 }} className={styles.container}>
+    <motion.div
+      initial={{ x: 480 }}
+      animate={{ x: 0 }}
+      exit={{ x: 480 }}
+      className={styles.container}
+    >
       <div className={styles.header}>
         <div className={styles.headerSubtitle}>
           <Sparkles size={16} color="var(--accent-primary)" />
@@ -96,9 +102,7 @@ const ChatSidebar = memo(function ChatSidebar({
               </div>
             </div>
             <div className={`${styles.messageWrapper} ${styles.messageWrapperAI}`}>
-              <div className={`chat-bubble-ai ${styles.chatBubble}`}>
-                {t("chat.decorativeAI")}
-              </div>
+              <div className={`chat-bubble-ai ${styles.chatBubble}`}>{t("chat.decorativeAI")}</div>
             </div>
           </div>
         ) : (
@@ -129,10 +133,11 @@ const ChatSidebar = memo(function ChatSidebar({
                   </div>
                 )}
                 <div
-                   className={`${msg.role === "user" ? "chat-bubble-user" : "chat-bubble-ai"} ${styles.chatBubble}`}
-                   style={{
-                     borderRadius: msg.role === "assistant" ? "16px 16px 16px 2px" : "16px 16px 2px 16px",
-                   }}
+                  className={`${msg.role === "user" ? "chat-bubble-user" : "chat-bubble-ai"} ${styles.chatBubble}`}
+                  style={{
+                    borderRadius:
+                      msg.role === "assistant" ? "16px 16px 16px 2px" : "16px 16px 2px 16px",
+                  }}
                 >
                   {msg.role === "assistant" ? (
                     <TypewriterText
@@ -154,26 +159,31 @@ const ChatSidebar = memo(function ChatSidebar({
             {isLoading && (
               <div
                 className={`${styles.messageWrapper} ${styles.messageWrapperAI}`}
-                style={{ display: "flex", gap: "12px", alignItems: "flex-start", alignSelf: "flex-start" }}
+                style={{
+                  display: "flex",
+                  gap: "12px",
+                  alignItems: "flex-start",
+                  alignSelf: "flex-start",
+                }}
               >
                 <div
-                    style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: "50%",
-                      background: "var(--bg-secondary)",
-                      border: "1px solid var(--border-subtle)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: "50%",
+                    background: "var(--bg-secondary)",
+                    border: "1px solid var(--border-subtle)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
                 >
-                    <Sparkles size={16} color="var(--accent-primary)" />
+                  <Sparkles size={16} color="var(--accent-primary)" />
                 </div>
                 <div
-                   className={`chat-bubble-ai ${styles.loadingContainer}`}
-                   style={{ borderRadius: "16px 16px 16px 2px" }}
+                  className={`chat-bubble-ai ${styles.loadingContainer}`}
+                  style={{ borderRadius: "16px 16px 16px 2px" }}
                 >
                   {[0, 0.2, 0.4].map((d, i) => (
                     <span
@@ -242,7 +252,14 @@ const ChatSidebar = memo(function ChatSidebar({
               </div>
             )}
             <div className={styles.inputWrapper}>
-              <div style={{ paddingRight: 10, display: "flex", alignItems: "center", color: "var(--text-tertiary)" }}>
+              <div
+                style={{
+                  paddingRight: 10,
+                  display: "flex",
+                  alignItems: "center",
+                  color: "var(--text-tertiary)",
+                }}
+              >
                 <MessageCircle size={18} />
               </div>
               <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>

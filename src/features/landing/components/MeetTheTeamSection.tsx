@@ -2,10 +2,10 @@
 
 import { useTranslation } from "@/lib/i18n";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Github, Linkedin, Twitter } from "lucide-react";
+import { ChevronLeft, ChevronRight, Facebook, Github, Linkedin } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { AnimatedSection, fadeUp } from "./AnimatedSection";
 import { TEAM } from "../constants";
+import { AnimatedSection, fadeUp } from "./AnimatedSection";
 
 export default function MeetTheTeamSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -289,15 +289,19 @@ export default function MeetTheTeamSection() {
                 }}
               >
                 <a
-                  href="#"
+                  href={member.socials.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{ color: "var(--text-secondary)", transition: "color 0.2s" }}
                   onMouseOver={(e) => (e.currentTarget.style.color = member.gradient[0])}
                   onMouseOut={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
                 >
-                  <Twitter size={18} />
+                  <Facebook size={18} />
                 </a>
                 <a
-                  href="#"
+                  href={member.socials.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{ color: "var(--text-secondary)", transition: "color 0.2s" }}
                   onMouseOver={(e) => (e.currentTarget.style.color = member.gradient[0])}
                   onMouseOut={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
@@ -305,7 +309,9 @@ export default function MeetTheTeamSection() {
                   <Linkedin size={18} />
                 </a>
                 <a
-                  href="#"
+                  href={member.socials.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{ color: "var(--text-secondary)", transition: "color 0.2s" }}
                   onMouseOver={(e) => (e.currentTarget.style.color = member.gradient[0])}
                   onMouseOut={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}

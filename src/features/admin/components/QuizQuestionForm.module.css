@@ -1,0 +1,157 @@
+@reference "tailwindcss";
+
+.overlay {
+  @apply fixed inset-0 z-[9999] flex items-center justify-center p-4;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  @apply relative max-h-[90vh] w-full max-w-[600px] overflow-y-auto rounded-xl border p-6 shadow-2xl;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.header {
+  @apply mb-6 flex items-center justify-between;
+}
+
+.title {
+  @apply m-0 text-xl font-bold;
+}
+
+.closeBtn {
+  @apply ml-auto flex rounded-full p-2 transition-colors;
+}
+
+.closeBtn:hover {
+  background: var(--bg-secondary);
+}
+
+.formGroup {
+  @apply flex flex-col gap-4;
+}
+
+.fieldGroup {
+  @apply flex flex-col;
+}
+
+.label {
+  @apply mb-1 block text-sm font-medium;
+  color: var(--text-secondary);
+}
+
+.select {
+  @apply w-full rounded-lg border p-2.5 transition-all outline-none;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.textarea {
+  @apply min-h-[42px] w-full rounded-lg border p-3 transition-all outline-none;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+  field-sizing: content;
+  resize: none;
+  overflow: hidden;
+}
+
+.textareaQuestion {
+  @apply font-serif italic;
+}
+
+.textareaMono {
+  @apply min-h-[100px] font-mono text-xs;
+}
+
+.textareaSmall {
+  @apply min-h-[60px] text-sm;
+}
+
+.optionsContainer {
+  @apply flex flex-col gap-2;
+}
+
+.optionRow {
+  @apply flex items-center gap-3;
+}
+
+.radio {
+  @apply h-4 w-4 cursor-pointer;
+  accent-color: var(--accent-primary);
+}
+
+.optionInput {
+  @apply flex-1 rounded-lg border p-2.5 transition-all outline-none;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+  field-sizing: content;
+  resize: none;
+  overflow: hidden;
+}
+
+.optionInputSelected {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.2);
+}
+
+.tfContainer {
+  @apply flex gap-4;
+}
+
+.tfLabel {
+  @apply flex flex-1 cursor-pointer items-center gap-2 rounded-lg border p-3 transition-colors;
+  background: var(--bg-secondary);
+  border-color: var(--border-subtle);
+}
+
+.tfLabel:hover {
+  border-color: var(--accent-primary);
+}
+
+.tfText {
+  @apply text-sm font-semibold;
+}
+
+.hintText {
+  @apply mt-1 text-[10px] italic;
+  color: var(--text-tertiary);
+}
+
+.footer {
+  @apply mt-8 flex items-center justify-end gap-3 border-t pt-4;
+  border-color: var(--border-subtle);
+}
+
+.cancelBtn {
+  @apply cursor-pointer border-none bg-transparent px-4 py-2 text-sm font-medium transition-colors;
+  color: var(--text-secondary);
+}
+
+.cancelBtn:hover {
+  color: var(--text-primary);
+}
+
+.draftBtn {
+  @apply cursor-pointer rounded-lg border bg-transparent px-5 py-2.5 text-sm font-bold transition-all active:scale-[0.98];
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.draftBtn:hover {
+  border-color: var(--text-primary);
+}
+
+.publishBtn {
+  @apply flex min-w-[110px] cursor-pointer items-center justify-center rounded-lg border-none py-2.5 font-bold transition-all active:scale-[0.98];
+  background: var(--accent-gradient);
+  color: white;
+}
+
+.publishBtn:hover {
+  opacity: 0.9;
+}

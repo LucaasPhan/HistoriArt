@@ -1,7 +1,7 @@
 "use client";
 
-import { Check, Pencil, Save, X } from "lucide-react";
 import { handleTextareaShortcuts } from "@/lib/textarea-shortcuts";
+import { Check, Pencil, Save, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./styles/PageEditModal.module.css";
 
@@ -95,17 +95,14 @@ export default function PageEditModal({
     return () => window.removeEventListener("keydown", handler);
   }, [isOpen, handleSave, onClose]);
 
-  const handleTextareaKeyDown = useCallback(
-    async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      await handleTextareaShortcuts(e, {
-        onChanged: () => {
-          setError("");
-          setSuccess(false);
-        },
-      });
-    },
-    [],
-  );
+  const handleTextareaKeyDown = useCallback(async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    await handleTextareaShortcuts(e, {
+      onChanged: () => {
+        setError("");
+        setSuccess(false);
+      },
+    });
+  }, []);
 
   if (!isOpen) return null;
 

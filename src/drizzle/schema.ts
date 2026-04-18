@@ -174,7 +174,6 @@ export const conversations = pgTable(
   (table) => [uniqueIndex("idx_conversation_user_book").on(table.userId, table.bookId)],
 );
 
-
 // ─── Media Annotations (multimedia tied to text passages) ──────
 export const mediaAnnotations = pgTable(
   "media_annotations",
@@ -277,11 +276,8 @@ export const quizPreferences = pgTable(
     language: text("language").$type<"vi" | "en">().notNull().default("vi"),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
-  (table) => [
-    index("idx_quiz_pref_user_book").on(table.userId, table.bookId),
-  ],
+  (table) => [index("idx_quiz_pref_user_book").on(table.userId, table.bookId)],
 );
-
 
 // ─── Favorite Books ───────────────────────────────────────────
 

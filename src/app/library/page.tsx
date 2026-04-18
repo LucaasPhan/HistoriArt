@@ -6,15 +6,14 @@ import DeleteBookDialog from "@/features/library/components/DeleteBookDialog";
 import EditBookDialog from "@/features/library/components/EditBookDialog";
 import LibraryBookSection from "@/features/library/components/LibraryBookSection";
 import LibraryHeader from "@/features/library/components/LibraryHeader";
+import { BOOK_GRID_STYLE, SECTION_TITLE_STYLE } from "@/features/library/const";
 import { useLibraryData } from "@/features/library/hooks/useLibraryData";
 import { useLibraryMutations } from "@/features/library/hooks/useLibraryMutations";
 import type { Book, EditBookForm } from "@/features/library/types";
 import PinVerifyModal from "@/features/read/[bookId]/components/PinVerifyModal";
+import { useTranslation } from "@/lib/i18n";
 import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
-import { BOOK_GRID_STYLE, SECTION_TITLE_STYLE } from "@/features/library/const";
-import { useTranslation } from "@/lib/i18n";
-
 
 export default function LibraryPage() {
   const {
@@ -242,7 +241,9 @@ export default function LibraryPage() {
 
   const renderCard = useCallback(
     (book: Book, index: number, isContinue: boolean) => {
-      const href = isContinue ? `/read/${book.id}?page=${lastPages[book.id]}` : `/read/${book.id}?page=1`;
+      const href = isContinue
+        ? `/read/${book.id}?page=${lastPages[book.id]}`
+        : `/read/${book.id}?page=1`;
 
       return (
         <BookCard

@@ -50,6 +50,7 @@
     "ogl": "^1.0.11",
     "openai": "^6.32.0",
     "pg": "^8.20.0",
+    "postcss": "^8.5.10",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -63,7 +64,7 @@
     "unpdf": "^1.4.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.2.2",
     "@types/matter-js": "^0.20.2",
     "@types/node": "^20",
     "@types/pg": "^8.18.0",
@@ -78,7 +79,7 @@
     "prettier": "^3.8.2",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
-    "tailwindcss": "^4",
+    "tailwindcss": "^4.2.2",
     "tsx": "^4.21.0",
     "typescript": "^5"
   },

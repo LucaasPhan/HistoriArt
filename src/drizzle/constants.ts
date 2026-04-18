@@ -8,12 +8,7 @@ export const PURPOSES_OF_USE = [
   "other",
 ] as const;
 
-export const COMMUNICATION_PREFERENCES = [
-  "professor",
-  "narrator",
-  "guide",
-  "quick",
-] as const;
+export const COMMUNICATION_PREFERENCES = ["professor", "narrator", "guide", "quick"] as const;
 
 export type Gender = (typeof GENDERS)[number];
 export type PurposeOfUse = (typeof PURPOSES_OF_USE)[number];

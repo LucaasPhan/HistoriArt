@@ -1,0 +1,311 @@
+@reference "tailwindcss";
+
+.overlay {
+  @apply fixed inset-0 z-[9999] flex items-center justify-center p-4;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  animation: fade-in 0.2s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  @apply flex max-h-[85vh] w-[92%] max-w-[600px] flex-col p-8;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modalHeader {
+  @apply mb-5 flex shrink-0 items-center justify-between;
+}
+
+.modalHeaderContent {
+  @apply flex items-center gap-3;
+}
+
+.trophyBox {
+  @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-md;
+  background: var(--accent-gradient);
+}
+
+.modalTitle {
+  @apply text-[18px] leading-tight font-bold;
+  color: var(--text-primary);
+}
+
+.modalSubtitle {
+  @apply mt-[2px] text-[13px];
+  color: var(--text-secondary);
+}
+
+.progressContainer {
+  @apply mb-5 h-1 shrink-0 overflow-hidden rounded-full;
+  background: var(--border-subtle);
+}
+
+.progressBar {
+  @apply h-full transition-all duration-300 ease-in-out;
+  background: var(--accent-primary);
+}
+
+.scrollArea {
+  @apply flex flex-1 flex-col gap-5 overflow-y-auto p-1;
+}
+
+.loadingState {
+  @apply flex flex-col items-center justify-center py-16;
+}
+
+.loadingIconWrapper {
+  @apply mb-4 rounded-full p-3;
+  background: var(--bg-secondary);
+}
+
+.loadingText {
+  @apply text-sm font-medium tracking-widest uppercase;
+  color: var(--text-secondary);
+}
+
+.emptyState {
+  @apply flex flex-col items-center justify-center py-16 text-center;
+  color: var(--text-tertiary);
+}
+
+.emptyIconCircle {
+  @apply mb-4 flex h-16 w-16 items-center justify-center rounded-full;
+  background: var(--bg-secondary);
+}
+
+.emptyIconText {
+  @apply text-2xl opacity-50;
+}
+
+.emptyText {
+  @apply text-sm font-semibold;
+}
+
+.questionContainer {
+  @apply flex flex-col gap-4;
+}
+
+.questionText {
+  @apply text-[16px] leading-relaxed font-bold;
+  color: var(--text-primary);
+}
+
+.optionsList {
+  @apply flex flex-col gap-3;
+}
+
+.optionBtn {
+  @apply w-full rounded-[var(--radius-md)] border p-4 text-left transition-all;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border-color: var(--border-subtle);
+}
+
+.optionBtn:hover:not(:disabled) {
+  border-color: var(--text-tertiary);
+}
+
+.optionBtnSelected {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
+}
+
+.optionBtnCorrect {
+  background-color: rgba(34, 197, 94, 0.1);
+  border-color: rgb(34, 197, 94);
+  color: rgb(21, 128, 61);
+}
+
+.optionBtnIncorrect {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: rgb(185, 28, 28);
+  opacity: 0.7;
+}
+
+.optionBtnDisabled {
+  @apply cursor-default opacity-50;
+}
+
+.trueFalseGrid {
+  @apply flex gap-3;
+}
+
+.tfButton {
+  @apply flex-1 rounded-[var(--radius-md)] border p-4 transition-all;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border-color: var(--border-subtle);
+}
+
+.tfLabel {
+  @apply w-full text-center text-[14px] font-semibold;
+}
+
+.shortAnswerContainer {
+  @apply flex flex-col;
+}
+
+.textarea {
+  @apply min-h-[100px] w-full resize-y rounded-[var(--radius-md)] border p-[12px_16px] font-sans text-[14px] transition-all outline-none;
+  background: var(--bg-primary);
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.textarea:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
+}
+
+.gradingStatus {
+  @apply mt-4 flex items-center justify-center gap-2 rounded-xl p-4 text-sm;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+}
+
+.feedbackContainer {
+  @apply mt-2 rounded-[var(--radius-md)] border p-4;
+}
+
+.feedbackHeader {
+  @apply mb-2 flex items-center gap-2;
+}
+
+.feedbackTitle {
+  @apply text-[14px] font-bold;
+}
+
+.feedbackText {
+  @apply mt-2 mb-0 text-[14px] leading-relaxed;
+  color: var(--text-primary);
+}
+
+.explanationBox {
+  @apply mt-3 pt-3 text-[13px] leading-relaxed;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.completeScreen {
+  @apply py-6 text-center;
+}
+
+.trophyCircle {
+  @apply mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full;
+  background: var(--accent-gradient);
+  box-shadow: 0 4px 16px rgba(var(--accent-rgb), 0.3);
+}
+
+.completeTitle {
+  @apply mb-1 text-[20px] font-bold;
+  color: var(--text-primary);
+}
+
+.scoreContainer {
+  @apply mb-6;
+}
+
+.scoreBig {
+  @apply mb-0 text-[32px] font-bold;
+  color: var(--accent-primary);
+}
+
+.scoreSmall {
+  @apply mt-1 text-[14px];
+  color: var(--text-secondary);
+}
+
+.detailsList {
+  @apply mb-8 flex flex-col gap-2 rounded-[var(--radius-md)] border p-4 text-left;
+  background: var(--bg-secondary);
+  border-color: var(--border-subtle);
+}
+
+.detailsHeader {
+  @apply mb-2 pb-2 text-[13px] font-bold;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.detailRow {
+  @apply flex items-start gap-2 py-1;
+}
+
+.detailQuestion {
+  @apply text-[13px];
+  color: var(--text-secondary);
+}
+
+.detailNumber {
+  @apply mr-1 font-semibold;
+  color: var(--text-primary);
+}
+
+.stickyFooter {
+  @apply mt-2 flex shrink-0 items-center justify-end;
+}
+
+.completeActions {
+  @apply mt-8 flex items-center justify-center gap-4;
+}
+
+.actionBtn {
+  @apply flex min-w-[120px] items-center justify-center rounded-[var(--radius-md)] border-none px-7 py-2.5 text-[14px] font-semibold transition-all;
+  background: var(--accent-gradient);
+  color: white;
+}
+
+.actionBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(var(--accent-rgb), 0.3);
+}
+
+.actionBtn:disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+
+.retryBtn {
+  @apply rounded-[var(--radius-md)] px-6 py-2.5 text-[14px] font-semibold transition-all;
+  color: var(--text-secondary);
+  border-color: var(--border-subtle);
+}
+
+.retryBtn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.closeBtn {
+  @apply -mt-2 -mr-2 ml-auto flex rounded-full p-2 transition-colors;
+  color: var(--text-tertiary);
+}
+
+.closeBtn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}

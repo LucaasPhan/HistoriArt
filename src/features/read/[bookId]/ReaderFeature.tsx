@@ -1,17 +1,19 @@
 "use client";
 
 import PageMountSignaler from "@/components/PageMountSignaler";
-import { ThemeButton } from "@/components/ThemeButton";
 import { TransitionLink } from "@/components/TransitionLink";
 import { useAuth } from "@/context/AuthContext";
+import { ChapterCompleteDialog } from "@/features/quiz/components/ChapterCompleteDialog";
+import { QuizButton } from "@/features/quiz/components/QuizButton";
+import { QuizModal } from "@/features/quiz/components/QuizModal";
 import { useTranslation } from "@/lib/i18n";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, BookOpen, Film, Highlighter, List, MessageCircle, Pencil } from "lucide-react";
 import React, { useEffect } from "react";
 import AddMediaModal from "./components/AddMediaModal";
 import AudioIsland from "./components/AudioIsland";
-import ChatSidebar from "./components/ChatSidebar";
 import ChaptersSidebar from "./components/ChaptersSidebar";
+import ChatSidebar from "./components/ChatSidebar";
 import HighlightsSidebar from "./components/HighlightsSidebar";
 import MediaPanel from "./components/MediaPanel";
 import PageEditModal from "./components/PageEditModal";
@@ -22,9 +24,6 @@ import SelectionTooltip from "./components/SelectionTooltip";
 import VideoPopup from "./components/VideoPopup";
 import useReaderController from "./hooks/useReaderController";
 import type { MediaAnnotation } from "./types";
-import { QuizButton } from "@/features/quiz/components/QuizButton";
-import { QuizModal } from "@/features/quiz/components/QuizModal";
-import { ChapterCompleteDialog } from "@/features/quiz/components/ChapterCompleteDialog";
 
 export default function ReaderFeature({ bookId }: { bookId: string }) {
   const c = useReaderController({ bookId });
@@ -56,10 +55,9 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
 
   const loadAnnotations = React.useCallback(async () => {
     try {
-      const res = await fetch(
-        `/api/media-annotations?bookId=${bookId}&pageNumber=${currentPage}`,
-        { cache: "no-store" },
-      );
+      const res = await fetch(`/api/media-annotations?bookId=${bookId}&pageNumber=${currentPage}`, {
+        cache: "no-store",
+      });
       if (res.ok) {
         const data = await res.json();
         setActiveAnnotations(data);
@@ -79,7 +77,10 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
   // Pause global video when playingMedia is cleared or is not a video
   useEffect(() => {
     if (!playingMedia || playingMedia.mediaType !== "video") {
-      const globalVideo = typeof document !== "undefined" ? document.getElementById("historiart-global-video") as HTMLVideoElement : null;
+      const globalVideo =
+        typeof document !== "undefined"
+          ? (document.getElementById("historiart-global-video") as HTMLVideoElement)
+          : null;
       if (globalVideo) {
         if (!globalVideo.paused) {
           globalVideo.pause();
@@ -241,16 +242,16 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
               position: "sticky",
               top: 0,
               zIndex: 999,
-              padding: "12px 16px",
+              padding: "12px var(--toolbar-padding, 16px)",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
               overflowX: "auto",
               whiteSpace: "nowrap",
               scrollbarWidth: "none", // hide scrollbar for firefox
-            }}
+            } as React.CSSProperties}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--toolbar-gap, 12px)" }}>
               <TransitionLink href="/library">
                 <button
                   className="btn-ghost"
@@ -265,7 +266,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                   <span className="mobile-hide-text">{t("reader.library")}</span>
                 </button>
               </TransitionLink>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "var(--toolbar-gap-inner, 8px)" }}>
                 <BookOpen size={16} color="var(--accent-primary)" />
                 <span className="mobile-hide-text" style={{ fontSize: 14, fontWeight: 600 }}>
                   {c.bookTitle || t("common.loading")}
@@ -284,7 +285,7 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                       alignItems: "center",
                       gap: 4,
                       fontSize: 12,
-                      marginLeft: 8,
+                      marginLeft: "var(--toolbar-gap-inner, 8px)",
                       background: c.chaptersSidebarOpen ? "var(--bg-secondary)" : "transparent",
                     }}
                   >
@@ -293,24 +294,31 @@ export default function ReaderFeature({ bookId }: { bookId: string }) {
                 )}
               </div>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--toolbar-gap, 12px)" }}>
+              {/* Quiz Group */}
+              <QuizButton
+                currentChapter={c.currentViewingChapter}
+                totalChapters={c.chapters.length}
+                completedChapters={c.completedChapters}
+                quizzesDone={c.quizzesDone}
+                onOpenQuiz={(ch) => {
+                  c.setActiveQuizChapter(ch);
+                  c.setQuizModalOpen(true);
+                }}
+              />
+
+              {/* Function Group */}
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 6,
+                  gap: "var(--pill-gap, 6px)",
                   background: "var(--bg-tertiary)",
                   borderRadius: "var(--radius-full)",
-                  padding: "6px",
+                  padding: "var(--pill-padding, 6px)",
                   border: "1px solid var(--border-subtle)",
-                }}
+                } as React.CSSProperties}
               >
-                <QuizButton 
-                  bookId={bookId} 
-                  currentChapter={c.activeQuizChapter} 
-                  completedChapters={c.completedChapters} 
-                  onClick={() => c.setQuizModalOpen(true)} 
-                />
                 {isAdmin && (
                   <button
                     className="toolbar-btn"

@@ -1,6 +1,6 @@
 import { verifySession } from "@/dal/verifySession";
 import { db } from "@/drizzle/db";
-import { quizResults } from "@/drizzle/schema";
+import { books, quizResults } from "@/drizzle/schema";
 import { and, desc, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -17,11 +17,26 @@ export async function GET(req: NextRequest) {
     const conditions = [eq(quizResults.userId, session.user.id)];
     if (bookId) conditions.push(eq(quizResults.bookId, bookId));
 
-    const results = await db
-      .select()
+    const rows = await db
+      .select({
+        id: quizResults.id,
+        bookId: quizResults.bookId,
+        bookTitle: books.title,
+        chapterNumber: quizResults.chapterNumber,
+        score: quizResults.score,
+        totalQuestions: quizResults.totalQuestions,
+        completedAt: quizResults.completedAt,
+      })
       .from(quizResults)
+      .leftJoin(books, eq(quizResults.bookId, books.id))
       .where(and(...conditions))
       .orderBy(desc(quizResults.completedAt));
+
+    // Fallback: if book was deleted, use the bookId as the display title
+    const results = rows.map((r) => ({
+      ...r,
+      bookTitle: r.bookTitle ?? r.bookId,
+    }));
 
     return NextResponse.json({ results });
   } catch (error) {

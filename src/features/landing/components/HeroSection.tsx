@@ -39,9 +39,9 @@ export default function HeroSection() {
           transform: "scale(2)", // Scale up to hide blurred edges
         }}
       />
-      
+
       {/* ─── Dark Gradient Overlay ────────────────────────────── */}
-      <div 
+      <div
         style={{
           position: "absolute",
           inset: 0,

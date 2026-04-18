@@ -21,11 +21,10 @@ function getInitialLanguage(): Language {
 }
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("vi");
+  const [language, setLanguageState] = useState<Language>(() => getInitialLanguage());
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setLanguageState(getInitialLanguage());
     setMounted(true);
   }, []);
 

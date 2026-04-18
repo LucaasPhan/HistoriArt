@@ -21,12 +21,7 @@ export async function GET(req: NextRequest) {
     const [pref] = await db
       .select()
       .from(quizPreferences)
-      .where(
-        and(
-          eq(quizPreferences.userId, session.user.id),
-          eq(quizPreferences.bookId, bookId),
-        ),
-      )
+      .where(and(eq(quizPreferences.userId, session.user.id), eq(quizPreferences.bookId, bookId)))
       .limit(1);
 
     return NextResponse.json({
@@ -60,10 +55,7 @@ export async function POST(req: NextRequest) {
       .select()
       .from(quizPreferences)
       .where(
-        and(
-          eq(quizPreferences.userId, session.user.id),
-          eq(quizPreferences.bookId, body.bookId),
-        ),
+        and(eq(quizPreferences.userId, session.user.id), eq(quizPreferences.bookId, body.bookId)),
       )
       .limit(1);
 

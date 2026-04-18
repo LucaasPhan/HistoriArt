@@ -10,7 +10,7 @@ import {
 } from "@/context/queryKeys";
 import { authClient } from "@/lib/auth-client";
 import { useTranslation } from "@/lib/i18n";
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   Cog,
@@ -53,14 +53,14 @@ const UnauthenticatedUser = () => {
       >
         <Link href="/login">
           <Button
-            style={{ 
-              height: "36px", 
-              padding: "0 20px", 
+            style={{
+              height: "36px",
+              padding: "0 20px",
               fontSize: "14px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              gap: "8px"
+              gap: "8px",
             }}
           >
             <SquareUserRound size={16} />
@@ -92,9 +92,10 @@ const User = memo(() => {
     enabled: isAuthenticated && !!user,
   });
 
-  const displayName = profile?.firstName && profile?.lastName
-    ? `${profile.firstName} ${profile.lastName}`
-    : user?.name || "User";
+  const displayName =
+    profile?.firstName && profile?.lastName
+      ? `${profile.firstName} ${profile.lastName}`
+      : user?.name || "User";
 
   const nameParts = displayName.split(" ").filter(Boolean);
   const initials =
@@ -156,7 +157,16 @@ const User = memo(() => {
   }
 
   if (isSessionPending) {
-    return <Skeleton style={{ height: "32px", width: "32px", borderRadius: "var(--radius-full)", background: "var(--bg-tertiary)" }} />;
+    return (
+      <Skeleton
+        style={{
+          height: "32px",
+          width: "32px",
+          borderRadius: "var(--radius-full)",
+          background: "var(--bg-tertiary)",
+        }}
+      />
+    );
   }
   if (!isAuthenticated || !user) {
     return <UnauthenticatedUser />;
@@ -164,7 +174,9 @@ const User = memo(() => {
   return (
     <>
       <DropdownMenu onOpenChange={setIsMenuOpen} open={isMenuOpen} modal={false}>
-        <DropdownMenuTrigger style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer" }}>
+        <DropdownMenuTrigger
+          style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
+        >
           <AnimatePresence mode="wait">
             <motion.div
               animate={{ opacity: 1, scale: 1 }}
@@ -174,13 +186,12 @@ const User = memo(() => {
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
               <Avatar>
-                <div style={{ position: "relative", zIndex: 1, borderRadius: "var(--radius-full)" }} title="Account Settings">
-                  <AvatarImage
-                    src={user.image || "/assets/avatar/blue.webp"}
-                  />
-                  <AvatarFallback>
-                    {initials.toUpperCase()}
-                  </AvatarFallback>
+                <div
+                  style={{ position: "relative", zIndex: 1, borderRadius: "var(--radius-full)" }}
+                  title="Account Settings"
+                >
+                  <AvatarImage src={user.image || "/assets/avatar/blue.webp"} />
+                  <AvatarFallback>{initials.toUpperCase()}</AvatarFallback>
                 </div>
               </Avatar>
             </motion.div>
@@ -200,41 +211,58 @@ const User = memo(() => {
             width: "200px",
             border: "1px solid var(--border-subtle)",
             borderRadius: "var(--radius-md)",
-            boxShadow: "var(--shadow-card)"
+            boxShadow: "var(--shadow-card)",
           }}
         >
-          <div style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "flex-start", gap: "8px", padding: "8px 12px" }}>
+          <div
+            style={{
+              display: "flex",
+              width: "100%",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              gap: "8px",
+              padding: "8px 12px",
+            }}
+          >
             <Avatar>
               <AvatarImage
                 src={user.image || "/assets/avatar/blue.webp"}
                 style={{ border: "none" }}
               />
-              <AvatarFallback style={{ border: "none" }}>
-                {initials.toUpperCase()}
-              </AvatarFallback>
+              <AvatarFallback style={{ border: "none" }}>{initials.toUpperCase()}</AvatarFallback>
             </Avatar>
-            <p style={{ margin: 0, maxWidth: "120px", fontSize: "14px", fontWeight: 500, whiteSpace: "pre-line", overflow: "hidden", textOverflow: "ellipsis" }}>
+            <p
+              style={{
+                margin: 0,
+                maxWidth: "120px",
+                fontSize: "14px",
+                fontWeight: 500,
+                whiteSpace: "pre-line",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
               {displayName}
             </p>
           </div>
 
           <DropdownMenuItem
-            style={{ 
-              display: "flex", 
-              width: "100%", 
-              cursor: "pointer", 
-              alignItems: "center", 
-              justifyContent: "flex-start", 
-              gap: "8px", 
-              padding: "8px 12px", 
-              borderRadius: "var(--radius-sm)", 
+            style={{
+              display: "flex",
+              width: "100%",
+              cursor: "pointer",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              gap: "8px",
+              padding: "8px 12px",
+              borderRadius: "var(--radius-sm)",
               fontSize: "14px",
               background: "transparent",
               border: "none",
-              color: "var(--text-primary)"
+              color: "var(--text-primary)",
             }}
-            onMouseOver={(e) => e.currentTarget.style.background = "var(--bg-secondary)"}
-            onMouseOut={(e) => e.currentTarget.style.background = "transparent"}
+            onMouseOver={(e) => (e.currentTarget.style.background = "var(--bg-secondary)")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
             onSelect={(e) => {
               e.preventDefault();
               toggleTheme();
@@ -243,24 +271,24 @@ const User = memo(() => {
             {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
             {theme === "dark" ? t("user.lightMode") : t("user.darkMode")}
           </DropdownMenuItem>
-          
-          <DropdownMenuItem 
-            style={{ 
-              display: "flex", 
-              width: "100%", 
-              cursor: "pointer", 
-              alignItems: "center", 
-              justifyContent: "flex-start", 
-              gap: "8px", 
-              padding: "8px 12px", 
-              borderRadius: "var(--radius-sm)", 
+
+          <DropdownMenuItem
+            style={{
+              display: "flex",
+              width: "100%",
+              cursor: "pointer",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              gap: "8px",
+              padding: "8px 12px",
+              borderRadius: "var(--radius-sm)",
               fontSize: "14px",
               background: "transparent",
               border: "none",
-              color: "var(--text-primary)"
+              color: "var(--text-primary)",
             }}
-            onMouseOver={(e) => e.currentTarget.style.background = "var(--bg-secondary)"}
-            onMouseOut={(e) => e.currentTarget.style.background = "transparent"}
+            onMouseOver={(e) => (e.currentTarget.style.background = "var(--bg-secondary)")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
             onClick={() => router.push("/dashboard")}
           >
             <LayoutDashboard size={16} />
@@ -268,23 +296,23 @@ const User = memo(() => {
           </DropdownMenuItem>
 
           {user?.role === "admin" && (
-            <DropdownMenuItem 
-              style={{ 
-                display: "flex", 
-                width: "100%", 
-                cursor: "pointer", 
-                alignItems: "center", 
-                justifyContent: "flex-start", 
-                gap: "8px", 
-                padding: "8px 12px", 
-                borderRadius: "var(--radius-sm)", 
+            <DropdownMenuItem
+              style={{
+                display: "flex",
+                width: "100%",
+                cursor: "pointer",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                gap: "8px",
+                padding: "8px 12px",
+                borderRadius: "var(--radius-sm)",
                 fontSize: "14px",
                 background: "transparent",
                 border: "none",
-                color: "var(--text-primary)"
+                color: "var(--text-primary)",
               }}
-              onMouseOver={(e) => e.currentTarget.style.background = "var(--bg-secondary)"}
-              onMouseOut={(e) => e.currentTarget.style.background = "transparent"}
+              onMouseOver={(e) => (e.currentTarget.style.background = "var(--bg-secondary)")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
               onClick={() => router.push("/admin")}
             >
               <ShieldCheck size={16} />
@@ -292,23 +320,23 @@ const User = memo(() => {
             </DropdownMenuItem>
           )}
 
-          <DropdownMenuItem 
-            style={{ 
-              display: "flex", 
-              width: "100%", 
-              cursor: "pointer", 
-              alignItems: "center", 
-              justifyContent: "flex-start", 
-              gap: "8px", 
-              padding: "8px 12px", 
-              borderRadius: "var(--radius-sm)", 
+          <DropdownMenuItem
+            style={{
+              display: "flex",
+              width: "100%",
+              cursor: "pointer",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              gap: "8px",
+              padding: "8px 12px",
+              borderRadius: "var(--radius-sm)",
               fontSize: "14px",
               background: "transparent",
               border: "none",
-              color: "var(--text-primary)"
+              color: "var(--text-primary)",
             }}
-            onMouseOver={(e) => e.currentTarget.style.background = "var(--bg-secondary)"}
-            onMouseOut={(e) => e.currentTarget.style.background = "transparent"}
+            onMouseOver={(e) => (e.currentTarget.style.background = "var(--bg-secondary)")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
             onClick={() => router.push("/settings")}
           >
             <Cog size={16} />
@@ -316,23 +344,23 @@ const User = memo(() => {
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            style={{ 
-              display: "flex", 
-              width: "100%", 
-              cursor: "pointer", 
-              alignItems: "center", 
-              justifyContent: "flex-start", 
-              gap: "8px", 
-              padding: "8px 12px", 
-              borderRadius: "var(--radius-sm)", 
+            style={{
+              display: "flex",
+              width: "100%",
+              cursor: "pointer",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              gap: "8px",
+              padding: "8px 12px",
+              borderRadius: "var(--radius-sm)",
               fontSize: "14px",
               background: "transparent",
               border: "none",
               color: "var(--text-primary)",
-              marginBottom: "8px"
+              marginBottom: "8px",
             }}
-            onMouseOver={(e) => e.currentTarget.style.background = "var(--bg-secondary)"}
-            onMouseOut={(e) => e.currentTarget.style.background = "transparent"}
+            onMouseOver={(e) => (e.currentTarget.style.background = "var(--bg-secondary)")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
             onSelect={(e) => {
               e.preventDefault();
               setIsMenuOpen(true);

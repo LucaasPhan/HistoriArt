@@ -1,0 +1,105 @@
+@reference "tailwindcss";
+
+.overlay {
+  @apply fixed inset-0 z-[9999] flex items-center justify-center p-4;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  animation: fade-in 0.2s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  @apply flex max-h-[85vh] w-[92%] max-w-[600px] flex-col p-8;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modalHeader {
+  @apply mb-5 flex shrink-0 items-center justify-between;
+}
+
+.modalHeaderContent {
+  @apply flex items-center gap-3;
+}
+
+.closeBtn {
+  @apply -mt-2 -mr-2 ml-auto flex rounded-full p-2 transition-colors;
+  color: var(--text-tertiary);
+}
+
+.closeBtn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.quizIcon {
+  @apply flex h-12 w-12 items-center justify-center rounded-xl;
+  background: var(--accent-gradient);
+}
+
+.title {
+  @apply mt-6 mb-3 text-[22px] font-bold;
+  color: var(--text-primary);
+}
+
+.promptText {
+  @apply mb-8 text-[15px] leading-relaxed;
+  color: var(--text-secondary);
+}
+
+.buttonGroup {
+  @apply mb-6 flex w-full flex-col gap-3;
+}
+
+.actionBtn {
+  @apply flex items-center justify-center rounded-xl border-none px-7 py-4 text-sm font-bold transition-all;
+  background: var(--accent-gradient);
+  color: white;
+}
+
+.actionBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(var(--accent-rgb), 0.3);
+}
+
+.skipBtn {
+  @apply w-full rounded-xl p-4 text-center text-sm font-bold transition-all;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.skipBtn:hover {
+  background: var(--border-subtle);
+}
+
+.footerLabel {
+  @apply flex cursor-pointer items-center gap-2 py-2 text-sm select-none;
+  color: var(--text-tertiary);
+}
+
+.checkbox {
+  @apply h-4 w-4 cursor-pointer rounded border-none align-middle;
+  accent-color: var(--accent-primary);
+}

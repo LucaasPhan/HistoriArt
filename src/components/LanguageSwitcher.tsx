@@ -17,9 +17,7 @@ export default function LanguageSwitcher({ position = "bottom-right" }: Language
       style={{
         position: "fixed",
         zIndex: 50,
-        ...(position === "bottom-right"
-          ? { bottom: 24, right: 24 }
-          : { top: 24, right: 24 }),
+        ...(position === "bottom-right" ? { bottom: 24, right: 24 } : { top: 24, right: 24 }),
       }}
     >
       <div className="lang-switcher__track">

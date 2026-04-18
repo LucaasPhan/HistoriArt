@@ -66,8 +66,8 @@ export default function AccountTab() {
       setSuccess(true);
       router.refresh();
       setTimeout(() => setSuccess(false), 3000);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setSaving(false);
     }
@@ -75,7 +75,9 @@ export default function AccountTab() {
 
   if (loading)
     return (
-      <div style={{ padding: "40px 0", color: "var(--text-secondary)" }}>{t("settings.loadingProfile")}</div>
+      <div style={{ padding: "40px 0", color: "var(--text-secondary)" }}>
+        {t("settings.loadingProfile")}
+      </div>
     );
 
   const initials = (data.firstName[0] || "") + (data.lastName[0] || "");

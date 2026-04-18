@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/lib/i18n";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { QuizAnswer, QuizQuestion, QuizState } from "../types";
 
@@ -9,6 +10,7 @@ type UseQuizControllerArgs = {
 };
 
 export default function useQuizController({ bookId, chapterNumber }: UseQuizControllerArgs) {
+  const { language, t } = useTranslation();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswer[]>([]);
@@ -56,6 +58,7 @@ export default function useQuizController({ bookId, chapterNumber }: UseQuizCont
               userAnswer: answer.textAnswer,
               acceptedAnswers: question.acceptedAnswers ?? [],
               question: question.question,
+              language,
             }),
           });
           const data = await res.json();
@@ -63,7 +66,7 @@ export default function useQuizController({ bookId, chapterNumber }: UseQuizCont
           graded.feedback = data.feedback;
         } catch {
           graded.isCorrect = false;
-          graded.feedback = "Không thể chấm điểm. Vui lòng thử lại.";
+          graded.feedback = t("quiz.gradingError");
         } finally {
           setIsGrading(false);
         }

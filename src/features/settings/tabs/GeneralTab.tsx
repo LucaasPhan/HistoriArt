@@ -1,19 +1,18 @@
 "use client";
 
 import { ThemeButton } from "@/components/ThemeButton";
-import { useTranslation } from "@/lib/i18n";
 import type { Language } from "@/lib/i18n";
+import { useTranslation } from "@/lib/i18n";
 import { motion } from "framer-motion";
-import { useState } from "react";
 
-const LANGUAGE_OPTIONS: { value: Language; label: string}[] = [
-  { value: "vi", label: "Tiếng Việt"},
-  { value: "en", label: "English"},
+const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
+  { value: "vi", label: "Tiếng Việt" },
+  { value: "en", label: "English" },
 ];
 
 export default function GeneralTab() {
   const { t, language, setLanguage } = useTranslation();
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -51,15 +50,12 @@ export default function GeneralTab() {
                   gap: 8,
                   padding: "12px 16px",
                   borderRadius: "var(--radius-md)",
-                  border: language === opt.value
-                    ? "2px solid var(--accent-primary)"
-                    : "1px solid var(--border-subtle)",
-                  background: language === opt.value
-                    ? "var(--accent-glow)"
-                    : "var(--bg-card)",
-                  color: language === opt.value
-                    ? "var(--accent-primary)"
-                    : "var(--text-secondary)",
+                  border:
+                    language === opt.value
+                      ? "2px solid var(--accent-primary)"
+                      : "1px solid var(--border-subtle)",
+                  background: language === opt.value ? "var(--accent-glow)" : "var(--bg-card)",
+                  color: language === opt.value ? "var(--accent-primary)" : "var(--text-secondary)",
                   fontWeight: language === opt.value ? 600 : 400,
                   cursor: "pointer",
                   transition: "all 0.2s ease",

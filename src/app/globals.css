@@ -73,7 +73,9 @@ button,
   cursor: var(--cursor-pointer) !important;
 }
 
-input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not(
+    [type="radio"]
+  ):not([type="range"]):not([type="file"]),
 textarea,
 [contenteditable="true"],
 [data-cursor="text"],
@@ -245,7 +247,6 @@ body {
 
 /* ─── Voice Orb Animations ─────────────────────────────────── */
 @keyframes breathe {
-
   0%,
   100% {
     transform: scale(1);
@@ -403,6 +404,21 @@ body {
   background: transparent;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+@media (max-width: 768px) {
+  .toolbar-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  :root {
+    --toolbar-padding: 8px;
+    --toolbar-gap: 6px;
+    --toolbar-gap-inner: 4px;
+    --pill-padding: 4px;
+    --pill-gap: 4px;
+  }
 }
 
 .toolbar-btn:hover {
@@ -574,7 +590,6 @@ body {
 }
 
 @keyframes barGrow {
-
   0%,
   100% {
     height: 4px;
@@ -597,11 +612,11 @@ body {
 }
 
 /* ─── React Markdown ───────────────────────────────────────── */
-.react-markdown-prose>p:first-child {
+.react-markdown-prose > p:first-child {
   margin-top: 0;
 }
 
-.react-markdown-prose>p:last-child {
+.react-markdown-prose > p:last-child {
   margin-bottom: 0;
 }
 
@@ -736,7 +751,7 @@ body {
     padding: 8px 16px;
     gap: 0;
   }
-  
+
   .lang-switcher__flag {
     transform: none;
   }

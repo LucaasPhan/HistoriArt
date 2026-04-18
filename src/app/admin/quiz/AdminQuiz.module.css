@@ -1,0 +1,272 @@
+@reference "tailwindcss";
+
+.container {
+  @apply flex min-h-screen flex-col items-center;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  padding-top: 120px;
+  padding-bottom: 80px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.pageWrapper {
+  @apply flex w-full flex-col;
+  max-width: 1280px;
+}
+
+.pageTitleSection {
+  @apply flex items-center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.pageTitle {
+  @apply text-2xl font-black;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.gridContainer {
+  @apply grid grid-cols-1 items-start lg:grid-cols-[260px_1fr];
+  gap: 24px;
+}
+
+.sidebar {
+  @apply sticky;
+  top: 120px;
+}
+
+.sidebarContent {
+  @apply overflow-hidden rounded-2xl;
+  background: var(--bg-card);
+}
+
+.sidebarSection {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.bookSelector {
+  padding-top: 20px;
+  padding-bottom: 12px;
+}
+
+.chapterSelector {
+  padding-bottom: 16px;
+}
+
+.sidebarLabel {
+  @apply text-[10px] font-bold tracking-[0.15em] uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 8px;
+}
+
+.chapterLabel {
+  @apply text-[10px] font-bold tracking-[0.15em] uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 12px;
+}
+
+.selectWrapper {
+  @apply relative;
+}
+
+.customSelect {
+  @apply w-full cursor-pointer appearance-none rounded-lg text-sm font-semibold transition-all outline-none;
+  padding: 10px 32px 10px 12px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+}
+
+.selectIcon {
+  @apply pointer-events-none absolute top-1/2 -translate-y-1/2;
+  right: 12px;
+  color: var(--text-tertiary);
+}
+
+.chapterList {
+  @apply flex flex-col overflow-y-auto;
+  gap: 6px;
+  max-height: 460px;
+}
+
+.chapterBtn {
+  @apply rounded-full text-left text-xs font-bold tracking-wider uppercase transition-all duration-200;
+  padding: 10px 16px;
+}
+
+.chapterBtnActive {
+  @apply text-white shadow-md;
+  background: var(--accent-gradient);
+  box-shadow: 0 4px 12px rgba(212, 110, 86, 0.3);
+}
+
+.chapterBtnInactive {
+  color: var(--text-secondary);
+  background: transparent;
+}
+
+.chapterBtnInactive:hover {
+  color: var(--text-primary);
+}
+
+.mainPanel {
+  @apply flex min-w-0 flex-col;
+}
+
+.panelHeader {
+  @apply flex items-center justify-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.panelTitle {
+  @apply flex items-center text-base font-bold;
+  color: var(--text-primary);
+  gap: 8px;
+  margin: 0;
+}
+
+.headerActions {
+  @apply flex items-center;
+  gap: 8px;
+}
+
+.actionBtnBase {
+  @apply flex items-center rounded-full text-xs font-bold transition-all disabled:opacity-40;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--border-subtle);
+}
+
+.btnSecondary {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.btnTonal {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.btnPrimary {
+  @apply border-none text-white active:scale-95;
+  background: var(--accent-gradient);
+}
+
+.questionList {
+  @apply flex flex-col overflow-hidden rounded-2xl;
+  background: var(--bg-card);
+}
+
+.questionItem {
+  @apply relative flex items-center justify-between transition-colors duration-200;
+  padding: 16px 24px;
+  gap: 16px;
+}
+
+.questionItem:not(:first-child) {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.questionItem:hover {
+  background: var(--bg-secondary);
+}
+
+.questionInfo {
+  @apply min-w-0 flex-1;
+}
+
+.questionMeta {
+  @apply flex items-center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.metaText {
+  @apply text-[10px] font-bold tracking-[0.1em] uppercase;
+  color: var(--text-tertiary);
+}
+
+.metaSeparator {
+  @apply text-[10px];
+  color: var(--text-tertiary);
+}
+
+.questionText {
+  @apply text-sm leading-snug font-semibold;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.itemActions {
+  @apply flex shrink-0 items-center transition-opacity;
+  opacity: 0;
+  gap: 4px;
+}
+
+.questionItem:hover .itemActions {
+  opacity: 1;
+}
+
+.iconBtn {
+  @apply rounded-lg p-2 transition-colors;
+}
+
+.iconBtnEdit {
+  color: var(--text-tertiary);
+}
+
+.iconBtnEdit:hover {
+  color: var(--text-primary);
+}
+
+.iconBtnDelete {
+  color: var(--text-tertiary);
+}
+
+.iconBtnDelete:hover {
+  @apply text-red-500;
+}
+
+.iconBtnPublish {
+  @apply text-green-500 hover:bg-green-500/10;
+}
+
+.loadingBox {
+  @apply flex flex-col items-center justify-center;
+  padding: 64px 0;
+  gap: 12px;
+}
+
+.loadingText {
+  @apply animate-pulse text-[10px] font-bold tracking-[0.2em] uppercase;
+  color: var(--text-tertiary);
+}
+
+.emptyBox {
+  @apply flex flex-col items-center justify-center;
+  padding: 80px 0;
+  gap: 16px;
+}
+
+.emptyIconCircle {
+  @apply flex h-14 w-14 items-center justify-center rounded-full;
+  background: var(--bg-secondary);
+}
+
+.emptyText {
+  @apply text-sm font-bold;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.emptyBtn {
+  @apply flex items-center rounded-full text-xs font-bold transition-all;
+  gap: 8px;
+  padding: 8px 20px;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-tertiary);
+}

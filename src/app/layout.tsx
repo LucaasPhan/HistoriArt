@@ -45,6 +45,7 @@ import { verifySession } from "@/dal/verifySession";
 import { db } from "@/drizzle/db";
 import { userProfiles } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
+import { Toaster } from "sonner";
 
 export default async function RootLayout({
   children,
@@ -79,6 +80,7 @@ export default async function RootLayout({
                   <Navbar />
                   <NextTopLoader color="#f59e0b" zIndex={99_999_999} />
                   {children}
+                  <Toaster richColors position="bottom-right" />
                   <Analytics />
                 </body>
               </OnboardingGuard>

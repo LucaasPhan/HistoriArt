@@ -82,9 +82,7 @@ export default function LoginPage() {
             >
               {t("login.welcome")}
             </h1>
-            <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>
-              {t("login.subtitle")}
-            </p>
+            <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>{t("login.subtitle")}</p>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>

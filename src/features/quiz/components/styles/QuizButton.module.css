@@ -1,0 +1,208 @@
+@reference "tailwindcss";
+
+.activeDot {
+  @apply absolute top-[6px] right-[6px] h-1.5 w-1.5 rounded-full;
+  background: var(--accent-primary);
+  box-shadow: 0 0 6px var(--accent-primary);
+}
+
+.quizGroup {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  padding: 6px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .quizGroup {
+    padding: 4px;
+  }
+}
+
+.quizGroup:hover,
+.groupOpen {
+  border-color: var(--accent-primary);
+}
+
+.iconBtn {
+  @apply relative flex items-center justify-center h-[42px] w-[42px] rounded-full transition-all duration-200;
+  color: var(--text-secondary);
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .iconBtn {
+    height: 36px;
+    width: 36px;
+  }
+}
+
+.quizGroup:hover .iconBtn,
+.groupOpen .iconBtn,
+.iconBtn:hover {
+  color: var(--accent-primary);
+  background: var(--bg-primary);
+}
+
+.iconBtnActive {
+  color: var(--accent-primary);
+}
+
+.chapterSelector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  height: 42px;
+  max-width: 0;
+  opacity: 0;
+  overflow: visible;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: var(--radius-full);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .chapterSelector {
+    height: 36px;
+  }
+}
+
+.chapterSelector:hover {
+  color: var(--accent-primary);
+}
+
+/* Expanded Hitbox Underneath */
+.chapterSelector::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  right: -6px;
+  left: -48px;
+  z-index: -2;
+  border-radius: var(--radius-full);
+}
+
+@media (max-width: 768px) {
+  .chapterSelector::before {
+    top: -4px;
+    bottom: -4px;
+    right: -4px;
+    left: -40px;
+  }
+}
+
+.chapterNumber {
+  padding-left: 10px;
+  padding-right: 14px;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 768px) {
+  .chapterNumber {
+    padding-left: 6px;
+    padding-right: 10px;
+    font-size: 13px;
+  }
+}
+
+.quizGroup:hover .chapterSelector,
+.groupOpen .chapterSelector {
+  max-width: 100px;
+  margin-left: 10px;
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .quizGroup:hover .chapterSelector,
+  .groupOpen .chapterSelector {
+    margin-left: 6px;
+  }
+}
+
+.quizGroup:hover .chapterNumber,
+.groupOpen .chapterNumber {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Always show on mobile */
+@media (max-width: 768px) {
+  .chapterSelector {
+    max-width: 100px;
+    margin-left: 6px;
+    padding-right: 10px;
+    opacity: 1;
+    overflow: visible;
+  }
+  .chapterNumber {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.menuContent {
+  min-width: 180px;
+  max-height: 280px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  box-shadow: var(--shadow-card);
+  z-index: 10001;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+}
+
+.menuItem:hover {
+  background: var(--bg-secondary);
+  outline: none;
+}
+
+.menuItemLocked {
+  opacity: 0.5;
+}
+
+.menuItemInfo {
+  font-size: 11px;
+  opacity: 0.5;
+  margin-left: 8px;
+}

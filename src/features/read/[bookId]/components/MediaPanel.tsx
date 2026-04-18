@@ -1,10 +1,10 @@
 "use client";
 
+import { useTranslation } from "@/lib/i18n";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Film, MessageCirclePlus, Pen, Trash2, X } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { useTranslation } from "@/lib/i18n";
 import { PANEL_ANIMATION_DELAY, PULSE_HIGHLIGHT_DURATION } from "../constants";
 import type { MediaAnnotation } from "../types";
 import CustomAudioPlayer from "./CustomAudioPlayer";
@@ -198,7 +198,9 @@ function MediaCard({
             }}
           >
             <BookOpen size={12} />
-            <span>{t("media.sources")} ({sources!.length})</span>
+            <span>
+              {t("media.sources")} ({sources!.length})
+            </span>
             <span
               className={`${styles.sourcesChevron} ${showSources ? styles.sourcesChevronOpen : ""}`}
             >
@@ -301,9 +303,7 @@ const MediaPanel = memo(function MediaPanel({
           <div className={styles.emptyState}>
             <Film size={32} style={{ opacity: 0.3 }} />
             <p>{t("media.emptyTitle")}</p>
-            <span className={styles.emptyHint}>
-              {t("media.emptyHint")}
-            </span>
+            <span className={styles.emptyHint}>{t("media.emptyHint")}</span>
           </div>
         ) : (
           annotations.map((a) => (

@@ -1,6 +1,6 @@
 import { CSSProperties, ReactNode } from "react";
-import type { Book } from "../types";
 import { BOOK_GRID_STYLE, SECTION_TITLE_STYLE } from "../const";
+import type { Book } from "../types";
 
 type Props = {
   title: string;

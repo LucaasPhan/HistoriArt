@@ -25,8 +25,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
-import type { Book, BookCardProps } from "../types";
-
+import type { BookCardProps } from "../types";
 
 export default function BookCard({
   book,
@@ -78,8 +77,8 @@ export default function BookCard({
                 overflow: "hidden",
                 borderRadius: "var(--radius-lg)",
                 background: book.coverUrl
-                    ? "var(--bg-tertiary)"
-                    : `linear-gradient(135deg, ${book.coverGradient[0]}, ${book.coverGradient[1]})`,
+                  ? "var(--bg-tertiary)"
+                  : `linear-gradient(135deg, ${book.coverGradient[0]}, ${book.coverGradient[1]})`,
                 boxShadow: "var(--shadow-card)",
                 position: "relative",
               }}
@@ -90,12 +89,24 @@ export default function BookCard({
                   src={book.coverUrl}
                   alt={book.title}
                   fill
-                  style={{ objectFit: "cover", objectPosition: "center", transition: "transform 0.5s ease" }}
+                  style={{
+                    objectFit: "cover",
+                    objectPosition: "center",
+                    transition: "transform 0.5s ease",
+                  }}
                   sizes="320px"
                   unoptimized
                 />
               ) : (
-                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
                   <div
                     style={{
                       position: "absolute",
@@ -111,8 +122,14 @@ export default function BookCard({
               {/* Dark Gradient Overlay for text readability */}
               <motion.div
                 variants={{
-                  rest: { background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 40%, transparent 100%)" },
-                  hover: { background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 100%, transparent 100%)" }
+                  rest: {
+                    background:
+                      "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 40%, transparent 100%)",
+                  },
+                  hover: {
+                    background:
+                      "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 100%, transparent 100%)",
+                  },
                 }}
                 transition={{ duration: 0.3 }}
                 style={{
@@ -138,7 +155,11 @@ export default function BookCard({
                     zIndex: 5,
                   }}
                 >
-                  <Loader2 size={28} color="white" style={{ animation: "spin 1.2s linear infinite" }} />
+                  <Loader2
+                    size={28}
+                    color="white"
+                    style={{ animation: "spin 1.2s linear infinite" }}
+                  />
                   <span
                     style={{
                       color: "white",
@@ -183,7 +204,15 @@ export default function BookCard({
               </AnimatePresence>
 
               {/* Content overlay */}
-              <div style={{ padding: "20px", position: "relative", zIndex: 2, display: "flex", flexDirection: "column" }}>
+              <div
+                style={{
+                  padding: "20px",
+                  position: "relative",
+                  zIndex: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
                 <h2
                   style={{
                     fontFamily: "var(--font-sans)",
@@ -218,7 +247,7 @@ export default function BookCard({
                 <motion.div
                   variants={{
                     rest: { height: 0, opacity: 0, marginTop: 0 },
-                    hover: { height: "auto", opacity: 1, marginTop: 8 }
+                    hover: { height: "auto", opacity: 1, marginTop: 8 },
                   }}
                   transition={{ duration: 0.3 }}
                   style={{ overflow: "hidden" }}
@@ -286,7 +315,11 @@ export default function BookCard({
                             {book.estimatedReadTime || book.totalPages}p
                           </span>
                           <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                            <Star size={12} fill="var(--accent-primary)" stroke="var(--accent-primary)" />
+                            <Star
+                              size={12}
+                              fill="var(--accent-primary)"
+                              stroke="var(--accent-primary)"
+                            />
                             4.8
                           </span>
                         </>
@@ -419,7 +452,12 @@ export default function BookCard({
               </ContextMenuItem>
               <ContextMenuItem
                 className="cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 transition-colors duration-150"
-                style={{ fontSize: 13, fontWeight: 500, fontFamily: "var(--font-sans)", color: "#ef4444" }}
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  fontFamily: "var(--font-sans)",
+                  color: "#ef4444",
+                }}
                 onSelect={() => onDelete(book)}
               >
                 <div
@@ -437,7 +475,10 @@ export default function BookCard({
                 </div>
                 <span>Delete Book</span>
               </ContextMenuItem>
-              <ContextMenuSeparator className="my-1" style={{ background: "var(--border-subtle)" }} />
+              <ContextMenuSeparator
+                className="my-1"
+                style={{ background: "var(--border-subtle)" }}
+              />
             </>
           )}
 

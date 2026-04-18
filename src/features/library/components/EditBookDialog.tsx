@@ -1,4 +1,4 @@
-import { Loader2, BookOpen, X, Upload } from "lucide-react";
+import { BookOpen, Loader2, Upload, X } from "lucide-react";
 import { useEffect } from "react";
 import { EditBookDialogProps } from "../types";
 import styles from "./styles/EditBookDialog.module.css";
@@ -42,7 +42,9 @@ export default function EditBookDialog({
             </div>
             <div>
               <div className={styles.title}>Edit Book</div>
-              <div className={styles.pageLabel}>Update title, author, description, and cover image.</div>
+              <div className={styles.pageLabel}>
+                Update title, author, description, and cover image.
+              </div>
             </div>
           </div>
           <button
@@ -124,11 +126,7 @@ export default function EditBookDialog({
                 )}
                 {isUploadingCover ? "Uploading..." : "Upload Cover"}
               </button>
-              <button
-                type="button"
-                className={styles.removeCoverBtn}
-                onClick={onRemoveCover}
-              >
+              <button type="button" className={styles.removeCoverBtn} onClick={onRemoveCover}>
                 Remove cover
               </button>
               <input
@@ -164,7 +162,9 @@ export default function EditBookDialog({
               }}
               disabled={isSaving || isUploadingCover}
             >
-              {isSaving ? <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} /> : null}
+              {isSaving ? (
+                <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} />
+              ) : null}
               {isSaving ? "Saving..." : "Save Changes"}
             </button>
           </div>

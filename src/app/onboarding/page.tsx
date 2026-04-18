@@ -15,8 +15,8 @@ import {
   StepPurpose,
   StepReadingGoal,
 } from "@/features/onboarding/components/OnboardingSteps";
-import type { OnboardingData } from "@/features/onboarding/types";
 import { EMPTY } from "@/features/onboarding/constants";
+import type { OnboardingData } from "@/features/onboarding/types";
 
 function isValidAge(age: string) {
   const n = Number(age);
@@ -81,7 +81,9 @@ export default function OnboardingPage() {
               : [json.purposeOfUse]
             : [];
           const validPurposes = _purposes.filter((p: string) =>
-            ["learn-and-grow", "academic", "explore-stories", "media-experience", "other"].includes(p)
+            ["learn-and-grow", "academic", "explore-stories", "media-experience", "other"].includes(
+              p,
+            ),
           );
 
           const _goals = json.readingGoal
@@ -90,16 +92,16 @@ export default function OnboardingPage() {
               : [json.readingGoal]
             : [];
           const validGoals = _goals.filter((g: string) =>
-            ["facts", "insights", "epic", "roots"].includes(g)
+            ["facts", "insights", "epic", "roots"].includes(g),
           );
 
           const _personality = ["researcher", "storyteller", "student", "explorer"].includes(
-            json.personality
+            json.personality,
           )
             ? json.personality
             : "";
           const _comm = ["professor", "narrator", "guide", "quick"].includes(
-            json.communicationPreference
+            json.communicationPreference,
           )
             ? json.communicationPreference
             : "";
@@ -218,11 +220,7 @@ export default function OnboardingPage() {
             disabled={!canAdvance(step, data) || saving}
             onClick={handleNext}
           >
-            {saving
-              ? t("ob.saving")
-              : step === STEPS.length - 1
-                ? t("ob.start")
-                : t("ob.continue")}
+            {saving ? t("ob.saving") : step === STEPS.length - 1 ? t("ob.start") : t("ob.continue")}
           </button>
         </div>
       </OnboardingShell>

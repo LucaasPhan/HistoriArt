@@ -1,10 +1,10 @@
 "use client";
 
-import { useTranslation } from "@/lib/i18n";
 import type { TranslationKey } from "@/lib/i18n";
+import { useTranslation } from "@/lib/i18n";
 import { motion } from "framer-motion";
-import { AnimatedSection, fadeUp } from "./AnimatedSection";
 import { FEATURE_GRADIENTS, FEATURE_ICONS } from "../constants";
+import { AnimatedSection, fadeUp } from "./AnimatedSection";
 
 export default function FeaturesSection() {
   const { t } = useTranslation();
@@ -22,7 +22,8 @@ export default function FeaturesSection() {
       <div id="features" style={{ scrollMarginTop: 80 }} />
       <div style={{ textAlign: "center", marginBottom: 56 }}>
         <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.02em" }}>
-          {t("features.heading")} <span className="gradient-text">{t("features.headingAccent")}</span>
+          {t("features.heading")}{" "}
+          <span className="gradient-text">{t("features.headingAccent")}</span>
         </h2>
         <p
           style={{

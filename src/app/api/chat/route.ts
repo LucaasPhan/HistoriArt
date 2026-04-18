@@ -1,5 +1,10 @@
 import { verifySession } from "@/dal/verifySession";
-import { ChatUserContext, CommunicationPreference, Gender, PurposeOfUse } from "@/drizzle/constants";
+import {
+  ChatUserContext,
+  CommunicationPreference,
+  Gender,
+  PurposeOfUse,
+} from "@/drizzle/constants";
 import { db } from "@/drizzle/db";
 import { userProfiles } from "@/drizzle/schema";
 import { buildRAGPrompt, detectNavigationIntent, type ConversationMode } from "@/lib/prompts";
@@ -12,7 +17,10 @@ export async function POST(req: NextRequest) {
   try {
     const session = await verifySession();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "You must be signed in to use the AI chat." }, { status: 401 });
+      return NextResponse.json(
+        { error: "You must be signed in to use the AI chat." },
+        { status: 401 },
+      );
     }
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "dummy" });

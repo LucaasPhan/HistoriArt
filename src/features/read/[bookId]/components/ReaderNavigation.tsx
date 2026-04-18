@@ -1,8 +1,8 @@
 "use client";
 
+import { useTranslation } from "@/lib/i18n";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { memo, useEffect, useRef, useState } from "react";
-import { useTranslation } from "@/lib/i18n";
 
 type ReaderNavigationProps = {
   currentPage: number;
@@ -35,12 +35,15 @@ const ReaderNavigation = memo(function ReaderNavigation({
 }: ReaderNavigationProps) {
   const [isEditingPage, setIsEditingPage] = useState(false);
   const [pageInput, setPageInput] = useState((currentPage ?? 1).toString());
+  const [prevPage, setPrevPage] = useState(currentPage);
   const inputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
 
-  useEffect(() => {
+  // Sync pageInput with currentPage when it changes from outside
+  if (currentPage !== prevPage) {
     setPageInput((currentPage ?? 1).toString());
-  }, [currentPage]);
+    setPrevPage(currentPage);
+  }
 
   useEffect(() => {
     if (isEditingPage && inputRef.current) {

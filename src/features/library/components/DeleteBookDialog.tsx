@@ -11,7 +11,12 @@ import {
 import { AlertTriangle } from "lucide-react";
 import { DeleteBookDialogProps } from "../types";
 
-export default function DeleteBookDialog({ open, title, onOpenChange, onConfirm }: DeleteBookDialogProps) {
+export default function DeleteBookDialog({
+  open,
+  title,
+  onOpenChange,
+  onConfirm,
+}: DeleteBookDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent

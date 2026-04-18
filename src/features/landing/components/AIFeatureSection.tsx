@@ -83,7 +83,8 @@ export default function AIFeatureSection() {
                 lineHeight: 1.5,
               }}
             >
-              Chiến dịch Điện Biên Phủ trên không diễn ra vào thời gian nào và có ý nghĩa gì đối với lịch sử? Bạn có thể giải thích ngắn gọn cho mình không?
+              Chiến dịch Điện Biên Phủ trên không diễn ra vào thời gian nào và có ý nghĩa gì đối với
+              lịch sử? Bạn có thể giải thích ngắn gọn cho mình không?
             </div>
           </div>
 
@@ -123,7 +124,8 @@ export default function AIFeatureSection() {
                 <br />
                 <strong>Ý nghĩa:</strong> Chiến thắng này đập tan ý chí xâm lược của Mỹ, buộc Mỹ
                 phải ký Hiệp định Paris (1973) chấm dứt chiến tranh ở Việt Nam. Fable Chat có thể
-                tóm tắt hoặc cung cấp thêm thông tin chi tiết về các trận đánh tiêu biểu nếu bạn muốn!
+                tóm tắt hoặc cung cấp thêm thông tin chi tiết về các trận đánh tiêu biểu nếu bạn
+                muốn!
               </p>
             </div>
           </div>

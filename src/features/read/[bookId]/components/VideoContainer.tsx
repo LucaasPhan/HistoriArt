@@ -29,5 +29,7 @@ export default function VideoContainer({ src, autoPlay, className, style }: Prop
     }
   }, [src, autoPlay]);
 
-  return <div ref={containerRef} className={className} style={{ position: "relative", ...style }} />;
+  return (
+    <div ref={containerRef} className={className} style={{ position: "relative", ...style }} />
+  );
 }

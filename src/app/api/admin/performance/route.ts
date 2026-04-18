@@ -58,9 +58,10 @@ export async function GET(req: NextRequest) {
         chapterNumber: s.chapterNumber,
         totalAttempts: Number(s.totalAttempts),
         avgScore: Math.round(Number(s.avgScore || 0)),
-        passRate: Number(s.totalAttempts) > 0
-          ? Math.round((Number(s.passCount) / Number(s.totalAttempts)) * 100)
-          : 0,
+        passRate:
+          Number(s.totalAttempts) > 0
+            ? Math.round((Number(s.passCount) / Number(s.totalAttempts)) * 100)
+            : 0,
       }));
 
       return NextResponse.json({ stats, recentAttempts });

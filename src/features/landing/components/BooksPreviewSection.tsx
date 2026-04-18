@@ -6,8 +6,8 @@ import { motion } from "framer-motion";
 import { ArrowRight, BookOpen } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { AnimatedSection, fadeUp } from "./AnimatedSection";
 import { BookPreview } from "../types";
+import { AnimatedSection, fadeUp } from "./AnimatedSection";
 
 export default function BooksPreviewSection() {
   const [books, setBooks] = useState<BookPreview[]>([]);
@@ -86,8 +86,8 @@ export default function BooksPreviewSection() {
                     overflow: "hidden",
                     borderRadius: "var(--radius-lg)",
                     background: book.coverUrl
-                        ? "var(--bg-tertiary)"
-                        : `linear-gradient(135deg, ${book.coverGradient[0]}, ${book.coverGradient[1]})`,
+                      ? "var(--bg-tertiary)"
+                      : `linear-gradient(135deg, ${book.coverGradient[0]}, ${book.coverGradient[1]})`,
                     boxShadow: "var(--shadow-card)",
                     position: "relative",
                   }}
@@ -98,12 +98,24 @@ export default function BooksPreviewSection() {
                       src={book.coverUrl}
                       alt={book.title}
                       fill
-                      style={{ objectFit: "cover", objectPosition: "center", transition: "transform 0.5s ease" }}
+                      style={{
+                        objectFit: "cover",
+                        objectPosition: "center",
+                        transition: "transform 0.5s ease",
+                      }}
                       sizes="320px"
                       unoptimized
                     />
                   ) : (
-                    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
                       <div
                         style={{
                           position: "absolute",
@@ -119,8 +131,14 @@ export default function BooksPreviewSection() {
                   {/* Dark Gradient Overlay for text readability */}
                   <motion.div
                     variants={{
-                      rest: { background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 40%, transparent 100%)" },
-                      hover: { background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 100%, transparent 100%)" }
+                      rest: {
+                        background:
+                          "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 40%, transparent 100%)",
+                      },
+                      hover: {
+                        background:
+                          "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 100%, transparent 100%)",
+                      },
                     }}
                     transition={{ duration: 0.3 }}
                     style={{
@@ -153,7 +171,15 @@ export default function BooksPreviewSection() {
                   )}
 
                   {/* Content overlay */}
-                  <div style={{ padding: "20px", position: "relative", zIndex: 2, display: "flex", flexDirection: "column" }}>
+                  <div
+                    style={{
+                      padding: "20px",
+                      position: "relative",
+                      zIndex: 2,
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
                     <h3
                       style={{
                         fontFamily: "var(--font-sans)",
@@ -188,7 +214,7 @@ export default function BooksPreviewSection() {
                     <motion.div
                       variants={{
                         rest: { height: 0, opacity: 0, marginTop: 0 },
-                        hover: { height: "auto", opacity: 1, marginTop: 8 }
+                        hover: { height: "auto", opacity: 1, marginTop: 8 },
                       }}
                       transition={{ duration: 0.3 }}
                       style={{ overflow: "hidden" }}
@@ -233,7 +259,7 @@ export default function BooksPreviewSection() {
                           }}
                           variants={{
                             rest: { x: 0 },
-                            hover: { x: 4 }
+                            hover: { x: 4 },
                           }}
                           transition={{ duration: 0.2 }}
                         >

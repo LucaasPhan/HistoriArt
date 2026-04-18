@@ -35,29 +35,36 @@ export const translations = {
     "hero.badge": "Nền tảng eBook lịch sử với đa phương tiện",
     "hero.titleLine1": "Lịch sử Việt Nam",
     "hero.titleLine2": "qua trang sách sống động",
-    "hero.subtitle": "Từ Bạch Đằng đến Điện Biên Phủ — đọc lịch sử với hình ảnh, phim tư liệu và âm nhạc chèn thẳng vào từng trang sách.",
+    "hero.subtitle":
+      "Từ Bạch Đằng đến Điện Biên Phủ — đọc lịch sử với hình ảnh, phim tư liệu và âm nhạc chèn thẳng vào từng trang sách.",
     "hero.cta": "Bắt đầu đọc",
     "hero.learnMore": "Tìm hiểu thêm",
 
     // ── Landing — Features ──
     "features.heading": "Đọc — Xem — Hỏi đáp —",
     "features.headingAccent": "Ôn tập",
-    "features.subtitle": "Trải nghiệm học lịch sử hoàn toàn mới với công nghệ eBook đa phương tiện.",
+    "features.subtitle":
+      "Trải nghiệm học lịch sử hoàn toàn mới với công nghệ eBook đa phương tiện.",
     "features.0.title": "Sách lịch sử sống động",
-    "features.0.desc": "Đọc những tác phẩm kinh điển về lịch sử Việt Nam, từ thời Hùng Vương đến ngày thống nhất.",
+    "features.0.desc":
+      "Đọc những tác phẩm kinh điển về lịch sử Việt Nam, từ thời Hùng Vương đến ngày thống nhất.",
     "features.1.title": "Tư liệu đa phương tiện",
-    "features.1.desc": "Hình ảnh, video, và âm thanh lịch sử hiện ngay khi bạn đọc đến đoạn văn liên quan.",
+    "features.1.desc":
+      "Hình ảnh, video, và âm thanh lịch sử hiện ngay khi bạn đọc đến đoạn văn liên quan.",
     "features.2.title": "Trợ lý AI Fable",
-    "features.2.desc": "Hỏi đáp, tóm tắt và mở rộng kiến thức lịch sử tức thì ngay bên cạnh trang sách đang đọc.",
+    "features.2.desc":
+      "Hỏi đáp, tóm tắt và mở rộng kiến thức lịch sử tức thì ngay bên cạnh trang sách đang đọc.",
     "features.3.title": "Ôn tập qua quiz",
-    "features.3.desc": "Kiểm tra kiến thức lịch sử sau mỗi chương với câu hỏi trắc nghiệm thú vị.",
+    "features.3.desc": "Kiểm tra kiến thức lịch sử sau mỗi chương với các câu hỏi thú vị.",
     "features.4.title": "Cộng đồng đóng góp",
-    "features.4.desc": "Người đọc có thể đề xuất và đóng góp thêm hình ảnh, video để làm phong phú thư viện.",
+    "features.4.desc":
+      "Người đọc có thể đề xuất và đóng góp thêm hình ảnh, video để làm phong phú thư viện.",
 
     // ── Landing — Books Preview ──
     "books.heading": "Thư viện",
     "books.headingAccent": "lịch sử",
-    "books.subtitle": "Khám phá những tác phẩm kinh điển về lịch sử Việt Nam từ thời dựng nước đến thống nhất.",
+    "books.subtitle":
+      "Khám phá những tác phẩm kinh điển về lịch sử Việt Nam từ thời dựng nước đến thống nhất.",
     "books.loading": "Đang tải thư viện...",
     "books.readTime": "phút đọc",
     "books.pages": "trang",
@@ -72,23 +79,29 @@ export const translations = {
     // ── Landing — AI Feature ──
     "ai.heading": "Trợ lý AI",
     "ai.headingAccent": "Fable Chat",
-    "ai.subtitle": "Bạn gặp những sự kiện khó hiểu hay muốn tìm hiểu thêm về bài đọc? Fable Chat luôn sẵn sàng giải đáp ngay lập tức, tóm tắt nội dung và mở rộng kiến thức ngay bên cạnh trang sách.",
+    "ai.subtitle":
+      "Bạn gặp những sự kiện khó hiểu hay muốn tìm hiểu thêm về bài đọc? Fable Chat luôn sẵn sàng giải đáp ngay lập tức, tóm tắt nội dung và mở rộng kiến thức ngay bên cạnh trang sách.",
     "ai.placeholder": "Hỏi Fable Chat về đoạn trích lịch sử này...",
 
     // ── Landing — Team ──
     "team.heading": "Đội ngũ",
     "team.headingAccent": "HistoriArt",
-    "team.subtitle": "Những người đằng sau sứ mệnh mang lịch sử Việt Nam đến gần hơn với thế hệ trẻ.",
+    "team.subtitle":
+      "Những người đằng sau sứ mệnh mang lịch sử Việt Nam đến gần hơn với thế hệ trẻ.",
     "team.member.1.role": "Quản lý Dự án",
     "team.member.1.desc": "Điều phối tiến độ và đội ngũ để đảm bảo dự án vận hành mượt mà.",
     "team.member.2.role": "Nghiên cứu Nội dung",
-    "team.member.2.desc": "Khám phá và xác thực những câu chuyện lịch sử phong phú đằng sau mỗi tác phẩm.",
+    "team.member.2.desc":
+      "Khám phá và xác thực những câu chuyện lịch sử phong phú đằng sau mỗi tác phẩm.",
     "team.member.3.role": "Quản trị Nội dung",
-    "team.member.3.desc": "Tổ chức và quản lý kho lưu trữ số để đảm bảo chất lượng và khả năng tiếp cận.",
+    "team.member.3.desc":
+      "Tổ chức và quản lý kho lưu trữ số để đảm bảo chất lượng và khả năng tiếp cận.",
     "team.member.4.role": "Kỹ sư Trưởng",
-    "team.member.4.desc": "Xây dựng nền tảng kỹ thuật cho những trải nghiệm lịch sử tương tác sinh động.",
+    "team.member.4.desc":
+      "Xây dựng nền tảng kỹ thuật cho những trải nghiệm lịch sử tương tác sinh động.",
     "team.member.5.role": "Chuyên viên Truyền thông",
-    "team.member.5.desc": "Sáng tạo các tài liệu hình ảnh sống động để đưa lịch sử Việt Nam đến gần hơn với mọi người.",
+    "team.member.5.desc":
+      "Sáng tạo các tài liệu hình ảnh sống động để đưa lịch sử Việt Nam đến gần hơn với mọi người.",
 
     // ── Landing — Footer ──
     "footer.text": "Nền tảng eBook lịch sử Việt Nam",
@@ -101,7 +114,7 @@ export const translations = {
     "library.bookIdPlaceholder": "ID sách tùy chỉnh (tùy chọn)",
     "library.bookTitlePlaceholder": "Tên sách",
     "library.uploading": "Đang tải...",
-    'library.continueReading': 'Tiếp tục đọc',
+    "library.continueReading": "Tiếp tục đọc",
     "library.errorLoadingBooks": "Lỗi khi tải thư viện",
     "library.errorLoadingBooksDescription": "Vui lòng thử lại sau",
     "library.library": "Tủ Sách Lịch Sử",
@@ -133,7 +146,8 @@ export const translations = {
     "chat.audio": "Âm thanh",
     "chat.annotation": "Chú thích",
     "chat.decorativeUser": "Bạn có thể giải thích chủ đề chính của chương này không?",
-    "chat.decorativeAI": "Chương này tập trung vào xung đột giữa quyền lực và lương tâm, thể hiện qua các quyết định mà nhân vật chính buộc phải đưa ra.",
+    "chat.decorativeAI":
+      "Chương này tập trung vào xung đột giữa quyền lực và lương tâm, thể hiện qua các quyết định mà nhân vật chính buộc phải đưa ra.",
 
     // ── Reader — Media Panel ──
     "media.relatedMedia": "Tư liệu liên quan",
@@ -142,7 +156,8 @@ export const translations = {
     "media.editMedia": "Sửa tư liệu",
     "media.deleteMedia": "Xóa tư liệu",
     "media.emptyTitle": "Tiếp tục đọc để xem tư liệu lịch sử liên quan",
-    "media.emptyHint": "Hình ảnh, video và chú thích sẽ tự động hiển thị khi bạn đọc đến đoạn văn liên quan.",
+    "media.emptyHint":
+      "Hình ảnh, video và chú thích sẽ tự động hiển thị khi bạn đọc đến đoạn văn liên quan.",
     "media.playVideo": "Bấm để phát video",
     "media.sources": "Nguồn tham khảo",
 
@@ -154,7 +169,8 @@ export const translations = {
     "highlights.empty": "Chưa có ghi chú nào. Chọn văn bản trong sách để thêm!",
     "highlights.clearAll": "Xóa tất cả",
     "highlights.clearAllTitle": "Xóa tất cả ghi chú",
-    "highlights.clearAllText": "Bạn có chắc chắn muốn xóa tất cả ghi chú trong cuốn sách này? Hành động này không thể hoàn tác.",
+    "highlights.clearAllText":
+      "Bạn có chắc chắn muốn xóa tất cả ghi chú trong cuốn sách này? Hành động này không thể hoàn tác.",
     "highlights.deleteAll": "Xóa tất cả",
 
     // ── Reader — Selection Tooltip ──
@@ -235,7 +251,7 @@ export const translations = {
     "ob.gender.female": "Nữ",
     "ob.gender.nonBinary": "Khác",
     "ob.gender.preferNotToSay": "Không muốn nói",
-    
+
     "ob.purpose.learn": "Mở rộng kiến thức",
     "ob.purpose.learnDesc": "Học hỏi sâu hơn về các sự kiện và nhân vật lịch sử",
     "ob.purpose.academic": "Tra cứu học thuật",
@@ -246,7 +262,7 @@ export const translations = {
     "ob.purpose.mediaDesc": "Tìm hiểu lịch sử trực quan qua hình ảnh và video",
     "ob.purpose.other": "Lý do khác",
     "ob.purpose.otherDesc": "Tôi muốn tự do khám phá",
-    
+
     "ob.goal.facts": "Sự kiện & Dữ liệu",
     "ob.goal.factsDesc": "Mốc thời gian và chi tiết lịch sử chính xác",
     "ob.goal.insights": "Góc nhìn sâu sắc",
@@ -279,13 +295,13 @@ export const translations = {
     // ── Quiz UI ──
     "quiz.title": "Câu hỏi ôn tập",
     "quiz.chapterComplete": "Bạn đã hoàn thành chương này!",
-    "quiz.takeQuizPrompt": "Bạn có muốn làm bài kiểm tra không?",
-    "quiz.startQuiz": "Bắt đầu làm bài",
+    "quiz.takeQuizPrompt": "Bạn có muốn làm quiz không?",
+    "quiz.startQuiz": "Bắt đầu làm quiz",
     "quiz.skipQuiz": "Bỏ qua",
     "quiz.dontShowAgain": "Không hiển thị lại",
     "quiz.question": "Câu hỏi",
     "quiz.of": "trong",
-    "quiz.submit": "Nộp bài",
+    "quiz.submit": "Hoàn thành",
     "quiz.next": "Tiếp theo",
     "quiz.correct": "Đúng rồi!",
     "quiz.incorrect": "Chưa đúng",
@@ -293,7 +309,7 @@ export const translations = {
     "quiz.correctAnswer": "Đáp án đúng",
     "quiz.explanation": "Giải thích",
     "quiz.score": "Điểm số",
-    "quiz.quizComplete": "Hoàn thành bài kiểm tra!",
+    "quiz.quizComplete": "Hoàn thành quiz!",
     "quiz.tryAgain": "Làm lại",
     "quiz.viewHistory": "Xem lịch sử",
     "quiz.noQuestions": "Chưa có câu hỏi cho chương này",
@@ -301,8 +317,16 @@ export const translations = {
     "quiz.true": "Đúng",
     "quiz.false": "Sai",
     "quiz.grading": "Đang chấm điểm...",
-    "quiz.openQuiz": "Làm bài kiểm tra",
+    "quiz.gradingError": "Không thể chấm điểm. Vui lòng thử lại.",
+    "quiz.openQuiz": "Làm quiz",
     "quiz.previousChapter": "Chương trước",
+    "quiz.chapterNotCompleted": "Vui lòng đọc xong ít nhất một chương trước khi thực hiện quiz!",
+    "quiz.shortAnswerPlaceholder": "Nhập câu trả lời của bạn...",
+    "quiz.completedPercent": "Đã hoàn thành {percent}%",
+    "quiz.resultsDetail": "Chi tiết kết quả",
+    "quiz.questionNumber": "Câu {number}:",
+    "quiz.finish": "Hoàn tất",
+    "quiz.alreadyCompleted": "Bạn đã hoàn thành quiz của chương này rồi!",
 
     // ── Admin ──
     "admin.dashboard": "Trang quản trị",
@@ -319,7 +343,7 @@ export const translations = {
     "admin.performance": "Hiệu suất",
     "admin.totalAttempts": "Tổng lượt làm",
     "admin.avgScore": "Điểm trung bình",
-    "admin.selectBook": "Chọn sách",
+    "admin.Book": "Sách",
     "admin.selectChapter": "Chọn chương",
     "admin.questionType": "Loại câu hỏi",
     "admin.multipleChoice": "Trắc nghiệm",
@@ -335,15 +359,17 @@ export const translations = {
     "admin.questionCount": "Số lượng câu hỏi",
     "admin.passRate": "Tỷ lệ pass",
     "admin.deleteConfirm": "Bạn có chắc chắn muốn xóa câu hỏi này?",
+    "admin.quizDescription": "Quản lý câu hỏi cho các chương",
+    "admin.performanceDescription": "Thống kê dữ liệu quiz của người dùng",
 
     // ── User Dashboard ──
     "dashboard.title": "Trang cá nhân",
     "dashboard.quizHistory": "Lịch sử làm bài",
-    "dashboard.noHistory": "Bạn chưa làm bài kiểm tra nào",
+    "dashboard.noHistory": "Bạn chưa làm quiz nào",
     "dashboard.chapter": "Chương",
     "dashboard.date": "Ngày",
     "dashboard.result": "Kết quả",
-    "dashboard.totalQuizzes": "Tổng bài kiểm tra",
+    "dashboard.totalQuizzes": "Tổng bài quiz",
     "dashboard.bestScore": "Điểm cao nhất",
 
     // ── Navbar extras ──
@@ -383,7 +409,8 @@ export const translations = {
     "hero.badge": "Multimedia eBook platform for Vietnamese history",
     "hero.titleLine1": "Vietnamese History",
     "hero.titleLine2": "through vivid book pages",
-    "hero.subtitle": "From Bạch Đằng to Điện Biên Phủ — read history with images, documentary footage and music embedded right into every page.",
+    "hero.subtitle":
+      "From Bạch Đằng to Điện Biên Phủ — read history with images, documentary footage and music embedded right into every page.",
     "hero.cta": "Start Reading",
     "hero.learnMore": "Learn More",
 
@@ -392,20 +419,26 @@ export const translations = {
     "features.headingAccent": "Review",
     "features.subtitle": "A brand-new way to learn history with multimedia eBook technology.",
     "features.0.title": "Vivid History Books",
-    "features.0.desc": "Read classic works on Vietnamese history, from the Hùng Vương era to national reunification.",
+    "features.0.desc":
+      "Read classic works on Vietnamese history, from the Hùng Vương era to national reunification.",
     "features.1.title": "Multimedia Resources",
-    "features.1.desc": "Images, videos and historical audio appear right when you reach the relevant passage.",
+    "features.1.desc":
+      "Images, videos and historical audio appear right when you reach the relevant passage.",
     "features.2.title": "AI Assistant Fable",
-    "features.2.desc": "Instant Q&A, summaries and knowledge expansion right beside the page you're reading.",
+    "features.2.desc":
+      "Instant Q&A, summaries and knowledge expansion right beside the page you're reading.",
     "features.3.title": "Review with Quizzes",
-    "features.3.desc": "Test your history knowledge after each chapter with engaging multiple-choice questions.",
+    "features.3.desc":
+      "Test your history knowledge after each chapter with engaging questions.",
     "features.4.title": "Community Contributions",
-    "features.4.desc": "Readers can suggest and contribute images and videos to enrich the library.",
+    "features.4.desc":
+      "Readers can suggest and contribute images and videos to enrich the library.",
 
     // ── Landing — Books Preview ──
     "books.heading": "History",
     "books.headingAccent": "Library",
-    "books.subtitle": "Explore classic works on Vietnamese history from the founding era to reunification.",
+    "books.subtitle":
+      "Explore classic works on Vietnamese history from the founding era to reunification.",
     "books.loading": "Loading library...",
     "books.readTime": "min read",
     "books.pages": "pages",
@@ -414,27 +447,32 @@ export const translations = {
     // ── Landing — Demo Preview ──
     "demo.heading": "Resources",
     "demo.headingAccent": "right inside the book",
-    "demo.subtitle": "When you reach a historical event, related media appears automatically to the side.",
+    "demo.subtitle":
+      "When you reach a historical event, related media appears automatically to the side.",
     "demo.relatedMedia": "Related Media",
 
     // ── Landing — AI Feature ──
     "ai.heading": "AI Assistant",
     "ai.headingAccent": "Fable Chat",
-    "ai.subtitle": "Encounter confusing events or want to learn more about the reading? Fable Chat is always ready to answer instantly, summarize content and expand knowledge right beside the book page.",
+    "ai.subtitle":
+      "Encounter confusing events or want to learn more about the reading? Fable Chat is always ready to answer instantly, summarize content and expand knowledge right beside the book page.",
     "ai.placeholder": "Ask Fable Chat about this historical passage...",
 
     // ── Landing — Team ──
     "team.heading": "The",
     "team.headingAccent": "HistoriArt Team",
-    "team.subtitle": "The people behind the mission to bring Vietnamese history closer to the younger generation.",
+    "team.subtitle":
+      "The people behind the mission to bring Vietnamese history closer to the younger generation.",
     "team.member.1.role": "Project Manager",
     "team.member.1.desc": "Coordinating timelines and teams to ensure seamless project delivery.",
     "team.member.2.role": "Content Researcher",
-    "team.member.2.desc": "Uncovering and verifying the rich historical stories behind every artwork.",
+    "team.member.2.desc":
+      "Uncovering and verifying the rich historical stories behind every artwork.",
     "team.member.3.role": "Content Administrator",
     "team.member.3.desc": "Organizing and managing digital archives for quality and accessibility.",
     "team.member.4.role": "Lead Engineer",
-    "team.member.4.desc": "Architecting the technical foundation for an interactive historical experience.",
+    "team.member.4.desc":
+      "Architecting the technical foundation for an interactive historical experience.",
     "team.member.5.role": "Media Specialist",
     "team.member.5.desc": "Creating immersive visual assets to bring Vietnamese history to life.",
 
@@ -449,11 +487,10 @@ export const translations = {
     "library.bookIdPlaceholder": "Custom Book ID (optional)",
     "library.bookTitlePlaceholder": "Book title",
     "library.uploading": "Uploading...",
-    'library.continueReading': 'Continue reading',
+    "library.continueReading": "Continue reading",
     "library.errorLoadingBooks": "Error loading books",
     "library.errorLoadingBooksDescription": "Please try again later",
     "library.library": "Historic Bookshelves",
-    
 
     // ── Reader — Top Bar ──
     "reader.library": "Library",
@@ -482,7 +519,8 @@ export const translations = {
     "chat.audio": "Audio",
     "chat.annotation": "Annotation",
     "chat.decorativeUser": "Can you explain the main theme of this chapter?",
-    "chat.decorativeAI": "This chapter focuses on the conflict between power and conscience, expressed through the decisions the protagonist is forced to make.",
+    "chat.decorativeAI":
+      "This chapter focuses on the conflict between power and conscience, expressed through the decisions the protagonist is forced to make.",
 
     // ── Reader — Media Panel ──
     "media.relatedMedia": "Related Media",
@@ -491,7 +529,8 @@ export const translations = {
     "media.editMedia": "Edit media",
     "media.deleteMedia": "Delete media",
     "media.emptyTitle": "Keep reading to see related historical media",
-    "media.emptyHint": "Images, videos and annotations will appear automatically when you reach the relevant passage.",
+    "media.emptyHint":
+      "Images, videos and annotations will appear automatically when you reach the relevant passage.",
     "media.playVideo": "Click to play video",
     "media.sources": "References",
 
@@ -503,7 +542,8 @@ export const translations = {
     "highlights.empty": "No highlights yet. Select text in the book to add some!",
     "highlights.clearAll": "Clear All",
     "highlights.clearAllTitle": "Clear All Highlights",
-    "highlights.clearAllText": "Are you sure you want to delete all highlights in this book? This action cannot be undone.",
+    "highlights.clearAllText":
+      "Are you sure you want to delete all highlights in this book? This action cannot be undone.",
     "highlights.deleteAll": "Delete All",
 
     // ── Reader — Selection Tooltip ──
@@ -561,7 +601,8 @@ export const translations = {
     // ── Settings — Security ──
     "settings.securityTitle": "Security",
     "settings.authentication": "Authentication",
-    "settings.securityPlaceholder": "Security options and session management will be available here.",
+    "settings.securityPlaceholder":
+      "Security options and session management will be available here.",
 
     // ── Onboarding ──
     "ob.back": "← Back",
@@ -584,7 +625,7 @@ export const translations = {
     "ob.gender.female": "Female",
     "ob.gender.nonBinary": "Non-binary",
     "ob.gender.preferNotToSay": "Prefer not to say",
-    
+
     "ob.purpose.learn": "Expand Knowledge",
     "ob.purpose.learnDesc": "Learn deeply about historical events and figures",
     "ob.purpose.academic": "Academic Research",
@@ -595,7 +636,7 @@ export const translations = {
     "ob.purpose.mediaDesc": "See history through documentaries and real photos",
     "ob.purpose.other": "My own reasons",
     "ob.purpose.otherDesc": "I'll explore freely",
-    
+
     "ob.goal.facts": "Facts & Data",
     "ob.goal.factsDesc": "Precise timelines and historical details",
     "ob.goal.insights": "Deep Insights",
@@ -650,8 +691,17 @@ export const translations = {
     "quiz.true": "True",
     "quiz.false": "False",
     "quiz.grading": "Grading...",
+    "quiz.gradingError": "Unable to grade your answer. Please try again.",
     "quiz.openQuiz": "Take Quiz",
     "quiz.previousChapter": "Previous chapter",
+    "quiz.chapterNotCompleted":
+      "Please finish reading at least one chapter before taking the quiz!",
+    "quiz.shortAnswerPlaceholder": "Type your answer here...",
+    "quiz.completedPercent": "Completed {percent}%",
+    "quiz.resultsDetail": "Results Detail",
+    "quiz.questionNumber": "Question {number}:",
+    "quiz.finish": "Finish",
+    "quiz.alreadyCompleted": "You have already completed the quiz for this chapter!",
 
     // ── Admin ──
     "admin.dashboard": "Admin Dashboard",
@@ -668,7 +718,7 @@ export const translations = {
     "admin.performance": "Performance",
     "admin.totalAttempts": "Total Attempts",
     "admin.avgScore": "Average Score",
-    "admin.selectBook": "Select book",
+    "admin.Book": "Book",
     "admin.selectChapter": "Select chapter",
     "admin.questionType": "Question type",
     "admin.multipleChoice": "Multiple Choice",
@@ -684,6 +734,8 @@ export const translations = {
     "admin.questionCount": "Question count",
     "admin.passRate": "Pass Rate",
     "admin.deleteConfirm": "Are you sure you want to delete this question?",
+    "admin.quizDescription": "Manage questions for chapters",
+    "admin.performanceDescription": "Manage quiz performance data",
 
     // ── User Dashboard ──
     "dashboard.title": "My Dashboard",

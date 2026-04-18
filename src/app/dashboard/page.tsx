@@ -3,11 +3,12 @@
 import PageMountSignaler from "@/components/PageMountSignaler";
 import { useTranslation } from "@/lib/i18n";
 import { BookOpen, Calendar, GraduationCap, Trophy } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import styles from "./Dashboard.module.css";
 
 type QuizResult = {
   id: string;
-  bookId: string;
+  bookTitle: string;
   chapterNumber: number | null;
   score: number;
   totalQuestions: number;
@@ -30,122 +31,111 @@ export default function DashboardPage() {
   }, []);
 
   const totalQuizzes = results.length;
-  const bestScore = results.length > 0 
-    ? Math.max(...results.map(r => r.totalQuestions > 0 ? r.score / r.totalQuestions : 0)) * 100 
-    : 0;
+  const bestScore =
+    results.length > 0
+      ? Math.max(...results.map((r) => (r.totalQuestions > 0 ? r.score / r.totalQuestions : 0))) *
+        100
+      : 0;
 
   return (
-    <div 
-      className="flex flex-col items-center min-h-screen"
-      style={{ paddingBottom: "48px", paddingLeft: "24px", paddingRight: "24px", paddingTop: "120px", background: "var(--bg-primary)", color: "var(--text-primary)" }}
-    >
-      <div className="w-full max-w-4xl">
-        <div className="flex items-center" style={{ gap: "16px", marginBottom: "32px" }}>
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-accent-primary to-accent-secondary shadow-lg">
+    <div className={styles.container}>
+      <div className={styles.inner}>
+        <div className={styles.titleRow}>
+          <div className={styles.titleIcon}>
             <Trophy color="white" size={24} />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight" style={{ margin: 0 }}>
-              {t("dashboard.title")}
-            </h1>
+            <h1 className={styles.pageTitle}>{t("dashboard.title")}</h1>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: "16px", marginBottom: "32px" }}>
-          <div className="bg-(--bg-card) border border-(--border-subtle) rounded-xl shadow-sm flex items-center" style={{ padding: "24px", gap: "24px" }}>
-            <div className="w-14 h-14 rounded-full bg-(--bg-secondary) flex items-center justify-center text-(--accent-primary)">
+        <div className={styles.statsGrid}>
+          <div className={styles.statCard}>
+            <div className={styles.statIconCircle}>
               <BookOpen size={24} />
             </div>
             <div>
-              <p className="text-sm text-(--text-secondary) font-medium" style={{ marginBottom: "4px" }}>{t("dashboard.totalQuizzes")}</p>
-              <p className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-(--text-primary) to-(--text-secondary)" style={{ margin: 0 }}>
-                {loading ? "-" : totalQuizzes}
-              </p>
+              <p className={styles.statLabel}>{t("dashboard.totalQuizzes")}</p>
+              <p className={styles.statValueGradient}>{loading ? "-" : totalQuizzes}</p>
             </div>
           </div>
 
-          <div className="bg-(--bg-card) border border-(--border-subtle) rounded-xl shadow-sm flex items-center" style={{ padding: "24px", gap: "24px" }}>
-            <div className="w-14 h-14 rounded-full bg-(--bg-secondary) flex items-center justify-center text-(--accent-primary)">
+          <div className={styles.statCard}>
+            <div className={styles.statIconCircle}>
               <GraduationCap size={24} />
             </div>
             <div>
-              <p className="text-sm text-(--text-secondary) font-medium" style={{ marginBottom: "4px" }}>{t("dashboard.bestScore")}</p>
-              <p className="text-3xl font-bold text-(--text-primary)" style={{ margin: 0 }}>
-                {loading ? "-" : `${Math.round(bestScore)}%`}
-              </p>
+              <p className={styles.statLabel}>{t("dashboard.bestScore")}</p>
+              <p className={styles.statValue}>{loading ? "-" : `${Math.round(bestScore)}%`}</p>
             </div>
           </div>
         </div>
 
         {/* History List */}
-        <div className="bg-(--bg-card) border border-(--border-subtle) rounded-xl overflow-hidden shadow-sm">
-          <div className="border-b border-(--border-subtle) bg-(--bg-secondary)/50" style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "16px", paddingBottom: "16px" }}>
-            <h2 className="text-lg font-semibold text-(--text-primary)" style={{ margin: 0 }}>{t("dashboard.quizHistory")}</h2>
+        <div className={styles.historyPanel}>
+          <div className={styles.historyHeader}>
+            <h2 className={styles.historyTitle}>{t("dashboard.quizHistory")}</h2>
           </div>
-          
-          <div className="" style={{ padding: 0 }}>
+
+          <div>
             {loading ? (
-              <div className="text-center text-(--text-secondary)" style={{ padding: "32px" }}>{t("common.loading")}</div>
+              <div className={styles.loadingState}>{t("common.loading")}</div>
             ) : results.length === 0 ? (
-              <div className="text-center text-(--text-tertiary)" style={{ padding: "48px" }}>
-                <div className="w-16 h-16 rounded-full bg-(--bg-secondary) flex items-center justify-center mx-auto" style={{ marginBottom: "16px" }}>
+              <div className={styles.emptyState}>
+                <div className={styles.emptyIconCircle}>
                   <BookOpen size={24} className="opacity-50" />
                 </div>
-                <p style={{ margin: 0 }}>{t("dashboard.noHistory")}</p>
+                <p className={styles.emptyText}>{t("dashboard.noHistory")}</p>
               </div>
             ) : (
-              <table className="w-full text-left text-sm" style={{ borderCollapse: "collapse" }}>
-                <thead>
-                  <tr className="border-b border-(--border-subtle) text-(--text-secondary)">
-                    <th className="font-medium" style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "16px", paddingBottom: "16px" }}>{t("admin.selectBook")}</th>
-                    <th className="font-medium" style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "16px", paddingBottom: "16px" }}>{t("dashboard.chapter")}</th>
-                    <th className="font-medium" style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "16px", paddingBottom: "16px" }}>{t("dashboard.date")}</th>
-                    <th className="font-medium text-right" style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "16px", paddingBottom: "16px" }}>{t("dashboard.result")}</th>
+              <table className={styles.table}>
+                <thead className={styles.tableHead}>
+                  <tr className={styles.tableHeadRow}>
+                    <th className={styles.th}>{t("admin.Book")}</th>
+                    <th className={styles.th}>{t("dashboard.chapter")}</th>
+                    <th className={styles.th}>{t("dashboard.date")}</th>
+                    <th className={styles.thRight}>{t("dashboard.result")}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-(--border-subtle)">
+                <tbody className={styles.tbody}>
                   {results.map((result) => {
-                    const percentage = result.totalQuestions > 0 
-                      ? Math.round((result.score / result.totalQuestions) * 100)
-                      : 0;
+                    const percentage =
+                      result.totalQuestions > 0
+                        ? Math.round((result.score / result.totalQuestions) * 100)
+                        : 0;
                     const isPass = percentage >= 70;
-                    const formatter = new Intl.DateTimeFormat(language === "en" ? "en-US" : "vi-VN", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit"
-                    });
-                    
+                    const formatter = new Intl.DateTimeFormat(
+                      language === "en" ? "en-US" : "vi-VN",
+                      {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      },
+                    );
+
                     return (
-                      <tr key={result.id} className="hover:bg-(--bg-secondary)/30 transition-colors">
-                        <td className="font-medium text-(--text-primary)" style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "16px", paddingBottom: "16px" }}>
-                          {/* Could map bookId to title here if we fetched books */}
-                          {result.bookId}
+                      <tr key={result.id} className={styles.tableRow}>
+                        <td className={styles.tdPrimary}>{result.bookTitle}</td>
+                        <td className={styles.tdSecondary}>
+                          {result.chapterNumber
+                            ? `${t("dashboard.chapter")} ${result.chapterNumber}`
+                            : "-"}
                         </td>
-                        <td className="text-(--text-secondary)" style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "16px", paddingBottom: "16px" }}>
-                          {result.chapterNumber ? `${t("dashboard.chapter")} ${result.chapterNumber}` : "-"}
-                        </td>
-                        <td className="text-(--text-secondary)" style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "16px", paddingBottom: "16px" }}>
-                          <div className="flex items-center" style={{ gap: "8px" }}>
+                        <td className={styles.tdSecondary}>
+                          <div className={styles.dateCell}>
                             <Calendar size={14} className="opacity-70" />
                             {formatter.format(new Date(result.completedAt))}
                           </div>
                         </td>
-                        <td className="text-right" style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "16px", paddingBottom: "16px" }}>
-                          <div className="inline-flex items-center" style={{ gap: "12px" }}>
-                            <span 
-                              className={`rounded-full text-xs font-semibold ${
-                                isPass 
-                                  ? "bg-green-500/10 text-green-500 border border-green-500/30" 
-                                  : "bg-red-500/10 text-red-500 border border-red-500/30"
-                              }`}
-                              style={{ paddingLeft: "10px", paddingRight: "10px", paddingTop: "4px", paddingBottom: "4px" }}
-                            >
+                        <td className={styles.tdRight}>
+                          <div className={styles.scoreCell}>
+                            <span className={isPass ? styles.badgePass : styles.badgeFail}>
                               {percentage}%
                             </span>
-                            <span className="text-(--text-tertiary) font-mono">
+                            <span className={styles.scoreRatio}>
                               {result.score}/{result.totalQuestions}
                             </span>
                           </div>
@@ -159,7 +149,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-      <PageMountSignaler/>
+      <PageMountSignaler />
     </div>
   );
 }

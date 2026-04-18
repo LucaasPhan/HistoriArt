@@ -3,9 +3,9 @@
 import PageMountSignaler from "@/components/PageMountSignaler";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/AuthContext";
+import "@/features/settings/settings.css";
 import { useTranslation } from "@/lib/i18n";
 import { BookOpen, Lock, Settings, User } from "lucide-react";
-import "@/features/settings/settings.css";
 
 import AccountTab from "@/features/settings/tabs/AccountTab";
 import GeneralTab from "@/features/settings/tabs/GeneralTab";

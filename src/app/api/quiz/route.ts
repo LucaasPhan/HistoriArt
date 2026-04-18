@@ -19,7 +19,8 @@ export async function GET(req: NextRequest) {
 
     const conditions = [];
     if (bookId) conditions.push(eq(quizQuestions.bookId, bookId));
-    if (chapterNumber) conditions.push(eq(quizQuestions.chapterNumber, parseInt(chapterNumber, 10)));
+    if (chapterNumber)
+      conditions.push(eq(quizQuestions.chapterNumber, parseInt(chapterNumber, 10)));
 
     const questions = await db
       .select()
@@ -139,10 +140,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Missing question id" }, { status: 400 });
     }
 
-    const [deleted] = await db
-      .delete(quizQuestions)
-      .where(eq(quizQuestions.id, id))
-      .returning();
+    const [deleted] = await db.delete(quizQuestions).where(eq(quizQuestions.id, id)).returning();
 
     if (!deleted) {
       return NextResponse.json({ error: "Question not found" }, { status: 404 });

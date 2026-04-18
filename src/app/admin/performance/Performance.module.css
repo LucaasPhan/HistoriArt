@@ -1,0 +1,171 @@
+@reference "tailwindcss";
+
+.container {
+  @apply flex min-h-screen flex-col items-center;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  padding-bottom: 48px;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-top: 120px;
+}
+
+.contentWrapper {
+  @apply w-full max-w-[896px];
+}
+
+.pageHeader {
+  @apply flex items-center justify-between;
+  margin-bottom: 32px;
+}
+
+.headerLeft {
+  @apply flex items-center;
+  gap: 16px;
+}
+
+.iconBox {
+  @apply flex h-12 w-12 items-center justify-center rounded-xl shadow-sm;
+  background: linear-gradient(to bottom right, var(--border-hover), var(--border-subtle));
+}
+
+.pageTitle {
+  @apply text-3xl font-bold tracking-tight;
+  margin: 0;
+}
+
+.headerRight {
+  @apply flex items-center;
+  gap: 16px;
+}
+
+.selectorBox {
+  @apply flex items-center;
+  gap: 12px;
+}
+
+.bookSelect {
+  @apply rounded-lg text-sm transition-all outline-none;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  padding: 8px 16px;
+}
+
+.bookSelect:focus {
+  @apply ring-1 outline-none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 1px var(--accent-primary);
+}
+
+.panel {
+  @apply overflow-hidden rounded-xl shadow-sm;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+}
+
+.panelHeader {
+  @apply flex items-center justify-between;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+  padding: 16px 24px;
+}
+
+.panelTitle {
+  @apply text-lg font-semibold;
+  margin: 0;
+}
+
+.panelContent {
+  padding: 0;
+}
+
+.loadingBox {
+  @apply text-center;
+  color: var(--text-secondary);
+  padding: 32px;
+}
+
+.emptyBox {
+  @apply text-center;
+  color: var(--text-tertiary);
+  padding: 40px;
+}
+
+.table {
+  @apply w-full border-collapse text-left text-sm;
+}
+
+.tableHeadRow {
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.tableHeadCell {
+  @apply font-medium;
+  padding: 16px 24px;
+}
+
+.tableRow {
+  @apply transition-colors last:border-0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.tableRow:hover {
+  background: var(--bg-secondary);
+  opacity: 0.8;
+}
+
+.tableCell {
+  padding: 16px 24px;
+}
+
+.chapterCell {
+  @apply font-medium;
+  color: var(--text-primary);
+}
+
+.statsCell {
+  color: var(--text-secondary);
+}
+
+.monoText {
+  @apply font-mono;
+  color: var(--text-primary);
+}
+
+.passRateContainer {
+  @apply flex items-center justify-end;
+  gap: 12px;
+}
+
+.progressBarContainer {
+  @apply h-2 w-24 overflow-hidden rounded-full;
+  background: var(--bg-secondary);
+}
+
+.progressBarFill {
+  @apply h-full transition-all duration-300;
+  background: var(--accent-primary);
+}
+
+.passRateLabel {
+  @apply min-w-[40px] font-mono;
+  color: var(--text-secondary);
+}
+
+.adminBtn {
+  @apply text-sm font-semibold transition-all;
+  background: var(--accent-gradient);
+  color: white;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 12px var(--accent-glow);
+  cursor: pointer;
+  border: none;
+}
+
+.adminBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--accent-glow);
+}
