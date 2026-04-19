@@ -26,11 +26,11 @@ export default function BookInfoPopover({ children, bookData }: BookInfoPopoverP
   };
 
   const handleMouseLeave = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      setOpen(false);
       timerRef.current = null;
-    }
-    setOpen(false);
+    }, 300);
   };
 
   return (
@@ -51,7 +51,7 @@ export default function BookInfoPopover({ children, bookData }: BookInfoPopoverP
           className={styles.popoverContent}
           side="bottom"
           align="start"
-          sideOffset={20}
+          sideOffset={8}
           onMouseEnter={() => {
             if (timerRef.current) clearTimeout(timerRef.current);
             setOpen(true);

@@ -40,7 +40,7 @@ export default function AccountTab() {
       !data.firstName.trim() ||
       !data.lastName.trim() ||
       isNaN(ageNum) ||
-      ageNum < 13 ||
+      ageNum < 12 ||
       ageNum > 99 ||
       !data.gender
     ) {

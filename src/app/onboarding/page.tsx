@@ -20,7 +20,7 @@ import type { OnboardingData } from "@/features/onboarding/types";
 
 function isValidAge(age: string) {
   const n = Number(age);
-  return age !== "" && Number.isInteger(n) && n >= 13 && n <= 99;
+  return age !== "" && Number.isInteger(n) && n >= 12 && n <= 99;
 }
 
 function canAdvance(step: number, data: OnboardingData): boolean {

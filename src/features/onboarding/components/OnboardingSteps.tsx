@@ -34,7 +34,7 @@ export function StepPersonal({ data, set }: StepProps) {
         placeholder={t("settings.age")}
         type="number"
         value={data.age}
-        min={13}
+        min={12}
         max={99}
         onChange={(e) => set("age", e.target.value)}
         style={{ marginBottom: 16 }}
