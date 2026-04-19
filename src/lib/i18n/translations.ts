@@ -329,6 +329,7 @@ export const translations = {
     "quiz.previousChapter": "Chương trước",
     "quiz.chapterNotCompleted": "Vui lòng đọc xong ít nhất một chương trước khi thực hiện quiz!",
     "quiz.shortAnswerPlaceholder": "Nhập câu trả lời của bạn...",
+    "quiz.signinRequired": "Vui lòng đăng nhập để làm quiz",
     "quiz.completedPercent": "Đã hoàn thành {percent}%",
     "quiz.resultsDetail": "Chi tiết kết quả",
     "quiz.questionNumber": "Câu {number}:",
@@ -728,6 +729,7 @@ export const translations = {
     "quiz.chapterNotCompleted":
       "Please finish reading at least one chapter before taking the quiz!",
     "quiz.shortAnswerPlaceholder": "Type your answer here...",
+    "quiz.signinRequired": "Please sign in to take quizzes",
     "quiz.completedPercent": "Completed {percent}%",
     "quiz.resultsDetail": "Results Detail",
     "quiz.questionNumber": "Question {number}:",

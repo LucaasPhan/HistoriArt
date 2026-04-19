@@ -5,6 +5,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTranslation } from "@/lib/i18n";
+import { useAuth } from "@/context/AuthContext";
 import { HelpCircle, Lock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -27,6 +28,7 @@ export function QuizButton({
   onOpenQuiz,
 }: QuizButtonProps) {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
   const [selectedChapter, setSelectedChapter] = useState(currentChapter);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -40,11 +42,20 @@ export function QuizButton({
   const isActive = completedChapters.length > 0;
 
   const handleQuizClick = () => {
+    // 0. Check authentication
+    if (!isAuthenticated) {
+      toast.error(t("quiz.signinRequired"), {
+        position: "bottom-right",
+        style: { backgroundColor: "#000", color: "#fff", border: "1px solid #333", borderRadius: "12px" },
+      });
+      return;
+    }
+
     // 1. Check if the SELECTED chapter is completed
     if (!completedChapters.includes(selectedChapter)) {
       toast(t("quiz.chapterNotCompleted"), {
         position: "bottom-right",
-        style: { backgroundColor: "#000", color: "#fff", border: "none", borderRadius: "12px" },
+        style: { backgroundColor: "#000", color: "#fff", border: "1px solid #333", borderRadius: "12px" },
       });
       return;
     }
@@ -53,10 +64,18 @@ export function QuizButton({
   };
 
   const handleSelectChapter = (ch: number) => {
+    if (!isAuthenticated) {
+      toast.error(t("quiz.signinRequired"), {
+        position: "bottom-right",
+        style: { backgroundColor: "#000", color: "#fff", border: "1px solid #333", borderRadius: "12px" },
+      });
+      return;
+    }
+
     if (!completedChapters.includes(ch)) {
       toast(t("quiz.chapterNotCompleted"), {
         position: "bottom-right",
-        style: { backgroundColor: "#000", color: "#fff", border: "none", borderRadius: "12px" },
+        style: { backgroundColor: "#000", color: "#fff", border: "1px solid #333", borderRadius: "12px" },
       });
       return;
     }

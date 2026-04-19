@@ -2,6 +2,7 @@
 
 import type { ConversationMode } from "@/lib/prompts";
 import { useTranslation } from "@/lib/i18n";
+import { useAuth } from "@/context/AuthContext";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -26,6 +27,7 @@ import type {
 
 export default function useReaderController({ bookId }: UseReaderControllerArgs) {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
 
@@ -252,7 +254,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
           const completedChapter = actualIdx + 1; // 1-indexed
           if (!completedChapters.includes(completedChapter)) {
             setCompletedChapters((prev) => [...prev, completedChapter]);
-            if (!suppressQuizPopup) {
+            if (!suppressQuizPopup && isAuthenticated) {
               setActiveQuizChapter(completedChapter);
               setShowChapterCompleteDialog(true);
             }
@@ -266,7 +268,7 @@ export default function useReaderController({ bookId }: UseReaderControllerArgs)
       const lastChapter = chapters.length;
       if (!completedChapters.includes(lastChapter)) {
         setCompletedChapters((prev) => [...prev, lastChapter]);
-        if (!suppressQuizPopup) {
+        if (!suppressQuizPopup && isAuthenticated) {
           setActiveQuizChapter(lastChapter);
           setShowChapterCompleteDialog(true);
         }
