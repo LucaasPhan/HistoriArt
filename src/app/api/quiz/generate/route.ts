@@ -16,16 +16,17 @@ export async function POST(req: NextRequest) {
       chapterNumber: number;
       pageContent: string;
       count: number;
+      questionTypes: string[];
     };
 
-    const { pageContent, count } = body;
+    const { pageContent, count, questionTypes } = body;
 
     if (!pageContent || !count) {
       return NextResponse.json({ error: "Missing pageContent or count" }, { status: 400 });
     }
 
     const safeCount = Math.min(Math.max(count, 1), 10);
-    const prompt = QUIZ_GENERATION_PROMPT(pageContent, safeCount);
+    const prompt = QUIZ_GENERATION_PROMPT(pageContent, safeCount, questionTypes);
     let responseText = "";
     let provider = "";
 

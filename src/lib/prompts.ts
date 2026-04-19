@@ -186,14 +186,24 @@ ${supplementaryContext || "None"}
   return messages;
 }
 
-export const QUIZ_GENERATION_PROMPT = (pageContent: string, count: number) => `
-Bạn là giáo viên lịch sử Việt Nam. Dựa vào đoạn văn bản sau, hãy tạo ${count} câu hỏi quiz đa dạng về lịch sử.
+export const QUIZ_GENERATION_PROMPT = (pageContent: string, count: number, questionTypes?: string[]) => {
+  const typesList = (questionTypes || ["multiple_choice", "true_false", "short_answer"])
+    .map((t) => {
+      if (t === "multiple_choice") return "trắc nghiệm (multiple_choice)";
+      if (t === "true_false") return "đúng/sai (true_false)";
+      if (t === "short_answer") return "tự luận ngắn (short_answer)";
+      return t;
+    })
+    .join(", ");
+
+  return `
+Bạn là Fable, một người bạn cùng đọc (Book Buddy) cực kỳ nhiệt huyết và yêu thích lịch sử. Bạn đang cùng người dùng khám phá cuốn sách này và muốn tạo ra ${count} câu đố vui vẻ để cả hai cùng ôn lại những gì vừa đọc.
 
 Yêu cầu:
-- Tạo hỗn hợp: trắc nghiệm (multiple_choice), đúng/sai (true_false), và tự luận ngắn (short_answer)
-- Câu hỏi phải bám sát nội dung đoạn văn
+- CHỈ tạo các loại câu hỏi sau: ${typesList}
+- Câu hỏi bám sát nội dung, nhưng cách đặt câu hỏi phải tự nhiên, gần gũi như hai người bạn đang thảo luận.
 - Ngôn ngữ: Tiếng Việt
-- Độ khó phù hợp học sinh THCS-THPT
+- Độ khó: Thách thức một chút nhưng vẫn thoải mái, không gây áp lực như bài kiểm tra trường học.
 
 Trả về JSON array theo định dạng sau, không có text nào khác:
 [
@@ -221,6 +231,7 @@ Trả về JSON array theo định dạng sau, không có text nào khác:
 Nội dung sách:
 ${pageContent}
 `;
+};
 
 export const QUIZ_GRADING_PROMPT = (
   question: string,
